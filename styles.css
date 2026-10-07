@@ -95,7 +95,9 @@ textarea { resize: vertical; }
 
 /* cards and lists */
 .card { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--bg); text-align: left; padding: 0; display: flex; flex-direction: column; width: 100%; }
-.card .ph, .card .fallback { height: 120px; border-radius: 0; }
+/* Safari does not stretch children of a button laid out as a column, so give them a full width. */
+.card > * { width: 100%; align-self: stretch; }
+.card .ph, .card .fallback { height: 150px; border-radius: 0; }
 .card .fallback { padding: 14px; justify-content: flex-end; }
 .card .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; }
 .why { color: var(--acc); font-weight: 700; }
