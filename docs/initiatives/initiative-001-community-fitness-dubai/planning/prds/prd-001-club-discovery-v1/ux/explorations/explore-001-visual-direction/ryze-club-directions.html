@@ -1,0 +1,291 @@
+<title>Ryze Club Directions</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=Unbounded:wght@500;700&family=DM+Sans:wght@400;500;700&family=Big+Shoulders+Display:wght@700;800&family=Manrope:wght@400;600;700&display=swap">
+<style>
+/* Layout: one column of three direction sections; each is a note beside a wrapping row of phone specimens. */
+:root{
+  --bg:#F3F5F8; --fg:#131A2B; --mut:#5A6478; --line:#D9DEE8; --surface:#FFFFFF; --accent:#2F5BFF; --bezel:#131A2B;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif; --body:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0F1420; --fg:#E8ECF5; --mut:#9AA5BD; --line:#263048; --surface:#171E2E; --accent:#8FA6FF; --bezel:#3A4663; color-scheme:dark } }
+:root[data-theme="dark"]{ --bg:#0F1420; --fg:#E8ECF5; --mut:#9AA5BD; --line:#263048; --surface:#171E2E; --accent:#8FA6FF; --bezel:#3A4663; color-scheme:dark }
+
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:20px;padding-block:40px 64px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:700;letter-spacing:-.02em}
+h2{font-size:1.6rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.lede{color:var(--mut);font-size:1.05rem}
+header{display:flex;flex-direction:column;gap:14px}
+.note{font-size:.85rem;color:var(--mut)}
+section{display:flex;flex-direction:column;gap:20px}
+.dir-head{display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--fg);padding-top:16px}
+.phones{display:flex;flex-wrap:wrap;gap:24px}
+.spec{display:flex;flex-direction:column;gap:8px;width:272px;max-width:100%}
+.spec figcaption{font-size:.8rem;color:var(--mut);font-weight:600}
+figure{margin:0}
+.pros{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.pros div{display:flex;flex-direction:column;gap:4px;font-size:.92rem;min-width:0}
+.pros b{font-family:var(--display)}
+.tablebox{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:700}
+td:first-child{font-weight:600}
+.pick{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.pick ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+
+/* ---------- phone specimens: each direction is a fixed look by design ---------- */
+.phone{width:272px;max-width:100%;height:560px;border:8px solid var(--bezel);border-radius:34px;overflow:hidden;display:flex;flex-direction:column;background:var(--p-bg);color:var(--p-fg);font-family:var(--p-body);font-size:12.5px;line-height:1.4}
+.scr{flex:1;min-height:0;padding:18px 16px 14px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.ph-h{font-family:var(--p-display);line-height:1.05;margin:0}
+.m{color:var(--p-mut)}
+.sm{font-size:11px}
+.r{display:flex;gap:8px;align-items:center}
+.wrapr{display:flex;flex-wrap:wrap;gap:6px}
+.sp{justify-content:space-between}
+.grow{flex:1;min-width:0}
+.push{margin-top:auto}
+.chip{padding:6px 10px;border-radius:999px;border:1px solid var(--p-line);font-weight:600;font-size:11.5px;color:var(--p-fg);background:transparent}
+.chip.on{background:var(--p-acc);border-color:var(--p-acc);color:var(--p-accfg)}
+.btn{display:block;text-align:center;padding:11px;border-radius:var(--p-rad);background:var(--p-acc);color:var(--p-accfg);font-weight:700;font-size:13px}
+.btn.ghost{background:transparent;color:var(--p-fg);border:1px solid var(--p-line)}
+.av{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-size:10px;font-weight:700;background:var(--p-card);color:var(--p-fg);border:2px solid var(--p-bg);margin-left:-6px}
+.av:first-child{margin-left:0}
+.photo{border-radius:var(--p-rad);display:flex;align-items:flex-end;padding:6px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#FFFFFF;min-height:0}
+.s1{background:linear-gradient(160deg,#FF9A62 0%,#F25C7A 45%,#3B2A6B 100%)}
+.s2{background:linear-gradient(200deg,#8FD3F4 0%,#3E7CB1 55%,#1B3A5C 100%)}
+.s3{background:linear-gradient(140deg,#F7D774 0%,#E88D4F 50%,#7A3B4C 100%)}
+.s4{background:linear-gradient(180deg,#B8E0C8 0%,#4E9A86 60%,#1F4E4A 100%)}
+.rule{height:1px;background:var(--p-line)}
+
+/* A — Timetable */
+.dA{--p-bg:#F6F7FA;--p-fg:#0F1B3D;--p-mut:#5B668A;--p-line:#CCD3E4;--p-card:#FFFFFF;--p-acc:#2F5BFF;--p-accfg:#FFFFFF;--p-rad:6px;--p-display:"Bricolage Grotesque","Trebuchet MS",sans-serif;--p-body:"Figtree","Segoe UI",sans-serif}
+.dA .ticket{background:var(--p-card);border:1px solid var(--p-fg);border-radius:6px;display:flex;flex-direction:column}
+.dA .ticket > div{padding:10px 12px}
+.dA .ticket .stub{border-top:1px dashed var(--p-fg);display:flex;justify-content:space-between;align-items:center}
+.dA .time{font-family:var(--p-display);font-size:34px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.dA .slot{display:grid;grid-template-columns:38px 48px 1fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--p-line);font-variant-numeric:tabular-nums}
+.dA .wk{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.dA .wk i{aspect-ratio:1;border-radius:3px;border:1px solid var(--p-line)}
+.dA .wk i.f{background:var(--p-acc);border-color:var(--p-acc)}
+
+/* B — Album */
+.dB{--p-bg:#FFFFFF;--p-fg:#2A1730;--p-mut:#7C6A82;--p-line:#EADFEA;--p-card:#F7EFF5;--p-acc:#FF4D6D;--p-accfg:#FFFFFF;--p-rad:16px;--p-display:"Unbounded","Arial Black",sans-serif;--p-body:"DM Sans","Segoe UI",sans-serif}
+.dB .scr.flush{padding:0}
+.dB .mosaic{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:3px;height:190px}
+.dB .mosaic .photo{border-radius:0}
+.dB .mosaic .photo:first-child{grid-row:span 2}
+.dB .pad{padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.dB .strip{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;height:58px}
+.dB .strip .photo{border-radius:8px}
+.dB .bar{margin-top:auto;border-top:1px solid var(--p-line);padding:10px 14px;display:flex;gap:10px;align-items:center;background:var(--p-bg)}
+.dB .bar .btn{padding:10px 16px;border-radius:999px}
+.dB .big{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+.dB .big .photo{flex:1;font-family:var(--p-display);font-size:13px;letter-spacing:0;text-transform:none;padding:12px}
+.dB .card{flex:1;min-height:0;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:6px;color:#FFFFFF}
+.dB .card .n{font-family:var(--p-display);font-size:64px;font-weight:700;line-height:.9}
+.dB .badge{width:38px;height:38px;border-radius:50%;background:var(--p-card);display:grid;place-items:center;font-family:var(--p-display);font-size:10px}
+.dB .badge.off{opacity:.4}
+
+/* C — Scoreboard */
+.dC{--p-bg:#1B1740;--p-fg:#F4F1FF;--p-mut:#A9A2D6;--p-line:#3A3470;--p-card:#28225A;--p-acc:#FFB23F;--p-accfg:#1B1740;--p-rad:10px;--p-display:"Big Shoulders Display","Impact",sans-serif;--p-body:"Manrope","Segoe UI",sans-serif}
+.dC .ph-h{text-transform:uppercase;letter-spacing:.01em}
+.dC .num{font-family:var(--p-display);font-size:96px;font-weight:800;line-height:.82;color:var(--p-acc)}
+.dC .days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;font-size:10px}
+.dC .days i{display:block;aspect-ratio:1;border-radius:50%;border:1.5px solid var(--p-line);margin-bottom:3px}
+.dC .days i.f{background:var(--p-acc);border-color:var(--p-acc)}
+.dC .days i.now{border-color:var(--p-fg);border-style:dashed}
+.dC .box{background:var(--p-card);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.dC .alert{border:1.5px solid var(--p-acc);border-radius:10px;padding:8px 12px;font-weight:600}
+.dC .heat{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.dC .heat i{aspect-ratio:1;border-radius:3px;background:var(--p-card)}
+.dC .heat i.a{background:#6B4E2E}.dC .heat i.b{background:#C28632}.dC .heat i.c{background:var(--p-acc)}
+.dC .rank{display:grid;grid-template-columns:18px 1fr auto;gap:8px;padding:6px 0;border-bottom:1px solid var(--p-line);font-variant-numeric:tabular-nums}
+.dC .rank b{font-family:var(--p-display);font-size:16px}
+.dC .why{color:var(--p-acc);font-weight:600}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Ryze Club · visual direction · exploratory</span>
+  <h1>Three ways Ryze Club could look and feel</h1>
+  <p class="lede">Each direction puts a different thing first: the next session, the photos, or the streak. That choice shapes the whole product, so the colours and type matter less than what leads.</p>
+  <p class="note">Clubs, people, times and numbers below are examples. Coloured blocks stand in for members' photos.</p>
+</header>
+
+<section>
+  <div class="dir-head"><span class="eyebrow">What competitors do</span><h2>Patterns seen in similar products</h2></div>
+  <div class="tablebox"><table>
+    <tr><th>Product</th><th>What it does well</th><th>Where it falls short for Dubai newcomers</th></tr>
+    <tr><td>Heylo</td><td>Events, RSVPs, who's going, photos after sessions, milestone badges, a public club directory. Free for clubs.</td><td>The closest match to this idea. Built around an app and group chat, aimed at US clubs. Dubai coverage not checked.</td></tr>
+    <tr><td>Sweatpals</td><td>Search by area, activity and price. See who's going. Check-in by scanning a code at the session.</td><td>Operates in US cities. Leans towards paid, ticketed events.</td></tr>
+    <tr><td>Strava clubs</td><td>Huge existing audience, leaderboards, activity photos.</td><td>A feed, not a schedule. Weak for RSVPs and for finding a beginner-friendly group.</td></tr>
+    <tr><td>Meetup</td><td>Where many people first search for a local group.</td><td>Organisers pay. Generic events and out-of-date member lists.</td></tr>
+    <tr><td>Playtomic</td><td>Padel court booking and a player level rating. Used by most Dubai padel clubs.</td><td>Booking only, padel only. No social clubs or other sports.</td></tr>
+  </table></div>
+  <div class="pros">
+    <div><b>Borrow</b><span>Faces of who's going on every session. Pace or level stated up front. A free or paid filter. Check-in by scanning a code, which later makes rewards hard to fake.</span></div>
+    <div><b>Avoid</b><span>A feed as the home page. Chat as the core. Requiring an app download before someone can see a club.</span></div>
+    <div><b>Where Ryze Club can differ</b><span>Curated for Dubai, several sports in one place, a match for newcomers, club pages that open from an Instagram link with no download, and a streak that spans all your clubs.</span></div>
+  </div>
+</section>
+
+<!-- ================= A ================= -->
+<section>
+  <div class="dir-head"><span class="eyebrow">Direction A</span><h2>Timetable</h2>
+  <p>The next session leads. Every club page opens on a ticket with the time, place, pace and one button. It reads like a departures board: fast, factual, calm.</p></div>
+  <div class="phones">
+    <figure class="spec"><div class="phone dA"><div class="scr">
+      <div class="r sp"><b class="ph-h" style="font-size:15px">Ryze Club</b><span class="m sm">Find a club</span></div>
+      <h3 class="ph-h" style="font-size:22px">Three questions, then your clubs.</h3>
+      <div><div class="m sm" style="margin-bottom:5px">What do you want to do?</div><div class="wrapr"><span class="chip on">Running</span><span class="chip">Padel</span><span class="chip">Yoga &amp; pilates</span></div></div>
+      <div><div class="m sm" style="margin-bottom:5px">Where are you based?</div><div class="wrapr"><span class="chip on">Marina</span><span class="chip">JLT</span><span class="chip">Downtown</span><span class="chip">Al Quoz</span><span class="chip">Jumeirah</span><span class="chip">Mirdif</span></div></div>
+      <div><div class="m sm" style="margin-bottom:5px">How would you describe yourself?</div><div class="wrapr"><span class="chip on">New to it</span><span class="chip">Some experience</span><span class="chip">Regular</span></div></div>
+      <div class="push"><span class="btn">Show my clubs</span><div class="m sm" style="text-align:center;margin-top:6px">No account needed</div></div>
+    </div></div><figcaption>Quiz on one screen</figcaption></figure>
+
+    <figure class="spec"><div class="phone dA"><div class="scr">
+      <div><h3 class="ph-h" style="font-size:20px">Marina Dawn Runners</h3><div class="m sm">Running · Dubai Marina · Free · Beginners welcome</div></div>
+      <div class="ticket">
+        <div><div class="m sm">NEXT SESSION · THU 8 OCT</div><div class="time">05:45</div><div style="font-weight:600">Marina Walk, by Pier 7</div><div class="m">5 km easy · 6:30–7:00 per km</div></div>
+        <div class="stub"><span class="r"><span><span class="av">L</span><span class="av">O</span><span class="av">S</span></span><b>18 going</b></span><span class="chip on">I'm in</span></div>
+      </div>
+      <div>
+        <div class="m sm" style="margin-bottom:2px">EVERY WEEK</div>
+        <div class="slot"><b>Tue</b><span>05:45</span><span class="m">Intervals · all paces</span></div>
+        <div class="slot"><b>Thu</b><span>05:45</span><span class="m">5 km easy</span></div>
+        <div class="slot"><b>Sat</b><span>06:30</span><span class="m">Long run · 10–16 km</span></div>
+      </div>
+      <div class="r" style="height:54px"><div class="photo s1 grow" style="height:100%">photo</div><div class="photo s2 grow" style="height:100%">photo</div><div class="photo s3 grow" style="height:100%">photo</div></div>
+      <div class="m sm push">Last confirmed by the organiser on 3 Oct</div>
+    </div></div><figcaption>Club page: the session ticket leads</figcaption></figure>
+
+    <figure class="spec"><div class="phone dA"><div class="scr">
+      <div class="m sm">YOUR STREAK</div>
+      <div class="r" style="align-items:baseline"><span class="time" style="font-size:56px">6</span><b>weeks in a row</b></div>
+      <div class="wk"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="m sm">Next milestone at 12 weeks. 6 to go.</div>
+      <div class="rule"></div>
+      <div class="r sp"><span>Streak protection</span><b>Available</b></div>
+      <div class="r sp"><span>Sessions attended</span><b>14</b></div>
+      <div class="rule"></div>
+      <div class="m sm">THIS WEEK</div>
+      <div class="slot" style="border:0;padding:0"><b>Thu</b><span>05:45</span><span>Marina Dawn Runners</span></div>
+      <div class="slot" style="border:0;padding:0"><b>Sun</b><span>19:00</span><span>Al Quoz Padel Social</span></div>
+      <span class="btn ghost push">Share my streak</span>
+    </div></div><figcaption>Streak as a simple record</figcaption></figure>
+  </div>
+  <div class="pros">
+    <div><b>Strengths</b><span>The quickest path to an RSVP. Works even when a club has no photos yet. Easiest to keep accurate.</span></div>
+    <div><b>Weaknesses</b><span>Feels like a utility. Shows little of the people or the atmosphere, which is what convinces a nervous newcomer.</span></div>
+  </div>
+</section>
+
+<!-- ================= B ================= -->
+<section>
+  <div class="dir-head"><span class="eyebrow">Direction B</span><h2>Album</h2>
+  <p>The photos lead. A club page opens on pictures from recent sessions, with the next session held in a bar at the bottom of the screen. Members' posts are the design.</p></div>
+  <div class="phones">
+    <figure class="spec"><div class="phone dB"><div class="scr">
+      <div class="r sp"><b class="ph-h" style="font-size:12px">ryze club</b><span class="m sm">1 of 3</span></div>
+      <h3 class="ph-h" style="font-size:19px">What gets you moving?</h3>
+      <div class="big">
+        <div class="photo s1">Running</div>
+        <div class="photo s2">Padel</div>
+        <div class="photo s4">Yoga &amp; pilates</div>
+      </div>
+      <div class="m sm" style="text-align:center">Tap one. You can add more later.</div>
+    </div></div><figcaption>Quiz: one question per screen</figcaption></figure>
+
+    <figure class="spec"><div class="phone dB"><div class="scr flush">
+      <div class="mosaic"><div class="photo s1">Thu 1 Oct</div><div class="photo s3">photo</div><div class="photo s2">photo</div></div>
+      <div class="pad">
+        <div><h3 class="ph-h" style="font-size:16px">Marina Dawn Runners</h3><div class="m sm">Running · Dubai Marina · Free · Beginners welcome</div></div>
+        <div class="r"><span><span class="av">L</span><span class="av">O</span><span class="av">S</span><span class="av">K</span></span><span><b>Layla, Omar</b> and 16 others are going Thursday</span></div>
+        <div class="r sp sm"><b>Sat 3 Oct · Long run</b><span class="m">9 photos · 22 came</span></div>
+        <div class="strip"><div class="photo s3">photo</div><div class="photo s4">photo</div><div class="photo s1">photo</div></div>
+        <div class="r sp sm"><b>Thu 1 Oct · 5 km easy</b><span class="m">6 photos · 17 came</span></div>
+        <div class="strip"><div class="photo s2">photo</div><div class="photo s1">photo</div><div class="photo s3">photo</div></div>
+      </div>
+      <div class="bar"><div class="grow"><b>Thu 8 Oct · 05:45</b><div class="m sm">Marina Walk, by Pier 7</div></div><span class="btn">I'm in</span></div>
+    </div></div><figcaption>Club page: photos lead, session bar stays put</figcaption></figure>
+
+    <figure class="spec"><div class="phone dB"><div class="scr">
+      <div class="m sm">New milestone</div>
+      <div class="card s1"><span style="font-family:var(--p-display);font-size:10px">ryze club</span><span class="push n">6</span><b style="font-size:15px">weeks in a row</b><span>with Marina Dawn Runners</span></div>
+      <div class="r sp"><span class="badge">1st</span><span class="badge">4w</span><span class="badge off">12w</span><span class="badge off">25</span><span class="badge off">100</span></div>
+      <div class="m sm">Next: 12 weeks. Streak protection is available.</div>
+      <span class="btn" style="border-radius:999px">Share to Instagram</span>
+      <span class="btn ghost" style="border-radius:999px">Send on WhatsApp</span>
+    </div></div><figcaption>Streak as a card made to be shared</figcaption></figure>
+  </div>
+  <div class="pros">
+    <div><b>Strengths</b><span>Shows the people, which is what makes a newcomer feel safe to turn up. Rewards members for posting. The share card spreads the name for free.</span></div>
+    <div><b>Weaknesses</b><span>Looks empty for a club with no photos, so each club needs a few before launch. Photo loading must be fast on mobile data.</span></div>
+  </div>
+</section>
+
+<!-- ================= C ================= -->
+<section>
+  <div class="dir-head"><span class="eyebrow">Direction C</span><h2>Scoreboard</h2>
+  <p>The streak leads. A member opens the site to their week: the streak number, the days they've shown up, and what's left before Sunday. Club pages show how active the club is.</p></div>
+  <div class="phones">
+    <figure class="spec"><div class="phone dC"><div class="scr">
+      <div class="r sp"><b class="ph-h" style="font-size:18px">Ryze Club</b><span class="m sm">Running · Marina · New to it</span></div>
+      <h3 class="ph-h" style="font-size:28px">3 clubs fit you</h3>
+      <div class="box"><b>Marina Dawn Runners</b><span class="why">Easy pace group · 1.2 km away</span><span class="m sm">Next: Thu 05:45 · 18 going</span></div>
+      <div class="box"><b>Kite Beach Social Run</b><span class="why">Beginners every Friday · run then coffee</span><span class="m sm">Next: Fri 06:15 · 31 going</span></div>
+      <div class="box"><b>JLT Lake Loop Crew</b><span class="why">Evening runs · walk-run group</span><span class="m sm">Next: Mon 19:30 · 12 going</span></div>
+      <span class="btn push">Start your streak</span>
+    </div></div><figcaption>Quiz results with reasons</figcaption></figure>
+
+    <figure class="spec"><div class="phone dC"><div class="scr">
+      <div class="m sm">YOUR WEEK</div>
+      <div class="r" style="align-items:flex-end"><span class="num">6</span><div><b class="ph-h" style="font-size:20px">week streak</b><div class="m sm">6 more to the 12-week badge</div></div></div>
+      <div class="days"><span><i class="f"></i>M</span><span><i></i>T</span><span><i class="now"></i>W</span><span><i></i>T</span><span><i></i>F</span><span><i></i>S</span><span><i></i>S</span></div>
+      <div class="alert">This week is safe. One session done.</div>
+      <div class="m sm">COMING UP</div>
+      <div class="box"><div class="r sp"><b>Thu 05:45</b><span class="chip on">Going</span></div><span class="m">Marina Dawn Runners · 5 km easy</span></div>
+      <div class="box"><div class="r sp"><b>Sun 19:00</b><span class="chip">RSVP</span></div><span class="m">Al Quoz Padel Social · mixed level</span></div>
+    </div></div><figcaption>Member home: the week and the streak</figcaption></figure>
+
+    <figure class="spec"><div class="phone dC"><div class="scr">
+      <div><h3 class="ph-h" style="font-size:24px">Marina Dawn Runners</h3><div class="m sm">Running · Dubai Marina · Free · Beginners welcome</div></div>
+      <div class="m sm">CLUB ACTIVITY · LAST 8 WEEKS</div>
+      <div class="heat"><i class="b"></i><i class="c"></i><i class="b"></i><i class="c"></i><i class="c"></i><i class="b"></i><i class="c"></i><i class="c"></i><i class="a"></i><i class="b"></i><i class="b"></i><i class="c"></i><i class="b"></i><i class="c"></i><i class="c"></i><i class="b"></i><i class="b"></i><i class="a"></i><i class="c"></i><i class="b"></i><i class="c"></i><i class="c"></i><i class="b"></i><i></i></div>
+      <div class="m sm">MOST CONSISTENT</div>
+      <div><div class="rank"><b>1</b><span>Layla H.</span><span>23 weeks</span></div><div class="rank"><b>2</b><span>Omar S.</span><span>19 weeks</span></div><div class="rank"><b>3</b><span>Sana K.</span><span>11 weeks</span></div></div>
+      <div class="box push"><div class="r sp"><b>Thu 8 Oct · 05:45</b><span class="chip on">I'm in</span></div><span class="m">Marina Walk, by Pier 7 · 18 going</span></div>
+    </div></div><figcaption>Club page: activity and standings lead</figcaption></figure>
+  </div>
+  <div class="pros">
+    <div><b>Strengths</b><span>The strongest pull for existing members to come back. Sets up future rewards naturally. Standings by weeks attended let beginners appear.</span></div>
+    <div><b>Weaknesses</b><span>A first-time visitor has no streak, so the lead element is empty for them. A competitive tone can put off the nervous newcomer the product is for.</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="dir-head"><span class="eyebrow">Comparison</span><h2>How they compare</h2></div>
+  <div class="tablebox"><table>
+    <tr><th></th><th>A · Timetable</th><th>B · Album</th><th>C · Scoreboard</th></tr>
+    <tr><td>Newcomer's first visit</td><td>Clear, a little cold</td><td>Warm and convincing</td><td>Weak until they have a streak</td></tr>
+    <tr><td>Bringing members back</td><td>Low</td><td>Medium: new photos each session</td><td>High</td></tr>
+    <tr><td>Uses members' photos</td><td>Barely</td><td>Fully</td><td>Barely</td></tr>
+    <tr><td>Club with no content yet</td><td>Still looks complete</td><td>Looks empty</td><td>Looks inactive</td></tr>
+    <tr><td>Organiser effort</td><td>Lowest</td><td>Low, members supply photos</td><td>Low</td></tr>
+    <tr><td>Fits "clean, community-driven"</td><td>Clean, less community</td><td>Both</td><td>Community, less calm</td></tr>
+  </table></div>
+  <div class="pick">
+    <h3>Recommendation: Album as the base, with two borrowed parts</h3>
+    <ul>
+      <li><b>Public club pages follow Album.</b> They are what people land on from Instagram, and photos of real members answer "are these my kind of people?"</li>
+      <li><b>The session bar borrows Timetable's ticket.</b> Time, place, pace and one button, always visible.</li>
+      <li><b>The signed-in home borrows Scoreboard's week view,</b> in Album's lighter look, so the streak leads only for people who have one.</li>
+    </ul>
+    <p class="note">Status: exploratory. Nothing here is final until a direction is chosen.</p>
+  </div>
+</section>
+</div>
