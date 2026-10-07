@@ -7,8 +7,16 @@
   const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.'];
+  const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
   const NOUN = { running: 'run', padel: 'padel', yoga: 'session' };
+
+  // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
+  const IMG = {
+    running: ['1590333748338-d629e4564ad9', '1552674605-db6ffd4facb5', '1613936360976-8f35cf0e5461', '1540539234-c14a20fb7c7b', '1602263515015-dd72f8e9f301', '1551927336-09d50efd69cd', '1667781838690-5f32ea0ccea6', '1739368732843-800f36a9b7d0', '1716573094354-e4c3226ba887', '1759674861540-afed9f86f94a'],
+    padel: ['1646649852033-7e0f3d679f8b', '1646651105426-e8c8ee9badde', '1646649851780-d9701b7c3c04', '1646649853703-7645147474ba', '1646649851800-48dba35edc76', '1646649852046-b758d2d573f3', '1658723826297-fe4d1b1e6600', '1612534847738-b3af9bc31f0c', '1657704358775-ed705c7388d2', '1526888935184-a82d2a4b7e67'],
+    yoga: ['1723406251847-168ea7a02077', '1687436874174-977fdd9e2cb8', '1636619297905-54f124aa90b2', '1687180948630-2780c8b3f7f6', '1543858828-7cf1a9beb95c', '1545205597-3d9d02c29597', '1564282350350-a8355817fd2e', '1687875495230-96dfea96d9da', '1758797315487-b3b225dff7d8', '1758274535230-3641d0632878']
+  };
+  const im = (sp, i) => { const a = IMG[sp]; const n = ((Number(i) % a.length) + a.length) % a.length; return ` style="--img:url('https://images.unsplash.com/photo-${a[n]}?w=800&q=70&auto=format&fit=crop')"`; };
 
   // Example clubs. None of these are real.
   const CLUBS = [
@@ -53,6 +61,7 @@
       sched: [{ d: 4, t: '18:00', type: 'Sunset practice', note: 'Open level', place: 'Dubai Hills Park, east lawn' }],
       top: [], active: 6 }
   ];
+  const ORIG = JSON.parse(JSON.stringify(CLUBS));
 
   const MS = [
     { id: 's1', b: '1st', t: 'First session', k: 'total', n: 1, line: 'First session done. Welcome to the club.' },
@@ -67,7 +76,8 @@
     { id: 't500', b: '500', t: '500 sessions', k: 'total', n: 500, line: '500 sessions.' }
   ];
 
-  const fresh = () => ({ user: null, quiz: {}, rsvps: [], follows: [], att: {}, streak: 0, longest: 0, total: 0, weekDone: false, prot: true, sinceProt: 0, badges: [], posts: {}, untag: {}, offset: 0, clubWeeks: {}, set: { standings: true, tagging: true, email: true, wa: false }, note: '' });
+  const fresh = () => ({ user: null, quiz: {}, rsvps: [], follows: [], att: {}, streak: 0, longest: 0, total: 0, weekDone: false, prot: true, sinceProt: 0, badges: [], posts: {}, untag: {}, offset: 0, clubWeeks: {}, set: { standings: true, tagging: true, email: true, wa: false }, note: '',
+    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {} });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } };
@@ -86,13 +96,15 @@
   const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const hash = (s) => { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100003; return h; };
   const club = (id) => CLUBS.find((c) => c.id === id);
+  const applyEdits = () => { CLUBS.forEach((c, i) => Object.assign(c, JSON.parse(JSON.stringify(ORIG[i])), S.edits[c.id] || {})); };
   const day0 = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
   const weekStart = (d) => { const x = day0(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
   const sameWeek = (a, b) => weekStart(a).getTime() === weekStart(b).getTime();
   const dateShort = (d) => `${DAY[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`;
   const dayWord = (d) => { const diff = Math.round((day0(d) - day0(now())) / 864e5); return diff === 0 ? 'Today' : diff === 1 ? 'Tomorrow' : dateShort(d); };
+  const whenShort = (d) => { const w = dayWord(d); return w === 'Today' || w === 'Tomorrow' ? w : `${DAY[d.getDay()]} ${d.getDate()}`; };
   const initials = (n) => n.split(' ').map((p) => p[0]).join('').slice(0, 2);
-  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const plural = (n, w) => (w === 'person' ? (n === 1 ? '1 person' : `${n} people`) : `${n} ${w}${n === 1 ? '' : 's'}`);
 
   function mk(c, d, s) {
     const [h, m] = s.t.split(':').map(Number);
@@ -112,10 +124,10 @@
     const s = c.sched.find((x) => x.t === t && x.d === d.getDay());
     return s ? mk(c, d, s) : null;
   }
+  const has = (id) => S.rsvps.includes(id);
   const future = (c) => sessions(c, 0, 14).filter((s) => s.at > now());
   const past = (c) => sessions(c, -8, 0).filter((s) => s.at <= now()).reverse();
-  const isCancelled = (s) => { if (!s.club.cancelNext || has(s.id)) return false; const f = future(s.club)[0]; return !!f && f.id === s.id; };
-  const has = (id) => S.rsvps.includes(id);
+  const isCancelled = (s) => { if (S.cancelled[s.id]) return true; if (!s.club.cancelNext || has(s.id) || S.manage.includes(s.club.id)) return false; const f = future(s.club)[0]; return !!f && f.id === s.id; };
   function going(s) {
     const base = 8 + (hash(s.id) % 15);
     if (s.cap) {
@@ -127,23 +139,47 @@
   }
   const isFull = (s) => !!s.cap && going(s) >= s.cap && !has(s.id);
   const nextOpen = (c) => future(c).find((s) => !isCancelled(s));
-  const people = (s, n) => { const k = hash(s.id); return Array.from({ length: n }, (_, i) => PEOPLE[(k + i * 3) % PEOPLE.length]); };
+  const people = (s, n) => { const k = hash(s.id); return Array.from({ length: Math.min(n, PEOPLE.length) }, (_, i) => PEOPLE[(k + i * 5) % PEOPLE.length]); };
   const ended = (s) => now() - s.at > 2 * 36e5;
-  const stale = (c) => c.confirmed >= 60;
-  const confirmedOn = (c) => { const d = now(); d.setDate(d.getDate() - c.confirmed); return `${d.getDate()} ${MON[d.getMonth()]}`; };
+  const stale = (c) => !S.conf[c.id] && c.confirmed >= 60;
+  const confirmedOn = (c) => { let d; if (S.conf[c.id]) d = new Date(S.conf[c.id]); else { d = now(); d.setDate(d.getDate() - c.confirmed); } return `${d.getDate()} ${MON[d.getMonth()]}`; };
   const nounFor = (s) => `${DAYL[s.at.getDay()]}’s ${NOUN[s.club.sport]}`;
+  const meetDays = (c) => [...new Set(c.sched.slice().sort((a, b) => ((a.d + 6) % 7) - ((b.d + 6) % 7)).map((s) => DAY[s.d]))].join(', ');
+
+  // photos: example photos per club and session, with organiser hide and pin applied
+  function leadPhotos(c, all) {
+    const k = hash(c.id);
+    const base = [0, 1, 2].map((i) => ({ key: `${c.id}:m${i}`, sp: c.sport, i: k + i, g: 1 + ((k + i) % 6), by: PEOPLE[(k + i) % PEOPLE.length] }));
+    const shown = all ? base : base.filter((p) => !S.hidden[p.key]);
+    const pin = S.pin[c.id];
+    return pin && !all ? [pin].concat(shown.filter((p) => p.key !== pin.key)).slice(0, 3) : shown;
+  }
+  function exPhotos(c, s, idx, all) {
+    const k = hash(c.id);
+    const list = [0, 1, 2].slice(0, c.photos).map((j) => ({ key: `${s.id}:${j}`, sp: c.sport, i: k + idx * 2 + j + 3, g: 1 + ((k + idx * 2 + j + 3) % 6), by: PEOPLE[(k + j + idx * 4 + 2) % PEOPLE.length], sid: s.id }));
+    return all ? list : list.filter((p) => !S.hidden[p.key]);
+  }
+  const myPhotos = (s) => (S.posts[s.id] || []).flatMap((p) => p.g.map((g) => ({ sp: s.club.sport, i: g - 1, g, by: 'You', sid: s.id, mine: true })));
+  function tile(p, label = '') {
+    return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="photo" data-sp="${p.sp}" data-i="${p.i}" data-g="${p.g}" data-by="${p.by}"${p.sid ? ` data-sid="${p.sid}"` : ''}${p.mine ? ' data-mine="1"' : ''}${p.tagged ? ' data-tagged="1"' : ''} aria-label="Photo by ${p.by}">${label}</button>`;
+  }
+
+  // organiser: the attendee list for a session
+  function roster(s) {
+    const n = going(s) - (has(s.id) ? 1 : 0); const over = S.orgAtt[s.id] || {};
+    return people(s, n).map((name) => { const h = hash(name + s.id); const def = h % 10 < 7 ? 'came' : h % 10 < 9 ? 'no' : 'wait'; return { name, first: h % 6 === 0, st: ended(s) ? (over[name] || def) : 'going' }; });
+  }
 
   function say(msg, undo) { toast = { msg, undo }; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast = null; render(); }, 4500); }
   function go(v, p = {}, replace = false) { if (!replace) stack.push(route); route = Object.assign({ v }, p); overlay = null; render(); window.scrollTo(0, 0); }
   function back() { route = stack.pop() || { v: S.user ? 'me' : 'home' }; overlay = null; render(); }
 
   // ---------- pieces ----------
-  const photo = (g, label = 'photo', extra = '') => `<span class="ph g${g}" ${extra}>${esc(label)}</span>`;
   function clubCard(c, why) {
-    const n = nextOpen(c);
-    const head = c.photos ? `<span class="ph g${1 + (hash(c.id) % 6)}">photo</span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
+    const n = nextOpen(c); const lead = leadPhotos(c)[0];
+    const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
     return `<button class="card" data-act="club" data-id="${c.id}">${head}<span class="body">
-      <span class="disp" style="font-size:14px;font-weight:700">${c.name}</span>
+      <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
       ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${c.cost === 'Free' ? 'Free' : 'Paid'}</span>`}
       <span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
     </span></button>`;
@@ -155,8 +191,8 @@
     else if (isFull(s)) tag = '<span class="tag">Full</span>';
     else tag = '<span class="tag">RSVP</span>';
     return `<button class="item" data-act="session" data-id="${s.id}">
-      <span class="when"><b>${dayWord(s.at) === 'Today' || dayWord(s.at) === 'Tomorrow' ? dayWord(s.at) : DAY[s.at.getDay()] + ' ' + s.at.getDate()}</b><span class="mut sm">${s.t}</span></span>
-      <span class="grow"><b>${showClub ? s.club.name : s.type}</b><br><span class="mut sm">${showClub ? s.type + ' · ' : ''}${s.note}</span></span>${tag}</button>`;
+      <span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span>
+      <span class="grow"><b>${showClub ? esc(s.club.name) : s.type}</b><br><span class="mut sm">${showClub ? s.type + ' · ' : ''}${s.note}</span></span>${tag}</button>`;
   }
   function avatars(names) { return `<span class="avs">${names.map((n) => `<span class="av">${initials(n)}</span>`).join('')}</span>`; }
 
@@ -220,17 +256,17 @@
     <div class="stack"><button class="btn block" data-act="quiz">Find my club</button>
       <button class="btn ghost block" data-act="browse">Browse all clubs</button></div>
     <div class="stack"><span class="cap">This week in Dubai</span>${[club('mdr'), club('jps'), club('kbf')].map((c) => clubCard(c)).join('')}</div>
-    <p class="note">This is a prototype. The clubs, people and photos are examples, and nothing you do here is sent anywhere. Use <b>Demo</b> at the top to skip ahead in time.</p>
-    <p class="center sm"><button class="link" data-act="soon" data-what="Tools for club organisers come in the next version of this prototype.">List your club</button></p>
+    <p class="note">This is a prototype. The clubs and people are examples, the photos are stock images, and nothing you do here is sent anywhere. Use <b>Demo</b> at the top to skip ahead in time or try the organiser view.</p>
+    <p class="center sm"><button class="link" data-act="browse">Run a club? Find it and tap "Is this your club?"</button></p>
   </main>`;
 
   V.quiz = () => {
     const step = route.step || 0;
     const head = `<div class="row sp"><button class="link" data-act="${step ? 'quizback' : 'back'}">Back</button><span class="mut sm">${step + 1} of 3</span></div>`;
     if (step === 0) return `<main>${head}<h1>What gets you moving?</h1><div class="quiz-opts">
-      <button class="quiz-opt g1" data-act="q" data-k="sport" data-val="running">Running</button>
-      <button class="quiz-opt g2" data-act="q" data-k="sport" data-val="padel">Padel</button>
-      <button class="quiz-opt g4" data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates</button></div>
+      <button class="quiz-opt g1"${im('running', 0)} data-act="q" data-k="sport" data-val="running">Running</button>
+      <button class="quiz-opt g2"${im('padel', 1)} data-act="q" data-k="sport" data-val="padel">Padel</button>
+      <button class="quiz-opt g4"${im('yoga', 0)} data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates</button></div>
       <p class="mut sm center">No account needed.</p></main>`;
     if (step === 1) return `<main>${head}<h1>Where are you based?</h1><div class="quiz-opts">
       ${AREAS.concat(['Anywhere in Dubai']).map((a) => `<button class="quiz-opt plain" data-act="q" data-k="area" data-val="${a}">${a}</button>`).join('')}</div></main>`;
@@ -266,16 +302,14 @@
 
   V.club = () => {
     const c = club(route.id); const n = nextOpen(c); const fut = future(c).slice(0, 4); const recaps = past(c).slice(0, 2);
-    const k = hash(c.id); const following = S.follows.includes(c.id);
-    const head = c.photos ? `<div class="mosaic">${[0, 1, 2].map((i) => `<button class="ph g${1 + ((k + i) % 6)}" data-act="photo" data-g="${1 + ((k + i) % 6)}" data-by="${PEOPLE[(k + i) % 10]}" data-club="${c.id}">${i === 0 && recaps[0] ? dateShort(recaps[0].at) : 'photo'}</button>`).join('')}</div>`
+    const following = S.follows.includes(c.id); const mine = S.manage.includes(c.id); const lead = c.photos ? leadPhotos(c) : [];
+    const head = lead.length ? `<div class="mosaic n${lead.length}">${lead.map((p, i) => tile(p, i === 0 && recaps[0] ? dateShort(recaps[0].at) : '')).join('')}</div>`
       : `<div class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span><span class="disp" style="font-size:18px;font-weight:700">${n ? `${dayWord(n.at)} ${n.t}` : 'No session scheduled'}</span><span class="mut sm">No photos yet. They appear here after the first session.</span></div>`;
     const who = n ? (S.user ? `${avatars(people(n, 4))}<span class="sm"><b>${people(n, 2).map((p) => p.split(' ')[0]).join(', ')}</b> and ${going(n) - 2} others are going ${dayWord(n.at)}</span>` : `<span class="sm"><b>${going(n)} going</b> ${dayWord(n.at)} · sign in to see who</span>`) : '';
     const recapHtml = recaps.map((s, i) => {
-      const mine = (S.posts[s.id] || []).flatMap((p) => p.g.map((g) => ({ g, by: 'You', cap: p.cap, mine: true })));
-      const ex = c.photos ? [0, 1, 2].slice(0, c.photos).map((j) => ({ g: 1 + ((k + i * 2 + j + 3) % 6), by: PEOPLE[(k + j + i) % 10] })) : [];
-      const all = mine.concat(ex).slice(0, 6);
+      const all = myPhotos(s).concat(exPhotos(c, s, i)).slice(0, 6);
       return `<div class="stack tight"><div class="row sp sm"><b>${dateShort(s.at)} · ${s.type}</b><span class="mut">${all.length ? plural(all.length, 'photo') + ' · ' : ''}${going(s) - 1} came</span></div>
-        ${all.length ? `<div class="strip">${all.map((p) => `<button class="ph g${p.g}" data-act="photo" data-g="${p.g}" data-by="${p.by}" data-sid="${s.id}" ${p.mine ? 'data-mine="1"' : ''}>${p.mine ? 'yours' : 'photo'}</button>`).join('')}</div>` : '<p class="mut sm">No photos from this one.</p>'}</div>`;
+        ${all.length ? `<div class="strip">${all.map((p) => tile(p, p.mine ? 'yours' : '')).join('')}</div>` : '<p class="mut sm">No photos from this one.</p>'}</div>`;
     }).join('');
     const top = c.top.length ? `<div class="stack tight"><span class="cap">Most consistent · last 12 weeks</span><p class="sm mut">${c.active} members showed up in the last 4 weeks.</p>
       ${S.user ? `<div>${c.top.map((r, i) => `<div class="rank"><b>${i + 1}</b><span>${r[0]}</span><span>${r[1]} weeks</span></div>`).join('')}${S.clubWeeks[c.id] ? `<div class="rank me"><b>·</b><span>You${S.set.standings ? '' : ' (hidden from others)'}</span><span>${plural(S.clubWeeks[c.id], 'week')}</span></div>` : ''}</div>` : '<p class="note">Sign in to see the standings.</p>'}</div>` : '';
@@ -284,24 +318,25 @@
     else if (has(n.id)) bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span></button><button class="btn quiet" data-act="session" data-id="${n.id}">You're going</button>`;
     else if (isFull(n)) { const after = future(c).find((s) => s.id !== n.id && !isCancelled(s)); bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">Full · ${n.cap} of ${n.cap}</span></button>${after ? `<button class="btn ghost" data-act="session" data-id="${after.id}">See next session</button>` : ''}`; }
     else bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span></button><button class="btn" data-act="rsvp" data-id="${n.id}">I'm in</button>`;
+    const claim = mine ? '' : S.claims[c.id] ? ' · <span class="mut">Your request to manage this club is with us.</span>' : ` · <button class="link" data-act="claim" data-id="${c.id}">Is this your club?</button>`;
     return `<main class="flush pad-bar">${head}
-      <div class="stack tight"><h1 style="font-size:21px">${c.name}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${c.cost}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
+      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who ? `<div class="row">${who}</div>` : ''}
-      <div class="row"><button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}">${following ? 'Following' : 'Follow this club'}</button></div>
-      <div class="stack tight"><p>${c.desc}</p><p class="sm mut">${c.level}. Bring: ${c.bring}</p></div>
+      <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">Manage this club</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}">${following ? 'Following' : 'Follow this club'}</button></div>
+      <div class="stack tight"><p>${esc(c.desc)}</p><p class="sm mut">${esc(c.level)}. Bring: ${esc(c.bring)}</p></div>
       <div class="stack tight"><span class="cap">Coming up</span><div>${fut.map((s) => sessionRow(s)).join('') || '<p class="mut sm">Nothing scheduled.</p>'}</div></div>
       ${recapHtml ? `<div class="stack"><span class="cap">Recent sessions</span>${recapHtml}</div>` : ''}
       ${top}
       <div class="stack tight sm"><div class="wrap"><button class="link" data-act="soon" data-what="This would open the club's Instagram.">Instagram</button><button class="link" data-act="soon" data-what="This would open the club's WhatsApp group.">WhatsApp group</button></div>
         <span class="mut">Last confirmed by the organiser on ${confirmedOn(c)}</span>
-        <span><button class="link" data-act="soon" data-what="Thanks. In the real product this goes to the Ryze Club curator.">Report a problem with this page</button> · <button class="link" data-act="soon" data-what="Organiser tools come in the next version of this prototype.">Is this your club?</button></span></div>
+        <span><button class="link" data-act="soon" data-what="Thanks. In the real product this goes to the Ryze Club curator.">Report a problem with this page</button>${claim}</span></div>
     </main><div class="bar">${bar}</div>`;
   };
 
   V.confirm = () => {
     const s = byId(route.id);
-    return `<main><div class="stack tight"><h1>You're in.</h1><p class="mut">${s.club.name}</p></div>
+    return `<main><div class="stack tight"><h1>You're in.</h1><p class="mut">${esc(s.club.name)}</p></div>
       <dl class="facts"><dt>When</dt><dd>${dayWord(s.at)} at ${s.t}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type} · ${s.note}</dd><dt>Going</dt><dd>${going(s)} people</dd></dl>
       <div><label class="switch" for="set-email"><span>Remind me by email</span><input type="checkbox" id="set-email" data-set="email" ${S.set.email ? 'checked' : ''}></label>
         <label class="switch" for="set-wa"><span>Remind me on WhatsApp<br><span class="mut sm">We'll only message you about sessions you've joined. Turn it off any time.</span></span><input type="checkbox" id="set-wa" data-set="wa" ${S.set.wa ? 'checked' : ''}></label></div>
@@ -319,32 +354,34 @@
     else if (left > 0) status = S.streak > 0 ? `One session keeps your streak. ${left} left this week.` : `${plural(left, 'session')} left this week in your clubs.`;
     else if (S.streak > 0 && S.prot) status = "Your protection will cover this week if you can't make it.";
     else status = 'No sessions left this week in your clubs.';
-    const ask = pend.length ? `<div class="ask"><div><b class="disp" style="font-size:16px">Did you go to ${nounFor(pend[0])}?</b><br><span class="mut sm">${pend[0].club.name} · ${dateShort(pend[0].at)} ${pend[0].t}${pend.length > 1 ? ` · ${pend.length - 1} more to confirm` : ''}</span></div>
+    const ask = pend.length ? `<div class="ask"><div><b class="disp" style="font-size:16px">Did you go to ${nounFor(pend[0])}?</b><br><span class="mut sm">${esc(pend[0].club.name)} · ${dateShort(pend[0].at)} ${pend[0].t}${pend.length > 1 ? ` · ${pend.length - 1} more to confirm` : ''}</span></div>
       <div class="row"><button class="btn grow" data-act="went" data-id="${pend[0].id}">I went</button><button class="btn ghost grow" data-act="missed" data-id="${pend[0].id}">I missed it</button></div></div>` : '';
     const showNum = S.total > 0 || S.streak > 0;
+    const org = S.manage.length ? `<div class="stack tight"><span class="cap">Clubs you manage</span>${S.manage.map((id) => `<button class="btn ghost block" data-act="manage" data-id="${id}">${esc(club(id).name)}</button>`).join('')}</div>` : '';
     return `<main class="pad-nav">${ask}
       ${S.note ? `<p class="note">${S.note}</p>` : ''}
       <div class="stack"><span class="cap">Hi ${esc(u.name)}</span>
         ${showNum ? `<button class="streak" data-act="profile" style="background:none;border:0;padding:0;text-align:left"><span class="n">${S.streak}</span><span><b class="disp" style="font-size:18px">week streak</b><br><span class="mut sm">${S.prot ? 'Protection available' : 'Protection used'} · ${plural(S.total, 'session')}</span></span></button>` : ''}
         <div class="days">${days}</div><p><b>${status}</b></p></div>
+      ${org}
       <div class="stack tight"><span class="cap">Coming up</span>
         ${up.length ? `<div>${up.map((s) => sessionRow(s, true)).join('')}</div>` : (S.follows.length ? '<p class="mut">Nothing booked this week.</p>' : '<p class="mut">Follow a club to see your week.</p><button class="btn" data-act="quiz">Find my club</button>')}</div>
-      ${S.follows.length ? `<div class="stack tight"><span class="cap">From your clubs</span><div class="strip">${S.follows.slice(0, 3).map((id) => `<button class="ph g${1 + (hash(id) % 6)}" data-act="club" data-id="${id}">${club(id).name.split(' ')[0]}</button>`).join('')}</div></div>` : ''}
+      ${S.follows.length ? `<div class="stack tight"><span class="cap">From your clubs</span><div class="strip">${S.follows.slice(0, 3).map((id) => { const c = club(id); const p = leadPhotos(c)[0] || { g: 1, sp: c.sport, i: 0 }; return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="club" data-id="${id}">${esc(c.name.split(' ')[0])}</button>`; }).join('')}</div></div>` : ''}
     </main>`;
   };
 
   V.result = () => {
     const s = byId(route.id); const c = s.club; const next = nextOpen(c); const k = hash(s.id);
-    const newcomer = (S.clubWeeks[c.id] || 0) <= 3; const mine = (S.posts[s.id] || []).flatMap((p) => p.g);
+    const newcomer = (S.clubWeeks[c.id] || 0) <= 3;
     const tagged = !S.untag[s.id];
     const offer = next ? `<div class="stack"><span class="cap">${newcomer ? 'Same time next week?' : 'Next session'}</span><div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${next.type} · ${going(next)} going</span></span>
       ${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div></div>` : '';
     const photos = `<div class="stack tight"><div class="row sp"><span class="cap">Photos from ${nounFor(s)}</span><button class="btn small ghost" data-act="post" data-id="${s.id}">Add yours</button></div>
-      <div class="strip">${mine.map((g) => `<button class="ph g${g}" data-act="photo" data-g="${g}" data-by="You" data-sid="${s.id}" data-mine="1">yours</button>`).join('')}
-        ${tagged ? `<button class="ph g${1 + (k % 6)}" data-act="photo" data-g="${1 + (k % 6)}" data-by="Layla H." data-sid="${s.id}" data-tagged="1">you're tagged</button>` : ''}
-        <button class="ph g${1 + ((k + 2) % 6)}" data-act="photo" data-g="${1 + ((k + 2) % 6)}" data-by="Omar S." data-sid="${s.id}">photo</button></div></div>`;
+      <div class="strip">${myPhotos(s).map((p) => tile(p, 'yours')).join('')}
+        ${tagged ? tile({ sp: c.sport, i: k, g: 1 + (k % 6), by: 'Layla H.', sid: s.id, tagged: true }, "you're tagged") : ''}
+        ${tile({ sp: c.sport, i: k + 2, g: 1 + ((k + 2) % 6), by: 'Omar S.', sid: s.id })}</div></div>`;
     return `<main class="pad-nav"><div class="stack tight"><h1>${route.weekJustDone ? `Week ${S.streak} done.` : 'Nice. That one counts too.'}</h1>
-      <p class="mut">${c.name} · ${dateShort(s.at)}. ${plural(S.total, 'session')} in total.</p></div>
+      <p class="mut">${esc(c.name)} · ${dateShort(s.at)}. ${plural(S.total, 'session')} in total.</p></div>
       ${newcomer ? offer + photos : photos + offer}
       <button class="btn ghost block" data-act="me">Back to my week</button></main>`;
   };
@@ -352,12 +389,13 @@
   V.missed = () => {
     const s = byId(route.id); const next = nextOpen(s.club);
     return `<main class="pad-nav"><div class="stack tight"><h1>No problem.</h1><p class="mut">${next ? `${DAYL[next.at.getDay()]}'s the next one.` : 'There is nothing scheduled yet.'}</p></div>
-      ${next ? `<div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${s.club.name} · ${next.type}</span></span>${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div>` : ''}
+      ${next ? `<div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${esc(s.club.name)} · ${next.type}</span></span>${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div>` : ''}
       <button class="btn ghost block" data-act="me">Back to my week</button></main>`;
   };
 
   V.clubs = () => `<main class="pad-nav"><h1>My clubs</h1>
-    ${S.follows.length ? `<div class="stack">${S.follows.map((id) => { const c = club(id); const n = nextOpen(c); return `<button class="card" data-act="club" data-id="${c.id}"><span class="body"><span class="disp" style="font-size:14px;font-weight:700">${c.name}</span><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span><span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t}` : 'No session scheduled'} · you: ${plural(S.clubWeeks[c.id] || 0, 'week')}</span></span></button>`; }).join('')}</div>` : '<p class="mut">You are not following any clubs yet.</p>'}
+    ${S.manage.length ? `<div class="stack tight"><span class="cap">You manage</span>${S.manage.map((id) => `<button class="btn ghost block" data-act="manage" data-id="${id}">${esc(club(id).name)}</button>`).join('')}</div>` : ''}
+    ${S.follows.length ? `<div class="stack">${S.follows.map((id) => { const c = club(id); const n = nextOpen(c); return `<button class="card" data-act="club" data-id="${c.id}"><span class="body"><span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span><span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t}` : 'No session scheduled'} · you: ${plural(S.clubWeeks[c.id] || 0, 'week')}</span></span></button>`; }).join('')}</div>` : '<p class="mut">You are not following any clubs yet.</p>'}
     <button class="btn ghost block" data-act="quiz">Find another club</button></main>`;
 
   V.profile = () => `<main class="pad-nav"><div class="stack tight"><h1>${esc(S.user.name)}</h1><p class="mut">Only you can see your streak and history.</p></div>
@@ -371,9 +409,69 @@
       <label class="switch" for="p-wa"><span>WhatsApp reminders</span><input type="checkbox" id="p-wa" data-set="wa" ${S.set.wa ? 'checked' : ''}></label></div>
     <button class="btn quiet block" data-act="signout">Sign out</button></main>`;
 
+  // ---------- organiser views ----------
+  V.manage = () => {
+    const c = club(route.id); const ck = S.check[c.id] || {};
+    const wk = future(c).filter((s) => s.at - now() < 7 * 864e5); const rec = past(c).slice(0, 2);
+    const row = (s) => { const list = roster(s); const over = ended(s);
+      const sub = isCancelled(s) ? 'Cancelled' : over ? `${list.filter((p) => p.st === 'came').length} came · ${list.filter((p) => p.st === 'no').length} didn't turn up` : `${plural(list.filter((p) => p.first).length, 'first-timer')}`;
+      return `<button class="item" data-act="attend" data-id="${s.id}"><span class="when"><b>${over ? DAY[s.at.getDay()] + ' ' + s.at.getDate() : whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${s.type}</b><br><span class="mut sm">${sub}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : `<span class="big-n">${over ? list.filter((p) => p.st === 'came').length : going(s)}</span>`}</button>`; };
+    const tick = (on, label, act) => `<button class="item" data-act="${act}" data-id="${c.id}"><span class="tick ${on ? 'on' : ''}" aria-hidden="true">${on ? '✓' : ''}</span><span class="grow">${label}</span><span class="mut">›</span></button>`;
+    const allDone = ck.d && ck.s && ck.p;
+    return `<main class="pad-nav"><div class="stack tight"><span class="cap">Managing</span><h1 style="font-size:21px">${esc(c.name)}</h1>
+        <p class="mut sm">Last confirmed ${confirmedOn(c)} · <button class="link" data-act="club" data-id="${c.id}">View public page</button></p></div>
+      ${allDone ? '' : `<div class="stack tight"><span class="cap">Get set up</span><div>${tick(ck.d, 'Check your details', 'editclub')}${tick(ck.s, 'Check your weekly sessions', 'sched')}${tick(ck.p, 'Add or tidy your photos', 'mphotos')}</div></div>`}
+      <div class="stack tight"><div class="row sp"><span class="cap">This week</span><span class="mut xs">going</span></div><div>${wk.map(row).join('') || '<p class="mut sm">No sessions this week.</p>'}</div></div>
+      <div class="stack tight"><div class="row sp"><span class="cap">Just finished</span><span class="mut xs">came</span></div><div>${rec.map(row).join('') || '<p class="mut sm">Nothing yet.</p>'}</div></div>
+      <div class="note"><b>Is ${esc(c.name)} still meeting ${meetDays(c)}?</b><div class="row" style="margin-top:10px"><button class="btn small" data-act="confirmclub" data-id="${c.id}">Yes, all correct</button><button class="btn small ghost" data-act="sched" data-id="${c.id}">Update</button></div></div>
+      <div class="stack tight"><span class="cap">Your club</span><div>
+        <button class="item" data-act="editclub" data-id="${c.id}"><span class="grow"><b>Club details</b><br><span class="mut sm">Description, level, cost, what to bring</span></span><span class="mut">›</span></button>
+        <button class="item" data-act="sched" data-id="${c.id}"><span class="grow"><b>Schedule</b><br><span class="mut sm">${meetDays(c)} · cancel a session</span></span><span class="mut">›</span></button>
+        <button class="item" data-act="mphotos" data-id="${c.id}"><span class="grow"><b>Photos</b><br><span class="mut sm">Pin the best, hide any you don't want</span></span><span class="mut">›</span></button>
+        <button class="item" data-act="soon" data-what="Inviting co-organisers is not in this prototype yet."><span class="grow"><b>Organisers</b><br><span class="mut sm">Just you</span></span><span class="mut">›</span></button></div></div>
+    </main>`;
+  };
+
+  V.attend = () => {
+    const s = byId(route.id); const c = s.club; const list = roster(s); const over = ended(s);
+    const person = (p, clickable) => `<${clickable ? 'button' : 'div'} class="item" ${clickable ? `data-act="cyc" data-id="${s.id}" data-name="${p.name}"` : ''}><span class="av">${initials(p.name)}</span><span class="grow">${p.name}</span>${p.first ? '<span class="tag ok">First time</span>' : ''}${clickable ? `<span class="mut xs">${p.st === 'came' ? 'Move to didn’t turn up' : 'Mark as came'}</span>` : ''}</${clickable ? 'button' : 'div'}>`;
+    const group = (st, title) => { const g = list.filter((p) => p.st === st); return g.length ? `<div class="stack tight"><span class="cap">${title} · ${g.length}</span><div>${g.map((p) => person(p, true)).join('')}</div></div>` : ''; };
+    const head = `<div class="stack tight"><span class="cap">${esc(c.name)}</span><h1 style="font-size:21px">${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]} · ${s.t}</h1><p class="mut sm">${s.type} · ${s.place}</p></div>`;
+    if (isCancelled(s)) return `<main class="pad-nav">${head}<p class="notice">This session is cancelled. Everyone who was going has been told.</p></main>`;
+    if (!over) return `<main class="pad-nav">${head}
+      <div class="row sp"><span><span class="big-n">${list.length}</span> going${s.cap ? ` of ${s.cap}` : ''}</span><button class="btn small ghost" data-act="soon" data-what="Link copied. Paste it in your WhatsApp group or Instagram.">Share link</button></div>
+      <p class="note">${plural(list.filter((p) => p.first).length, 'person')} coming for the first time. Say hello.</p>
+      <div>${list.map((p) => person(p, false)).join('')}</div>
+      <button class="btn ghost block" data-act="askcancel" data-id="${s.id}">Cancel this session</button></main>`;
+    return `<main class="pad-nav">${head}
+      <p class="note">Members answer "Did you go?" themselves. Tap a name to correct it.</p>
+      <button class="btn ghost block" data-act="allcame" data-id="${s.id}">Mark everyone as came</button>
+      ${group('came', 'Came')}${group('no', 'Didn’t turn up')}${group('wait', 'Not yet confirmed')}</main>`;
+  };
+
+  V.sched = () => {
+    const c = club(route.id); const fut = future(c).slice(0, 5);
+    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h1 style="font-size:21px">Schedule</h1></div>
+      <div class="stack tight"><span class="cap">Every week</span><div>${c.sched.map((s) => `<div class="item"><span class="when"><b>${DAY[s.d]}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${s.type}</b><br><span class="mut sm">${s.note} · ${s.place}${s.cap ? ` · up to ${s.cap}` : ''}</span></span><button class="link sm" data-act="soon" data-what="Editing times and places is not in this prototype yet.">Edit</button></div>`).join('')}</div>
+        <button class="btn small ghost" data-act="soon" data-what="Adding sessions is not in this prototype yet.">Add a session</button></div>
+      <div class="stack tight"><span class="cap">Coming up</span><div>${fut.map((s) => `<div class="item"><span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${s.type}</b><br><span class="mut sm">${isCancelled(s) ? 'Cancelled' : going(s) + ' going'}</span></span>${isCancelled(s) ? `<button class="link sm" data-act="uncancel" data-id="${s.id}">Restore</button>` : `<button class="link sm" data-act="askcancel" data-id="${s.id}">Cancel</button>`}</div>`).join('')}</div></div>
+      <button class="btn quiet block" data-act="soon" data-what="Pausing the club (for summer or Ramadan timings) is not in this prototype yet.">Pause the club</button></main>`;
+  };
+
+  V.mphotos = () => {
+    const c = club(route.id); const pin = S.pin[c.id];
+    const recs = past(c).slice(0, 2).flatMap((s, i) => exPhotos(c, s, i, true));
+    const all = (c.photos ? leadPhotos(c, true) : []).concat(recs);
+    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h1 style="font-size:21px">Photos</h1><p class="mut sm">Members post these. Pin one to lead your page, or hide any you don't want shown.</p></div>
+      ${all.length ? `<div class="mgrid">${all.map((p) => { const hid = S.hidden[p.key]; const isPin = pin && pin.key === p.key; return `<div class="stack tight"><span class="ph g${p.g} ${hid ? 'dim' : ''}"${im(p.sp, p.i)}>${hid ? 'hidden' : isPin ? 'pinned' : ''}</span><span class="xs mut">by ${p.by}</span>
+        <div class="row"><button class="btn small ${isPin ? '' : 'ghost'} grow" data-act="pin" data-id="${c.id}" data-key="${p.key}" data-i="${p.i}" data-g="${p.g}" data-by="${p.by}" ${hid ? 'disabled' : ''}>${isPin ? 'Pinned' : 'Pin'}</button><button class="btn small quiet grow" data-act="hide" data-id="${c.id}" data-key="${p.key}">${hid ? 'Show' : 'Hide'}</button></div></div>`; }).join('')}</div>`
+        : '<p class="note">No photos yet. Add a few so newcomers can see the club.</p>'}
+      <button class="btn ghost block" data-act="soon" data-what="On a phone this opens your photo library so you can seed the page.">Add photos</button></main>`;
+  };
+
   // ---------- overlays ----------
   const O = {};
-  O.signin = () => `<div class="sheet"><h2>Sign in to save your spot</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
+  O.signin = () => `<div class="sheet"><h2>${overlay.then && overlay.then.act === 'claim' ? 'Sign in to manage your club' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
     <label for="si-name">First name</label><input type="text" id="si-name" value="Alex" maxlength="20" autocomplete="off">
     <button class="btn block" data-act="dosignin">Continue with Google</button><button class="btn quiet block" data-act="close">Not now</button></div>`;
   O.session = () => {
@@ -384,19 +482,19 @@
     else if (mine) act = `<p class="note">You're going. Reminder ${s.at.getHours() < 10 ? 'at 19:00 the evening before' : 'three hours before'}.</p><button class="btn ghost block" data-act="unrsvp" data-id="${s.id}">Can't make it</button><button class="btn quiet block" data-act="soon" data-what="This would add the session to your phone's calendar.">Add to calendar</button>`;
     else if (full) act = `<p class="notice">Full · ${s.cap} of ${s.cap}. There is no waiting list.</p>`;
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">I'm in</button>`;
-    return `<div class="sheet"><div class="stack tight"><span class="cap">${s.club.name}</span><h2>${dayWord(s.at)} · ${s.t}</h2></div>
-      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${s.club.bring}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
+    return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h2>${dayWord(s.at)} · ${s.t}</h2></div>
+      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}<button class="btn quiet block" data-act="close">Close</button></div>`;
   };
   O.milestone = () => { const m = MS.find((x) => x.id === overlay.id); return `<div class="sheet full" style="justify-content:center;text-align:center;align-items:center">
-    <span class="badge on" style="width:120px;font-size:26px">${m.b}</span><span class="cap">New milestone</span><h1>${m.t}</h1><p>${m.line}</p><p class="mut sm">with ${overlay.club}</p>
+    <span class="badge on" style="width:120px;font-size:26px">${m.b}</span><span class="cap">New milestone</span><h1>${m.t}</h1><p>${m.line}</p><p class="mut sm">with ${esc(overlay.club)}</p>
     <div class="stack" style="width:100%"><button class="btn block" data-act="share">Share</button><button class="btn quiet block" data-act="close">Done</button></div></div>`; };
-  O.share = () => { const c = S.follows[0] ? club(S.follows[0]).name : 'Ryze Club'; return `<div class="sheet"><div class="sharecard g1"><span class="disp" style="font-size:12px;font-weight:700">ryze club</span><span class="n">${S.streak}</span><b style="font-size:18px">${S.streak === 1 ? 'week' : 'weeks'} in a row</b><span>with ${c}</span><span id="sc-name">${overlay.hide ? '' : esc(S.user.name)}</span></div>
+  O.share = () => { const c = S.follows[0] ? club(S.follows[0]) : null; return `<div class="sheet"><div class="sharecard g1"${c ? im(c.sport, hash(c.id) + 1) : ''}><span class="disp" style="font-size:12px;font-weight:700">ryze club</span><span class="n">${S.streak}</span><b style="font-size:18px">${S.streak === 1 ? 'week' : 'weeks'} in a row</b><span>with ${c ? esc(c.name) : 'Ryze Club'}</span><span id="sc-name">${overlay.hide ? '' : esc(S.user.name)}</span></div>
     <label class="switch" for="sc-show"><span>Show my name</span><input type="checkbox" id="sc-show" data-sharename="1" ${overlay.hide ? '' : 'checked'}></label>
     <button class="btn block" data-act="soon" data-what="This would open your phone's share menu with the image.">Share</button><button class="btn ghost block" data-act="soon" data-what="This would save the image to your phone.">Save image</button><button class="btn quiet block" data-act="close">Close</button></div>`; };
-  O.post = () => { const s = byId(overlay.id); const sel = overlay.sel || []; return `<div class="sheet"><div class="stack tight"><h2>Add photos</h2><p class="mut sm">${nounFor(s)} · ${s.club.name}</p></div>
+  O.post = () => { const s = byId(overlay.id); const sel = overlay.sel || []; return `<div class="sheet"><div class="stack tight"><h2>Add photos</h2><p class="mut sm">${nounFor(s)} · ${esc(s.club.name)}</p></div>
     <p class="note">On a phone this opens your photo library. Here, pick from these examples (up to 6).</p>
-    <div class="pick">${[1, 2, 3, 4, 5, 6].map((g) => `<button class="ph g${g} ${sel.includes(g) ? 'on' : ''}" data-act="pick" data-g="${g}" aria-pressed="${sel.includes(g)}">${sel.includes(g) ? 'chosen' : 'photo'}</button>`).join('')}</div>
+    <div class="pick">${[1, 2, 3, 4, 5, 6].map((g) => `<button class="ph g${g} ${sel.includes(g) ? 'on' : ''}"${im(s.club.sport, g - 1)} data-act="pick" data-g="${g}" aria-pressed="${sel.includes(g)}" aria-label="Example photo ${g}">${sel.includes(g) ? 'chosen' : ''}</button>`).join('')}</div>
     <label for="po-cap">Caption (optional)</label><input type="text" id="po-cap" maxlength="140" value="${esc(overlay.cap || '')}">
     <p class="mut xs">Photos here are public. Only post people who are happy to be seen.</p>
     <button class="btn block" data-act="dopost">Post</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
@@ -404,18 +502,39 @@
     const acts = p.confirmDel ? `<p><b>Delete this photo? This can't be undone.</b></p><div class="row"><button class="btn quiet grow" data-act="keep">Keep</button><button class="btn grow" data-act="delphoto">Delete</button></div>`
       : p.report ? `<span class="cap">Why are you reporting this?</span>${['I’m in this and want it removed', 'It’s not from this session', 'It’s inappropriate'].map((r) => `<button class="btn ghost block" data-act="sendreport">${r}</button>`).join('')}`
       : `${p.tagged ? '<button class="btn block" data-act="untag">Remove my tag</button>' : ''}${p.mine ? '<button class="btn ghost block" data-act="askdel">Delete</button>' : '<button class="btn ghost block" data-act="report">Report</button>'}`;
-    return `<div class="sheet"><span class="ph g${p.g} photo-big">${p.tagged ? "you're tagged" : 'photo'}</span>
+    return `<div class="sheet"><span class="ph g${p.g} photo-big"${im(p.sp, p.i)}>${p.tagged ? "you're tagged" : ''}</span>
       <p class="sm">${S.user || p.mine ? `Posted by <b>${esc(p.by)}</b>` : 'Sign in to see who posted this'}${s ? ` · ${nounFor(s)}` : ''}</p>
       ${acts}<button class="btn quiet block" data-act="close">Close</button></div>`; };
-  O.demo = () => { const n = now(); return `<div class="sheet"><div class="stack tight"><h2>Demo controls</h2><p class="mut sm">Prototype time: ${DAYL[n.getDay()]} ${n.getDate()} ${MON[n.getMonth()]}, ${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}</p></div>
+  O.claim = () => { const c = club(overlay.id); return `<div class="sheet"><div class="stack tight"><h2>Is this your club?</h2><p class="mut sm">${esc(c.name)}. Tell us who you are and we'll check with the club.</p></div>
+    <label for="cl-role">Your role</label><select id="cl-role"><option>I started it</option><option>I help run it</option><option>I coach or lead sessions</option></select>
+    <label for="cl-ig">The club's Instagram or WhatsApp group link</label><input type="text" id="cl-ig" placeholder="@yourclub" autocomplete="off">
+    <label for="cl-ct">Best way to reach you</label><input type="text" id="cl-ct" placeholder="Phone or email" autocomplete="off">
+    <button class="btn block" data-act="sendclaim" data-id="${c.id}">Send request</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+  O.edit = () => { const c = club(overlay.id); return `<div class="sheet"><h2>Club details</h2>
+    <label for="ed-desc">Description</label><textarea id="ed-desc" rows="4" maxlength="300">${esc(c.desc)}</textarea>
+    <label for="ed-level">Level or pace</label><input type="text" id="ed-level" maxlength="80" value="${esc(c.level)}">
+    <label for="ed-cost">Cost</label><input type="text" id="ed-cost" maxlength="40" value="${esc(c.cost)}">
+    <label for="ed-bring">What to bring</label><input type="text" id="ed-bring" maxlength="80" value="${esc(c.bring)}">
+    <p class="mut xs">Changes show on your public page straight away.</p>
+    <button class="btn block" data-act="saveclub" data-id="${c.id}">Save</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+  O.cancel = () => { const s = byId(overlay.id); return `<div class="sheet"><div class="stack tight"><h2>Cancel ${nounFor(s)}?</h2><p class="mut sm">${dateShort(s.at)} · ${s.t} · ${s.type}</p></div>
+    <p class="notice"><b>${plural(going(s), 'person')} will be told.</b> Their streak still counts this week.</p>
+    <label for="cn-why">Reason (optional)</label><input type="text" id="cn-why" maxlength="80" placeholder="Weather, venue closed…">
+    <button class="btn block" data-act="docancel" data-id="${s.id}">Cancel session</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
+  O.demo = () => { const n = now(); const pend = Object.keys(S.claims).length; return `<div class="sheet"><div class="stack tight"><h2>Demo controls</h2><p class="mut sm">Prototype time: ${DAYL[n.getDay()]} ${n.getDate()} ${MON[n.getMonth()]}, ${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}</p></div>
+    <span class="cap">As a member</span>
     <button class="btn ghost block" data-act="d-after">Skip to after my next session</button>
     <button class="btn ghost block" data-act="d-week">End this week</button>
     <button class="btn ghost block" data-act="d-11">Give me an 11-week streak</button>
+    <span class="cap">As an organiser</span>
+    <button class="btn ghost block" data-act="d-org">${pend ? 'Approve my club request' : 'Make me organiser of Marina Dawn Runners'}</button>
+    <span class="cap">Start again</span>
     <button class="btn ghost block" data-act="d-reset">Reset the prototype</button>
     <p class="mut xs">"Skip" needs an RSVP first. After an 11-week streak, your next "I went" earns the 12-week milestone.</p>
     <button class="btn quiet block" data-act="close">Close</button></div>`; };
 
   // ---------- actions ----------
+  const needUser = (fn) => (d) => { if (!S.user) { overlay = null; say('Sign in first: tap "Sign in" at the top.'); render(); return; } fn(d); };
   const A = {
     home: () => go(S.user ? 'me' : 'home'), me: () => go('me'), back, quiz: () => go('quiz', { step: 0 }),
     quizback: () => { route.step -= 1; render(); },
@@ -441,6 +560,7 @@
       S.user = { name }; save(); overlay = null;
       if (then && then.act === 'rsvp') { doRsvp(then.id); stack = []; go('confirm', { id: then.id }); }
       else if (then && then.act === 'follow') { if (!S.follows.includes(then.id)) S.follows.push(then.id); save(); say('Following.'); render(); }
+      else if (then && then.act === 'claim') { overlay = { t: 'claim', id: then.id }; render(); }
       else go('me');
     },
     signin: () => { overlay = { t: 'signin' }; render(); },
@@ -455,27 +575,52 @@
       const el = document.getElementById('po-cap'); if (!overlay.sel.length) { say('Choose at least one photo.'); render(); return; }
       const s = byId(overlay.id); (S.posts[s.id] = S.posts[s.id] || []).push({ g: overlay.sel, cap: el ? el.value : '' }); save(); overlay = null; say(`Posted to ${s.club.name}.`); render();
     },
-    photo: (d) => { overlay = { t: 'photo', g: Number(d.g), by: d.by, sid: d.sid, mine: !!d.mine, tagged: !!d.tagged }; render(); },
+    photo: (d) => { overlay = { t: 'photo', sp: d.sp, i: Number(d.i), g: Number(d.g), by: d.by, sid: d.sid, mine: !!d.mine, tagged: !!d.tagged }; render(); },
     untag: () => { const sid = overlay.sid; S.untag[sid] = true; save(); overlay = null; say('Tag removed.', () => { delete S.untag[sid]; save(); toast = null; render(); }); render(); },
     report: () => { overlay.report = true; render(); }, sendreport: () => { overlay = null; say("Sent. We'll tell you what happens."); render(); },
     askdel: () => { overlay.confirmDel = true; render(); }, keep: () => { overlay.confirmDel = false; render(); },
     delphoto: () => { const p = overlay; const list = S.posts[p.sid] || []; for (const post of list) { const i = post.g.indexOf(p.g); if (i >= 0) { post.g.splice(i, 1); break; } } S.posts[p.sid] = list.filter((x) => x.g.length); save(); overlay = null; say('Photo deleted.'); render(); },
+
+    // organiser
+    claim: (d) => { if (!S.user) { overlay = { t: 'signin', then: { act: 'claim', id: d.id } }; render(); return; } overlay = { t: 'claim', id: d.id }; render(); },
+    sendclaim: (d) => { S.claims[d.id] = 'pending'; save(); overlay = null; say("Sent. We'll confirm within 2 days. (Use Demo to approve it now.)"); render(); },
+    manage: (d) => go('manage', { id: d.id }),
+    attend: (d) => go('attend', { id: d.id }),
+    sched: (d) => { const id = d.id || route.id; (S.check[id] = S.check[id] || {}).s = true; save(); go('sched', { id }); },
+    mphotos: (d) => { const id = d.id || route.id; (S.check[id] = S.check[id] || {}).p = true; save(); go('mphotos', { id }); },
+    editclub: (d) => { overlay = { t: 'edit', id: d.id }; render(); },
+    saveclub: (d) => {
+      const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; }; const c = club(d.id);
+      S.edits[d.id] = { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, cost: val('ed-cost') || c.cost, bring: val('ed-bring') || c.bring };
+      S.conf[d.id] = now().getTime(); (S.check[d.id] = S.check[d.id] || {}).d = true; save(); applyEdits(); overlay = null; say('Saved. Your public page is updated.'); render();
+    },
+    confirmclub: (d) => { S.conf[d.id] = now().getTime(); (S.check[d.id] = S.check[d.id] || {}).d = true; save(); say('Thanks. Marked as confirmed today.'); render(); },
+    askcancel: (d) => { overlay = { t: 'cancel', id: d.id }; render(); },
+    docancel: (d) => { const s = byId(d.id); const n = going(s); S.cancelled[d.id] = true; save(); overlay = null; say(`Cancelled. ${plural(n, 'person')} told.`); render(); },
+    uncancel: (d) => { delete S.cancelled[d.id]; save(); say('Session restored.'); render(); },
+    cyc: (d) => { const o = (S.orgAtt[d.id] = S.orgAtt[d.id] || {}); const cur = roster(byId(d.id)).find((p) => p.name === d.name).st; o[d.name] = cur === 'came' ? 'no' : 'came'; save(); render(); },
+    allcame: (d) => { const o = (S.orgAtt[d.id] = S.orgAtt[d.id] || {}); roster(byId(d.id)).forEach((p) => { o[p.name] = 'came'; }); save(); say('Everyone marked as came. Tap a name to adjust.'); render(); },
+    hide: (d) => { if (S.hidden[d.key]) { delete S.hidden[d.key]; say('Photo is showing again.'); } else { S.hidden[d.key] = true; if (S.pin[d.id] && S.pin[d.id].key === d.key) delete S.pin[d.id]; say('Hidden. The member who posted it is told.'); } save(); render(); },
+    pin: (d) => { const c = club(d.id); if (S.pin[d.id] && S.pin[d.id].key === d.key) { delete S.pin[d.id]; say('Unpinned.'); } else { S.pin[d.id] = { key: d.key, sp: c.sport, i: Number(d.i), g: Number(d.g), by: d.by }; say('Pinned to the top of your page.'); } save(); render(); },
+
+    // demo
     'd-after': () => { const nx = S.rsvps.map(byId).filter((s) => s && !ended(s)).sort((a, b) => a.at - b.at)[0]; if (!nx) { overlay = null; say('RSVP to a session first.'); render(); return; } S.offset += (nx.at.getTime() + 2 * 36e5 + 6e4) - now().getTime(); save(); stack = []; go('me', {}, true); },
-    'd-week': () => { if (!S.user) { overlay = null; say('Sign in first by tapping "I\'m in" on a session.'); render(); return; } endWeek(); stack = []; go('me', {}, true); },
-    'd-11': () => { if (!S.user) { overlay = null; say('Sign in first by tapping "I\'m in" on a session.'); render(); return; } S.streak = 11; S.longest = Math.max(S.longest, 11); S.total = Math.max(S.total, 22); S.weekDone = false; ['s1', 'w4'].forEach((b) => { if (!S.badges.includes(b)) S.badges.push(b); }); save(); stack = []; go('me', {}, true); },
-    'd-reset': () => { S = fresh(); save(); stack = []; filt = { sport: '', area: '', day: '', level: '' }; go('home', {}, true); }
+    'd-week': needUser(() => { endWeek(); stack = []; go('me', {}, true); }),
+    'd-11': needUser(() => { S.streak = 11; S.longest = Math.max(S.longest, 11); S.total = Math.max(S.total, 22); S.weekDone = false; ['s1', 'w4'].forEach((b) => { if (!S.badges.includes(b)) S.badges.push(b); }); save(); stack = []; go('me', {}, true); }),
+    'd-org': needUser(() => { const ids = Object.keys(S.claims); const list = ids.length ? ids : ['mdr']; list.forEach((id) => { if (!S.manage.includes(id)) S.manage.push(id); delete S.claims[id]; }); save(); stack = []; say(`You now manage ${club(list[0]).name}.`); go('manage', { id: list[0] }, true); }),
+    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { sport: '', area: '', day: '', level: '' }; go('home', {}, true); }
   };
 
   // ---------- render ----------
   function render() {
     const app = document.getElementById('app'); if (!app) return;
-    if (!S.user && ['me', 'clubs', 'profile', 'result', 'missed', 'confirm'].includes(route.v)) route = { v: 'home' };
+    if (!S.user && ['me', 'clubs', 'profile', 'result', 'missed', 'confirm', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v)) route = { v: 'home' };
     const sub = !['home', 'me'].includes(route.v);
     const top = `<header class="top"><div class="r">${sub && stack.length ? '<button class="pill" data-act="back" aria-label="Back">←</button>' : ''}<button class="logo" data-act="home">ryze club</button></div>
       <div class="r"><button class="pill" data-act="demo">Demo</button>${S.user ? '' : '<button class="pill" data-act="signin">Sign in</button>'}</div></header>`;
     const showNav = S.user && route.v !== 'club' && route.v !== 'quiz';
     const tab = (v, l, on) => `<button data-act="${v}" class="${on ? 'on' : ''}">${l}</button>`;
-    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('me', 'My week', ['me', 'result', 'missed'].includes(route.v))}${tab('browse', 'Find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', route.v === 'clubs')}${tab('profile', 'Profile', route.v === 'profile')}</nav>` : '';
+    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('me', 'My week', ['me', 'result', 'missed'].includes(route.v))}${tab('browse', 'Find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', route.v === 'profile')}</nav>` : '';
     const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]()}</div>` : '';
     const ts = toast ? `<div class="toast" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
     app.innerHTML = top + (V[route.v] || V.home)() + nav + ov + ts;
@@ -485,6 +630,7 @@
     const veil = e.target.closest('[data-veil]');
     const el = e.target.closest('[data-act]');
     if (!el) { if (veil && e.target === veil) { overlay = null; render(); } return; }
+    if (el.disabled) return;
     const act = el.dataset.act;
     if (act === 'undo') { if (toast && toast.undo) toast.undo(); return; }
     if (A[act]) A[act](el.dataset);
@@ -497,6 +643,7 @@
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay) { overlay = null; render(); } });
 
+  applyEdits();
   route = { v: S.user ? 'me' : 'home' };
   render();
 })();
