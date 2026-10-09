@@ -108,6 +108,11 @@ textarea { resize: vertical; }
 .avs { display: flex; flex: none; }
 .av { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--soft); border: 2px solid var(--bg); margin-left: -8px; }
 .av:first-child { margin-left: 0; }
+.av[style] { background-size: cover; background-position: center; }
+.av.big { width: 64px; height: 64px; font-size: 20px; margin-left: 0; flex: none; }
+.person { display: flex; gap: 10px; align-items: center; width: 100%; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 9px 0; text-align: left; color: var(--ink); }
+.person:last-child { border-bottom: 0; }
+.person .av { margin-left: 0; width: 36px; height: 36px; font-size: 12px; }
 .rank { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 .rank:last-child { border-bottom: 0; }
 .rank.me { background: var(--soft); border-radius: 10px; padding: 9px 10px; border: 0; margin-top: 6px; }

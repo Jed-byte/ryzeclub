@@ -199,7 +199,7 @@
     return people(s, n).map((name) => { const h = hash(name + s.id); const def = h % 10 < 7 ? 'came' : h % 10 < 9 ? 'no' : 'wait'; return { name, first: h % 6 === 0, st: ended(s) ? (over[name] || def) : 'going' }; });
   }
 
-  function say(msg, undo) { toast = { msg, undo }; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast = null; render(); }, 4500); }
+  function say(msg, undo) { toast = { msg, undo }; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast = null; const el = document.querySelector('.toast'); if (el) el.remove(); }, 4500); }
   function go(v, p = {}, replace = false) { if (!replace) stack.push(route); route = Object.assign({ v }, p); overlay = null; render(); window.scrollTo(0, 0); }
   function back() { route = stack.pop() || { v: S.user ? 'me' : 'home' }; overlay = null; render(); }
 
@@ -224,6 +224,17 @@
       <span class="grow"><b>${showClub ? esc(s.club.name) : s.type}</b><br><span class="mut sm">${showClub ? s.type + ' · ' : ''}${s.note}</span></span>${tag}</button>`;
   }
   function avatars(names) { return `<span class="avs">${names.map((n) => `<span class="av">${initials(n)}</span>`).join('')}</span>`; }
+
+  // Member profiles. Only people going to the same session, and that club's organisers, can see them.
+  const WORK = ['Nurse', 'Works in marketing', 'Teacher', 'Software engineer', 'Architect', 'Cabin crew', 'Works in finance', 'Physiotherapist', 'Student', 'Works in hospitality', 'Designer', 'Lawyer'];
+  const HOBBY = ['Coffee and brunch spots', 'Photography', 'Padel on weekends', 'Cooking', 'Hiking in Hatta', 'Reading', 'Live music', 'Learning Arabic', 'Board games', 'Diving', 'Yoga', 'Travel'];
+  const memberPro = (name) => {
+    const h = hash(name); const first = name.split(' ')[0].toLowerCase();
+    return { name, area: AREAS[h % AREAS.length], level: Object.keys(LEVELS)[h % 3], work: WORK[h % WORK.length], hobbies: `${HOBBY[h % HOBBY.length]}, ${HOBBY[(h + 5) % HOBBY.length].toLowerCase()}`, ig: h % 4 === 0 ? '' : `${first}.${['runs', 'moves', 'dxb', 'outdoors'][h % 4]}` };
+  };
+  const myPro = () => Object.assign({ photo: '', area: '', level: '', ig: '', work: '', hobbies: '' }, (S.user && S.user.pro) || {});
+  const face = (name, photo, big) => `<span class="av${big ? ' big' : ''}"${photo ? ` style="background-image:url('${photo}')"` : ''} aria-hidden="true">${photo ? '' : initials(name)}</span>`;
+  const canSeeWho = (s) => has(s.id) || S.manage.includes(s.club.id);
 
   function match() {
     const q = S.quiz; const pool = CLUBS.filter((c) => c.sport === q.sport);
@@ -430,7 +441,11 @@
     ${S.follows.length ? `<div class="stack">${S.follows.map((id) => { const c = club(id); const n = nextOpen(c); return `<button class="card" data-act="club" data-id="${c.id}"><span class="body"><span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span><span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t}` : 'No session scheduled'} · you: ${plural(S.clubWeeks[c.id] || 0, 'week')}</span></span></button>`; }).join('')}</div>` : '<p class="mut">You are not following any clubs yet.</p>'}
     <button class="btn ghost block" data-act="quiz">Find another club</button></main>`;
 
-  V.profile = () => `<main class="pad-nav"><div class="stack tight"><h1>${esc(S.user.name)}</h1><p class="mut">Only you can see your streak and history.</p></div>
+  V.profile = () => { const m = myPro(); return `<main class="pad-nav"><div class="row">${face(S.user.name, m.photo, true)}<div class="stack tight"><h1>${esc(S.user.name)}</h1>
+      <span class="mut sm">${[m.area, m.level && LEVELS[m.level], m.work].filter(Boolean).map(esc).join(' · ') || 'Add a photo and a few details so people know who to look for.'}</span>
+      ${m.hobbies ? `<span class="sm">Into ${esc(m.hobbies)}</span>` : ''}${m.ig ? `<span class="sm">@${esc(m.ig)}</span>` : ''}</div></div>
+    <button class="btn ghost block" data-act="editpro">${m.photo || m.work || m.hobbies || m.ig ? 'Edit profile' : 'Set up your profile'}</button>
+    <p class="mut sm">People going to the same session as you can see your profile. Only you can see your streak and history.</p>
     <dl class="facts"><dt>Current streak</dt><dd>${plural(S.streak, 'week')}</dd><dt>Longest streak</dt><dd>${plural(S.longest, 'week')}</dd><dt>Sessions</dt><dd>${S.total}</dd><dt>Protection</dt><dd>${S.prot ? 'Available' : `Used. Returns after ${plural(Math.max(0, 4 - S.sinceProt), 'more week')} in a row`}</dd></dl>
     <div class="stack"><span class="cap">Milestones</span><div class="badges">${MS.map((m) => `<span class="badge ${S.badges.includes(m.id) ? 'on' : ''}" title="${m.t}" aria-label="${m.t}${S.badges.includes(m.id) ? ', earned' : ', not yet earned'}">${m.b}</span>`).join('')}</div>
       ${S.streak > 0 ? '<button class="btn ghost" data-act="share">Share my streak</button>' : ''}</div>
@@ -439,7 +454,7 @@
       <label class="switch" for="p-tg"><span>Let people tag me in photos</span><input type="checkbox" id="p-tg" data-set="tagging" ${S.set.tagging ? 'checked' : ''}></label>
       <label class="switch" for="p-em"><span>Email reminders</span><input type="checkbox" id="p-em" data-set="email" ${S.set.email ? 'checked' : ''}></label>
       <label class="switch" for="p-wa"><span>WhatsApp reminders</span><input type="checkbox" id="p-wa" data-set="wa" ${S.set.wa ? 'checked' : ''}></label></div>
-    <button class="btn quiet block" data-act="signout">Sign out</button></main>`;
+    <button class="btn quiet block" data-act="signout">Sign out</button></main>`; };
 
   // ---------- organiser views ----------
   V.manage = () => {
@@ -516,8 +531,41 @@
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">I'm in</button>`;
     return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h2>${dayWord(s.at)} · ${s.t}</h2></div>
       <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
+      ${who(s, over)}
       ${act}<button class="btn quiet block" data-act="close">Close</button></div>`;
   };
+  function who(s, over) {
+    if (!S.user || over || isCancelled(s)) return '';
+    if (!canSeeWho(s)) return `<p class="note">Say "I'm in" to see who's going and what they're into, so you know a face when you arrive.</p>`;
+    const me = myPro(); const others = people(s, Math.min(going(s) - (has(s.id) ? 1 : 0), 8));
+    const meRow = has(s.id) ? `<button class="person" data-act="editpro"><span>${face(S.user.name, me.photo)}</span><span class="grow"><b>You</b><br><span class="mut sm">${me.photo || me.work || me.hobbies ? 'Edit your profile' : 'Add a photo so people can spot you'}</span></span></button>` : '';
+    return `<div class="stack tight"><span class="cap">Who's going</span><div>${meRow}${others.map((n) => { const m = memberPro(n); return `<button class="person" data-act="person" data-name="${esc(n)}" data-sid="${s.id}"><span>${face(n)}</span><span class="grow"><b>${esc(n)}</b><br><span class="mut sm">${esc(m.work)} · ${esc(m.area)}</span></span></button>`; }).join('')}</div>
+      ${going(s) - (has(s.id) ? 1 : 0) > others.length ? `<p class="mut sm">and ${plural(going(s) - (has(s.id) ? 1 : 0) - others.length, 'other')}</p>` : ''}
+      <p class="mut xs">Only people going to this session and the club's organisers can see these profiles.</p></div>`;
+  }
+  O.person = () => {
+    const m = memberPro(overlay.name);
+    return `<div class="sheet"><div class="row">${face(m.name, '', true)}<div class="stack tight"><h2>${esc(m.name)}</h2><span class="mut sm">${esc(m.area)} · ${LEVELS[m.level]}</span></div></div>
+      <dl class="facts"><dt>Work</dt><dd>${esc(m.work)}</dd><dt>Into</dt><dd>${esc(m.hobbies)}</dd>${m.ig ? `<dt>Instagram</dt><dd><a href="https://instagram.com/${encodeURIComponent(m.ig)}" target="_blank" rel="noopener">@${esc(m.ig)}</a></dd>` : ''}</dl>
+      <p class="note">You'll both be at ${esc(byId(overlay.sid).place)}. Say hi.</p>
+      <button class="btn ghost block" data-act="session" data-id="${overlay.sid}">Back to who's going</button>
+      <button class="link" data-act="soon" data-what="Thanks. In the real product this goes to the club's organisers and the Ryze Club team.">Report this profile</button></div>`;
+  };
+  O.editpro = () => {
+    const d = overlay.d;
+    return `<div class="sheet"><h2>Your profile</h2><p class="mut sm">Only people going to the same session as you, and that club's organisers, can see this. Everything except your name is optional.</p>
+      <div class="row">${face(S.user.name, d.photo, true)}<div class="stack tight"><label class="btn small ghost" for="ep-photo">${d.photo ? 'Change photo' : 'Add a photo'}</label><input type="file" id="ep-photo" accept="image/*" data-photo="1" hidden>
+        ${d.photo ? '<button class="link sm" data-act="rmphoto">Remove photo</button>' : '<span class="mut xs">A clear face helps people find you at the meeting point.</span>'}</div></div>
+      <label for="ep-area">Area</label><select id="ep-area"><option value="">Choose</option>${AREAS.map((a) => `<option ${d.area === a ? 'selected' : ''}>${a}</option>`).join('')}</select>
+      <label for="ep-level">Running level</label><select id="ep-level"><option value="">Choose</option>${Object.entries(LEVELS).map(([k, l]) => `<option value="${k}" ${d.level === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <label for="ep-ig">Instagram</label><input type="text" id="ep-ig" maxlength="31" placeholder="@yourhandle" value="${d.ig ? '@' + esc(d.ig) : ''}" autocomplete="off" autocapitalize="off">
+      <label for="ep-work">Work</label><input type="text" id="ep-work" maxlength="40" placeholder="For example: Nurse, or Works in marketing" value="${esc(d.work)}">
+      <label for="ep-hob">Other things you're into</label><input type="text" id="ep-hob" maxlength="80" placeholder="For example: brunch spots, photography" value="${esc(d.hobbies)}">
+      <button class="btn block" data-act="savepro">Save</button><button class="btn quiet block" data-act="${overlay.sid ? 'session' : 'close'}"${overlay.sid ? ` data-id="${overlay.sid}"` : ''}>Cancel</button></div>`;
+  };
+  // Keep what has been typed when the sheet re-renders (for example after picking a photo).
+  const readPro = () => { const v = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; }; const d = overlay.d;
+    [['area', 'ep-area'], ['level', 'ep-level'], ['ig', 'ep-ig'], ['work', 'ep-work'], ['hobbies', 'ep-hob']].forEach(([k, id]) => { const x = v(id); if (x !== undefined) d[k] = k === 'ig' ? x.replace(/^@/, '') : x; }); };
   O.milestone = () => { const m = MS.find((x) => x.id === overlay.id); return `<div class="sheet full" style="justify-content:center;text-align:center;align-items:center">
     <span class="badge on" style="width:120px;font-size:26px">${m.b}</span><span class="cap">New milestone</span><h1>${m.t}</h1><p>${m.line}</p><p class="mut sm">with ${esc(overlay.club)}</p>
     <div class="stack" style="width:100%"><button class="btn block" data-act="share">Share</button><button class="btn quiet block" data-act="close">Done</button></div></div>`; };
@@ -573,6 +621,14 @@
     q: (d) => { S.quiz[d.k] = d.val; save(); if ((route.step || 0) < 2) { route.step = (route.step || 0) + 1; render(); window.scrollTo(0, 0); } else go('results', {}, true); },
     browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '' }; go('browse'); },
     filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '' }; render(); },
+    person: (d) => { overlay = { t: 'person', name: d.name, sid: d.sid }; render(); },
+    editpro: () => { const sid = overlay && overlay.t === 'session' ? overlay.id : null; overlay = { t: 'editpro', d: myPro(), sid }; render(); },
+    rmphoto: () => { readPro(); overlay.d.photo = ''; render(); },
+    savepro: () => {
+      readPro(); const d = overlay.d;
+      if (d.ig && !/^[A-Za-z0-9._]{1,30}$/.test(d.ig)) { say('Instagram handles use letters, numbers, dots and underscores only.'); render(); return; }
+      S.user.pro = d; save(); const sid = overlay.sid; overlay = sid ? { t: 'session', id: sid } : null; say('Profile saved.'); render();
+    },
     club: (d) => go('club', { id: d.id }), clubs: () => go('clubs'), profile: () => go('profile'),
     session: (d) => { overlay = { t: 'session', id: d.id }; render(); },
     close: () => { overlay = null; render(); },
@@ -672,7 +728,16 @@
     if (t.dataset.filt) { filt[t.dataset.filt] = t.value; render(); }
     else if (t.dataset.set) { S.set[t.dataset.set] = t.checked; save(); if (t.dataset.set === 'wa' && t.checked) { say('In the real product this asks for your phone number.'); render(); } }
     else if (t.dataset.sharename) { overlay.hide = !t.checked; render(); }
+    else if (t.dataset.photo && t.files && t.files[0]) {
+      readPro(); const img = new Image(); const url = URL.createObjectURL(t.files[0]);
+      img.onload = () => { const n = 240; const c = document.createElement('canvas'); c.width = n; c.height = n; const k = Math.min(img.width, img.height);
+        c.getContext('2d').drawImage(img, (img.width - k) / 2, (img.height - k) / 2, k, k, 0, 0, n, n); URL.revokeObjectURL(url);
+        if (overlay && overlay.t === 'editpro') { overlay.d.photo = c.toDataURL('image/jpeg', 0.82); render(); } };
+      img.onerror = () => { URL.revokeObjectURL(url); say("That file couldn't be read as a photo."); render(); };
+      img.src = url;
+    }
   });
+  document.addEventListener('input', (e) => { if (overlay && overlay.t === 'editpro' && e.target.id && e.target.id.startsWith('ep-')) readPro(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay) { overlay = null; render(); } });
 
   applyEdits();
