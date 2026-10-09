@@ -2,16 +2,16 @@
 (() => {
   const KEY = 'ryze-proto-v1';
   const AREAS = ['Marina', 'JVC', 'Dubai Hills', 'Downtown', 'Jumeirah', 'Palm', 'Mirdif'];
-  const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', squash: 'Squash', chess: 'Chess' };
+  const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', squash: 'Squash', cycling: 'Cycling' };
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
   const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
-  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', squash: 'squash', chess: 'chess' };
+  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', squash: 'squash', cycling: 'ride' };
 
   // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
-  // Volleyball, squash and chess have none yet, so they show the colour gradient instead.
+  // Volleyball, squash and cycling have none yet, so they show the colour gradient instead.
   const IMG = {
     running: ['1590333748338-d629e4564ad9', '1552674605-db6ffd4facb5', '1613936360976-8f35cf0e5461', '1540539234-c14a20fb7c7b', '1602263515015-dd72f8e9f301', '1551927336-09d50efd69cd', '1667781838690-5f32ea0ccea6', '1739368732843-800f36a9b7d0', '1716573094354-e4c3226ba887', '1759674861540-afed9f86f94a'],
     padel: ['1646649852033-7e0f3d679f8b', '1646651105426-e8c8ee9badde', '1646649851780-d9701b7c3c04', '1646649853703-7645147474ba', '1646649851800-48dba35edc76', '1646649852046-b758d2d573f3', '1658723826297-fe4d1b1e6600', '1612534847738-b3af9bc31f0c', '1657704358775-ed705c7388d2', '1526888935184-a82d2a4b7e67'],
@@ -77,14 +77,14 @@
       desc: 'A patient group for first-timers. A volunteer coach covers the basics before friendly games.', bring: 'Non-marking shoes. Rackets, balls and eye protection provided.',
       sched: [{ d: 4, t: '19:00', type: 'Learn and play', note: 'First-timers', place: 'JVC Community Courts, squash court 2', cap: 6 }],
       top: [['Noor E.', 9], ['Sam W.', 6]], active: 12 },
-    { id: 'dhc', name: 'Dubai Hills Chess Café', sport: 'chess', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], cost: 'Free, buy a coffee', level: 'All levels, boards matched by rating', photos: 3, confirmed: 4,
-      desc: 'Casual games over coffee. Newcomers are paired with a regular for their first game, and there is a quick-play board for blitz.', bring: 'Nothing. Boards and clocks provided.',
-      sched: [{ d: 2, t: '19:00', type: 'Casual night', note: 'All levels', place: 'Dubai Hills Mall, café terrace by the park entrance' }, { d: 6, t: '10:00', type: 'Saturday rapid', note: '15-minute games', place: 'Dubai Hills Mall, café terrace by the park entrance' }],
-      top: [['Yuki O.', 12], ['Ivan U.', 11], ['Maria G.', 8]], active: 27 },
-    { id: 'mcc', name: 'Mirdif Chess Circle', sport: 'chess', area: 'Mirdif', levels: ['new', 'some'], cost: 'Free', level: 'Beginner friendly', photos: 2, confirmed: 6,
-      desc: 'A friendly group at the community library. Short lessons on openings for newer players, then open play.', bring: 'Nothing. Boards provided.',
-      sched: [{ d: 5, t: '16:00', type: 'Lesson and play', note: 'Beginner friendly', place: 'Mirdif Library, community room' }],
-      top: [['Reem Q.', 10], ['Sana K.', 7]], active: 15 }
+    { id: 'aqr', name: 'Al Qudra Dawn Riders', sport: 'cycling', area: 'JVC', levels: ['some', 'regular'], cost: 'Free', level: 'Steady 28–32 km/h', photos: 3, confirmed: 4,
+      desc: 'Road rides on the Al Qudra track before the heat. One loop at a steady pace, with a regroup at the halfway shade stop.', bring: 'Road bike, helmet, lights and two bottles of water.',
+      sched: [{ d: 6, t: '05:30', type: 'Long loop', note: '50 km, steady', place: 'Al Qudra Cycle Track, Bab Al Shams start' }, { d: 3, t: '05:45', type: 'Midweek spin', note: '30 km, social pace', place: 'Al Qudra Cycle Track, Bab Al Shams start' }],
+      top: [['Diego M.', 13], ['Khalid Z.', 10], ['Mei L.', 8]], active: 31 },
+    { id: 'nsr', name: 'Nad Al Sheba Night Riders', sport: 'cycling', area: 'Mirdif', levels: ['new', 'some'], cost: 'Free, bike hire on site', level: 'No-drop, easy pace', photos: 2, confirmed: 3,
+      desc: 'Evening laps on the lit, car-free cycle park. No one gets dropped, and the ride leader waits at every lap.', bring: 'Helmet and water. Hire bikes are available at the park.',
+      sched: [{ d: 2, t: '19:30', type: 'Evening laps', note: 'Easy pace', place: 'Nad Al Sheba Cycle Park, main entrance' }],
+      top: [['Farah A.', 9], ['Tom R.', 6]], active: 19 }
   ];
   const ORIG = JSON.parse(JSON.stringify(CLUBS));
 
@@ -105,6 +105,10 @@
     manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {} });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
+  // Drop saved references to clubs and sports that have since been removed from the prototype.
+  { const ok = (id) => CLUBS.some((c) => c.id === id.split('|')[0]);
+    S.rsvps = S.rsvps.filter(ok); S.follows = S.follows.filter(ok); S.manage = S.manage.filter(ok);
+    if (S.quiz.sport && !SPORTS[S.quiz.sport]) S.quiz = {}; }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } };
 
   // view state (not saved)
@@ -277,7 +281,7 @@
 
   V.home = () => `<main>
     <div class="stack"><h1>Find your people. Keep showing up.</h1>
-      <p class="mut">Free community clubs across Dubai for running, padel, yoga and pilates, volleyball, squash and chess. Answer three questions and see the ones that fit you.</p></div>
+      <p class="mut">Free community clubs across Dubai for running, padel, yoga and pilates, volleyball, squash and cycling. Answer three questions and see the ones that fit you.</p></div>
     <div class="stack"><button class="btn block" data-act="quiz">Find my club</button>
       <button class="btn ghost block" data-act="browse">Browse all clubs</button></div>
     <div class="stack"><span class="cap">This week in Dubai</span>${[club('mdr'), club('jps'), club('kbf')].map((c) => clubCard(c)).join('')}</div>
@@ -294,7 +298,7 @@
       <button class="quiz-opt g4"${im('yoga', 0)} data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates</button>
       <button class="quiz-opt g3" data-act="q" data-k="sport" data-val="volleyball">Volleyball</button>
       <button class="quiz-opt g5" data-act="q" data-k="sport" data-val="squash">Squash</button>
-      <button class="quiz-opt g6" data-act="q" data-k="sport" data-val="chess">Chess</button></div>
+      <button class="quiz-opt g6" data-act="q" data-k="sport" data-val="cycling">Cycling</button></div>
       <p class="mut sm center">No account needed.</p></main>`;
     if (step === 1) return `<main>${head}<h1>Where are you based?</h1><div class="quiz-opts">
       ${AREAS.concat(['Anywhere in Dubai']).map((a) => `<button class="quiz-opt plain" data-act="q" data-k="area" data-val="${a}">${a}</button>`).join('')}</div></main>`;
