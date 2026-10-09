@@ -2,21 +2,22 @@
 (() => {
   const KEY = 'ryze-proto-v1';
   const AREAS = ['Marina', 'JVC', 'Dubai Hills', 'Downtown', 'Jumeirah', 'Palm', 'Mirdif'];
-  const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates' };
+  const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', squash: 'Squash', chess: 'Chess' };
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
   const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
-  const NOUN = { running: 'run', padel: 'padel', yoga: 'session' };
+  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', squash: 'squash', chess: 'chess' };
 
   // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
+  // Volleyball, squash and chess have none yet, so they show the colour gradient instead.
   const IMG = {
     running: ['1590333748338-d629e4564ad9', '1552674605-db6ffd4facb5', '1613936360976-8f35cf0e5461', '1540539234-c14a20fb7c7b', '1602263515015-dd72f8e9f301', '1551927336-09d50efd69cd', '1667781838690-5f32ea0ccea6', '1739368732843-800f36a9b7d0', '1716573094354-e4c3226ba887', '1759674861540-afed9f86f94a'],
     padel: ['1646649852033-7e0f3d679f8b', '1646651105426-e8c8ee9badde', '1646649851780-d9701b7c3c04', '1646649853703-7645147474ba', '1646649851800-48dba35edc76', '1646649852046-b758d2d573f3', '1658723826297-fe4d1b1e6600', '1612534847738-b3af9bc31f0c', '1657704358775-ed705c7388d2', '1526888935184-a82d2a4b7e67'],
     yoga: ['1723406251847-168ea7a02077', '1687436874174-977fdd9e2cb8', '1636619297905-54f124aa90b2', '1687180948630-2780c8b3f7f6', '1543858828-7cf1a9beb95c', '1545205597-3d9d02c29597', '1564282350350-a8355817fd2e', '1687875495230-96dfea96d9da', '1758797315487-b3b225dff7d8', '1758274535230-3641d0632878']
   };
-  const im = (sp, i) => { const a = IMG[sp]; const n = ((Number(i) % a.length) + a.length) % a.length; return ` style="--img:url('https://images.unsplash.com/photo-${a[n]}?w=800&q=70&auto=format&fit=crop')"`; };
+  const im = (sp, i) => { const a = IMG[sp]; if (!a) return ''; const n = ((Number(i) % a.length) + a.length) % a.length; return ` style="--img:url('https://images.unsplash.com/photo-${a[n]}?w=800&q=70&auto=format&fit=crop')"`; };
 
   // Example clubs. None of these are real.
   const CLUBS = [
@@ -59,7 +60,31 @@
     { id: 'hsy', name: 'Hills Sunset Yoga', sport: 'yoga', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Open level', photos: 0, confirmed: 1,
       desc: 'A new group that started this month. Slow evening practice on the park lawn.', bring: 'Mat, water.',
       sched: [{ d: 4, t: '18:00', type: 'Sunset practice', note: 'Open level', place: 'Dubai Hills Park, east lawn' }],
-      top: [], active: 6 }
+      top: [], active: 6 },
+    { id: 'kbv', name: 'Kite Beach Volleyball Social', sport: 'volleyball', area: 'Jumeirah', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Mixed level', photos: 3, confirmed: 5,
+      desc: 'Beach volleyball on the public courts at sunset. Teams are mixed on the night, so come alone or bring friends.', bring: 'Water and sunscreen. Balls provided.',
+      sched: [{ d: 3, t: '18:30', type: 'Sunset games', note: 'Mixed level', place: 'Kite Beach, volleyball courts by the skate park', cap: 24 }, { d: 6, t: '08:00', type: 'Morning 4s', note: 'Some experience', place: 'Kite Beach, volleyball courts by the skate park', cap: 16 }],
+      top: [['Ravi T.', 11], ['Chloe D.', 9], ['Ben J.', 7]], active: 34 },
+    { id: 'mbv', name: 'Marina Beach Volley Beginners', sport: 'volleyball', area: 'Marina', levels: ['new', 'some'], cost: 'Free', level: 'Never played is fine', photos: 2, confirmed: 3,
+      desc: 'A relaxed group for people learning the basics. The first half hour is drills, then easy games.', bring: 'Water. Bare feet on the sand.',
+      sched: [{ d: 1, t: '18:00', type: 'Learn and play', note: 'First-timers', place: 'JBR Beach, courts by The Walk', cap: 18 }],
+      top: [['Zara I.', 8], ['Luca C.', 6]], active: 21 },
+    { id: 'dsq', name: 'Downtown Squash Ladder', sport: 'squash', area: 'Downtown', levels: ['some', 'regular'], cost: 'Court share, about AED 40', level: 'Club level and up', photos: 2, confirmed: 7,
+      desc: 'A weekly ladder with matches set by level. Win and you move up; everyone plays at least three games.', bring: 'Your own racket, non-marking shoes and eye protection.',
+      sched: [{ d: 2, t: '19:30', type: 'Ladder night', note: 'Club level', place: 'Downtown Sports Club, courts 1–4', cap: 8 }, { d: 0, t: '07:00', type: 'Early rallies', note: 'Some experience', place: 'Downtown Sports Club, courts 1–4', cap: 8 }],
+      top: [['Hassan B.', 12], ['Anna F.', 10], ['Khalid Z.', 8]], active: 18 },
+    { id: 'jsq', name: 'JVC Squash Starters', sport: 'squash', area: 'JVC', levels: ['new'], cost: 'Court share, about AED 35', level: 'Never played is fine', photos: 2, confirmed: 10,
+      desc: 'A patient group for first-timers. A volunteer coach covers the basics before friendly games.', bring: 'Non-marking shoes. Rackets, balls and eye protection provided.',
+      sched: [{ d: 4, t: '19:00', type: 'Learn and play', note: 'First-timers', place: 'JVC Community Courts, squash court 2', cap: 6 }],
+      top: [['Noor E.', 9], ['Sam W.', 6]], active: 12 },
+    { id: 'dhc', name: 'Dubai Hills Chess Café', sport: 'chess', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], cost: 'Free, buy a coffee', level: 'All levels, boards matched by rating', photos: 3, confirmed: 4,
+      desc: 'Casual games over coffee. Newcomers are paired with a regular for their first game, and there is a quick-play board for blitz.', bring: 'Nothing. Boards and clocks provided.',
+      sched: [{ d: 2, t: '19:00', type: 'Casual night', note: 'All levels', place: 'Dubai Hills Mall, café terrace by the park entrance' }, { d: 6, t: '10:00', type: 'Saturday rapid', note: '15-minute games', place: 'Dubai Hills Mall, café terrace by the park entrance' }],
+      top: [['Yuki O.', 12], ['Ivan U.', 11], ['Maria G.', 8]], active: 27 },
+    { id: 'mcc', name: 'Mirdif Chess Circle', sport: 'chess', area: 'Mirdif', levels: ['new', 'some'], cost: 'Free', level: 'Beginner friendly', photos: 2, confirmed: 6,
+      desc: 'A friendly group at the community library. Short lessons on openings for newer players, then open play.', bring: 'Nothing. Boards provided.',
+      sched: [{ d: 5, t: '16:00', type: 'Lesson and play', note: 'Beginner friendly', place: 'Mirdif Library, community room' }],
+      top: [['Reem Q.', 10], ['Sana K.', 7]], active: 15 }
   ];
   const ORIG = JSON.parse(JSON.stringify(CLUBS));
 
@@ -252,7 +277,7 @@
 
   V.home = () => `<main>
     <div class="stack"><h1>Find your people. Keep showing up.</h1>
-      <p class="mut">Free community clubs across Dubai for running, padel, yoga and pilates. Answer three questions and see the ones that fit you.</p></div>
+      <p class="mut">Free community clubs across Dubai for running, padel, yoga and pilates, volleyball, squash and chess. Answer three questions and see the ones that fit you.</p></div>
     <div class="stack"><button class="btn block" data-act="quiz">Find my club</button>
       <button class="btn ghost block" data-act="browse">Browse all clubs</button></div>
     <div class="stack"><span class="cap">This week in Dubai</span>${[club('mdr'), club('jps'), club('kbf')].map((c) => clubCard(c)).join('')}</div>
@@ -266,7 +291,10 @@
     if (step === 0) return `<main>${head}<h1>What gets you moving?</h1><div class="quiz-opts">
       <button class="quiz-opt g1"${im('running', 0)} data-act="q" data-k="sport" data-val="running">Running</button>
       <button class="quiz-opt g2"${im('padel', 1)} data-act="q" data-k="sport" data-val="padel">Padel</button>
-      <button class="quiz-opt g4"${im('yoga', 0)} data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates</button></div>
+      <button class="quiz-opt g4"${im('yoga', 0)} data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates</button>
+      <button class="quiz-opt g3" data-act="q" data-k="sport" data-val="volleyball">Volleyball</button>
+      <button class="quiz-opt g5" data-act="q" data-k="sport" data-val="squash">Squash</button>
+      <button class="quiz-opt g6" data-act="q" data-k="sport" data-val="chess">Chess</button></div>
       <p class="mut sm center">No account needed.</p></main>`;
     if (step === 1) return `<main>${head}<h1>Where are you based?</h1><div class="quiz-opts">
       ${AREAS.concat(['Anywhere in Dubai']).map((a) => `<button class="quiz-opt plain" data-act="q" data-k="area" data-val="${a}">${a}</button>`).join('')}</div></main>`;
