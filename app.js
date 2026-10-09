@@ -193,6 +193,32 @@
     return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="photo" data-sp="${p.sp}" data-i="${p.i}" data-g="${p.g}" data-by="${p.by}"${p.sid ? ` data-sid="${p.sid}"` : ''}${p.mine ? ' data-mine="1"' : ''}${p.tagged ? ' data-tagged="1"' : ''} aria-label="Photo by ${p.by}">${label}</button>`;
   }
 
+  // session recaps on the club page: one lead photo, who posted it, and who came
+  const CAPS = {
+    running: ['Sunrise over the Marina. Worth the alarm.', 'New PB for three of us today.', 'Coffee was earned.', 'Slow group stuck together the whole way.'],
+    padel: ['Americano done, rematch on Thursday.', 'Best rallies of the month.', 'Two first-timers won their first game.', 'Lights, sweat, smiles.'],
+    yoga: ['Calm start to the week.', 'Sunset flow by the water.', 'Mats out, phones away.', 'Three newcomers today. Welcome.'],
+    volleyball: ['Sand everywhere. Worth it.', 'Mixed teams, no egos.', 'Sunset game went to 25–23.', 'Ten new faces this week.'],
+    squash: ['Ladder shake-up: two new names in the top four.', 'Long rallies tonight.', 'First-timers already hitting the back wall.', 'Good games, cold drinks.'],
+    cycling: ['50 km before the heat.', 'Nobody dropped, as promised.', 'Spotted gazelles at Al Qudra.', 'Fastest regroup yet.']
+  };
+  const captionFor = (s) => { const a = CAPS[s.club.sport] || CAPS.running; return a[hash(s.id) % a.length]; };
+  function recap(c, s, i) {
+    const all = myPhotos(s).concat(exPhotos(c, s, i)); const came = going(s) - 1; const lead = all[0];
+    const inIt = has(s.id) || S.att[s.id] === 'went';
+    let media;
+    if (!IMG[c.sport]) media = `<div class="ph poster g${1 + (hash(s.id) % 6)}"><span class="mut-on">${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</span><span class="pt">${esc(s.type)}</span><span>${plural(came, 'person')} came${all.length ? ' · ' + plural(all.length, 'photo') : ''}</span></div>`;
+    else if (all.length) { const shown = all.slice(0, 3); const more = all.length - shown.length;
+      media = `<div class="rc-media n${shown.length}">${shown.map((p, j) => tile(p, j === shown.length - 1 && more > 0 ? `<span class="more">+${more}</span>` : p.mine ? 'yours' : '')).join('')}</div>`; }
+    else media = '';
+    const by = lead ? `<div class="rc-by">${face(lead.mine ? S.user.name : lead.by, lead.mine ? myPro().photo : '')}<p class="sm"><b>${lead.mine ? 'You' : esc(lead.by)}</b> ${lead.mine ? 'posted photos' : `“${esc(captionFor(s))}”`}</p></div>` : '';
+    const head = IMG[c.sport] ? `<div class="rc-head"><b class="disp">${dateShort(s.at)} · ${esc(s.type)}</b><span class="mut sm">${plural(came, 'person')} came</span></div>` : '';
+    return `<article class="recap">${head}
+      ${media}${by}
+      ${!all.length && IMG[c.sport] ? '<p class="mut sm">No photos from this one yet.</p>' : ''}
+      ${inIt ? `<button class="btn small ghost" data-act="post" data-id="${s.id}">Add your photos</button>` : ''}</article>`;
+  }
+
   // organiser: the attendee list for a session
   function roster(s) {
     const n = going(s) - (has(s.id) ? 1 : 0); const over = S.orgAtt[s.id] || {};
@@ -348,12 +374,10 @@
     const following = S.follows.includes(c.id); const mine = S.manage.includes(c.id); const lead = c.photos ? leadPhotos(c) : [];
     const head = lead.length ? `<div class="mosaic n${lead.length}">${lead.map((p, i) => tile(p, i === 0 && recaps[0] ? dateShort(recaps[0].at) : '')).join('')}</div>`
       : `<div class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span><span class="disp" style="font-size:18px;font-weight:700">${n ? `${dayWord(n.at)} ${n.t}` : 'No session scheduled'}</span><span class="mut sm">No photos yet. They appear here after the first session.</span></div>`;
-    const who = n ? (S.user ? `${avatars(people(n, 4))}<span class="sm"><b>${people(n, 2).map((p) => p.split(' ')[0]).join(', ')}</b> and ${going(n) - 2} others are going ${dayWord(n.at)}</span>` : `<span class="sm"><b>${going(n)} going</b> ${dayWord(n.at)} · sign in to see who</span>`) : '';
-    const recapHtml = recaps.map((s, i) => {
-      const all = myPhotos(s).concat(exPhotos(c, s, i)).slice(0, 6);
-      return `<div class="stack tight"><div class="row sp sm"><b>${dateShort(s.at)} · ${s.type}</b><span class="mut">${all.length ? plural(all.length, 'photo') + ' · ' : ''}${going(s) - 1} came</span></div>
-        ${all.length ? `<div class="strip">${all.map((p) => tile(p, p.mine ? 'yours' : '')).join('')}</div>` : '<p class="mut sm">No photos from this one.</p>'}</div>`;
-    }).join('');
+    const who = n ? (!S.user ? `<span class="sm"><b>${going(n)} going</b> ${dayWord(n.at)} · sign in to see who</span>`
+      : canSeeWho(n) ? `<button class="whobtn" data-act="session" data-id="${n.id}">${avatars(people(n, 4))}<span class="grow sm"><b>See who's going ${dayWord(n.at).toLowerCase() === 'today' || dayWord(n.at) === 'Tomorrow' ? dayWord(n.at).toLowerCase() : 'on ' + dayWord(n.at)}</b><br><span class="mut">${plural(going(n) - 1, 'other')} · tap to see their profiles</span></span><span aria-hidden="true">→</span></button>`
+      : `${avatars(people(n, 4))}<span class="sm"><b>${people(n, 2).map((p) => p.split(' ')[0]).join(', ')}</b> and ${going(n) - 2} others are going ${dayWord(n.at)}<br><span class="mut">Say "I'm in" to see their profiles</span></span>`) : '';
+    const recapHtml = recaps.map((s, i) => recap(c, s, i)).join('');
     const top = c.top.length ? `<div class="stack tight"><span class="cap">Most consistent · last 12 weeks</span><p class="sm mut">${c.active} members showed up in the last 4 weeks.</p>
       ${S.user ? `<div>${c.top.map((r, i) => `<div class="rank"><b>${i + 1}</b><span>${r[0]}</span><span>${r[1]} weeks</span></div>`).join('')}${S.clubWeeks[c.id] ? `<div class="rank me"><b>·</b><span>You${S.set.standings ? '' : ' (hidden from others)'}</span><span>${plural(S.clubWeeks[c.id], 'week')}</span></div>` : ''}</div>` : '<p class="note">Sign in to see the standings.</p>'}</div>` : '';
     let bar;

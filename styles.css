@@ -106,7 +106,7 @@ textarea { resize: vertical; }
 .when { width: 82px; flex: none; font-variant-numeric: tabular-nums; }
 .when b { display: block; }
 .avs { display: flex; flex: none; }
-.av { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--soft); border: 2px solid var(--bg); margin-left: -8px; }
+.av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: -.02em; background: var(--soft); border: 2px solid var(--bg); margin-left: -7px; flex: none; }
 .av:first-child { margin-left: 0; }
 .av[style] { background-size: cover; background-position: center; }
 .av.big { width: 64px; height: 64px; font-size: 20px; margin-left: 0; flex: none; }
@@ -172,3 +172,26 @@ textarea { resize: vertical; }
   body { padding-block: 0; }
   #app { box-shadow: 0 0 0 1px var(--line); }
 }
+
+/* Session recaps on the club page */
+.recap { display: flex; flex-direction: column; gap: 10px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.recap:last-child { border-bottom: 0; padding-bottom: 0; }
+.rc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.rc-head .disp { font-size: 14px; font-weight: 700; }
+.rc-head .mut { white-space: nowrap; }
+.rc-media { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; height: 210px; border-radius: 14px; overflow: hidden; }
+.rc-media .ph:first-child { grid-row: span 2; }
+.rc-media.n1 { grid-template-columns: 1fr; }
+.rc-media.n2 .ph { grid-row: span 2; }
+.rc-media .ph { align-items: center; justify-content: center; }
+.rc-media .ph:first-child { align-items: flex-end; justify-content: flex-start; }
+.ph .more { font-family: var(--display); font-size: 20px; letter-spacing: 0; }
+.rc-by { display: flex; gap: 10px; align-items: flex-start; }
+.rc-by .av { margin-left: 0; width: 30px; height: 30px; font-size: 11px; flex: none; }
+.rc-by p { margin: 0; padding-top: 5px; }
+.recap .btn.small { align-self: flex-start; }
+.ph.poster { flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 4px; min-height: 170px; border-radius: 14px; padding: 16px; font-size: 13px; letter-spacing: 0; text-transform: none; font-weight: 500; }
+.ph.poster .pt { font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.05; }
+.ph.poster .mut-on { font-size: 12px; font-weight: 700; opacity: .85; }
+.whobtn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; background: var(--soft); border: 0; border-radius: 12px; text-align: left; color: var(--ink); }
+.whobtn .av { border-color: var(--soft); background: var(--bg); }
