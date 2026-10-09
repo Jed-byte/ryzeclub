@@ -413,7 +413,7 @@
 
   V.me = () => {
     const u = S.user; const n = now(); const ws = weekStart(n); const went = wentThisWeek(); const pend = pending(); const up = comingUp();
-    const days = [0, 1, 2, 3, 4, 5, 6].map((i) => { const d = new Date(ws); d.setDate(d.getDate() + i); const f = went.some((s) => ymd(s.at) === ymd(d)); const t = ymd(d) === ymd(n); return `<span class="${f ? 'f' : ''} ${t ? 't' : ''}" aria-label="${DAYL[d.getDay()]}${f ? ', attended' : ''}"><i></i>${DAY[d.getDay()][0]}</span>`; }).join('');
+    const days = [0, 1, 2, 3, 4, 5, 6].map((i) => { const d = new Date(ws); d.setDate(d.getDate() + i); const w = went.find((s) => ymd(s.at) === ymd(d)); const t = ymd(d) === ymd(n); return `<span class="${w ? 'f' : ''} ${t ? 't' : ''}" aria-label="${DAYL[d.getDay()]}${w ? ', attended ' + esc(w.club.name) : ''}"><i class="g${w ? 1 + (hash(w.id) % 6) : ''}"${w ? im(w.club.sport, hash(w.id)) : ''}></i>${DAY[d.getDay()][0]}</span>`; }).join('');
     const left = up.filter((s) => sameWeek(s.at, n) && !isCancelled(s)).length;
     let status;
     if (S.weekDone) status = `This week is safe. ${went.length === 1 ? 'One session' : went.length + ' sessions'} done.`;
@@ -431,11 +431,20 @@
         ${showNum ? `<button class="streak" data-act="profile" style="background:none;border:0;padding:0;text-align:left"><span class="n">${S.streak}</span><span><b class="disp" style="font-size:18px">week streak</b><br><span class="mut sm">${S.prot ? 'Protection available' : 'Protection used'} · ${plural(S.total, 'session')}</span></span></button>` : ''}
         <div class="days">${days}</div><p><b>${status}</b></p></div>
       ${org}
+      ${nextCard(up.find((s) => has(s.id) && !isCancelled(s)))}
       <div class="stack tight"><span class="cap">Coming up</span>
         ${up.length ? `<div>${up.map((s) => sessionRow(s, true)).join('')}</div>` : (S.follows.length ? '<p class="mut">Nothing booked this week.</p>' : '<p class="mut">Follow a club to see your week.</p><button class="btn" data-act="quiz">Find my club</button>')}</div>
       ${S.follows.length ? `<div class="stack tight"><span class="cap">From your clubs</span><div class="strip">${S.follows.slice(0, 3).map((id) => { const c = club(id); const p = leadPhotos(c)[0] || { g: 1, sp: c.sport, i: 0 }; return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="club" data-id="${id}">${esc(c.name.split(' ')[0])}</button>`; }).join('')}</div></div>` : ''}
     </main>`;
   };
+
+  // My week: the next session you're going to, with its photo and who else is going
+  function nextCard(s) {
+    if (!s) return '';
+    const c = s.club; const g = 1 + (hash(c.id) % 6); const others = going(s) - 1;
+    return `<button class="next" data-act="session" data-id="${s.id}"><span class="ph g${g}"${im(c.sport, hash(c.id) + 1)}><span class="nx-when">${dayWord(s.at)} · ${s.t}</span><span class="nx-what">${esc(s.type)}</span></span>
+      <span class="nx-body"><b>${esc(c.name)}</b><span class="mut sm">${esc(s.place)}</span><span class="row">${avatars(people(s, 4))}<span class="sm"><b>${plural(others, 'other')}</b> going · see who</span></span></span></button>`;
+  }
 
   V.result = () => {
     const s = byId(route.id); const c = s.club; const next = nextOpen(c); const k = hash(s.id);
@@ -733,9 +742,25 @@
     const showNav = S.user && route.v !== 'club' && route.v !== 'quiz';
     const tab = (v, l, on) => `<button data-act="${v}" class="${on ? 'on' : ''}">${l}</button>`;
     const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('me', 'My week', ['me', 'result', 'missed'].includes(route.v))}${tab('browse', 'Find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', route.v === 'profile')}</nav>` : '';
-    const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]()}</div>` : '';
-    const ts = toast ? `<div class="toast" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
+    const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
+    const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
     app.innerHTML = top + (V[route.v] || V.home)() + nav + ov + ts;
+    a11yOverlay(app);
+  }
+
+  // Sheets behave as modal dialogs: focus moves in when one opens, the page behind can't be reached,
+  // and focus returns to the control that opened it when it closes.
+  let shownOverlay = null; let opener = null; let lastClick = null;
+  function a11yOverlay(app) {
+    const sheet = app.querySelector('.sheet');
+    [...app.children].forEach((el) => { if (!el.classList.contains('veil') && !el.classList.contains('toast')) el.inert = !!sheet; });
+    if (sheet) {
+      const h = sheet.querySelector('h1, h2'); if (h) { h.id = 'sheet-title'; h.tabIndex = -1; sheet.setAttribute('aria-labelledby', 'sheet-title'); }
+      if (overlay !== shownOverlay) { if (!shownOverlay) opener = lastClick; (h || sheet).focus({ preventScroll: true }); }
+    } else if (shownOverlay && opener) {
+      const back = app.querySelector(`[data-act="${opener.act}"]${opener.id ? `[data-id="${CSS.escape(opener.id)}"]` : ''}`); if (back) back.focus({ preventScroll: true });
+    }
+    shownOverlay = overlay;
   }
 
   document.addEventListener('click', (e) => {
@@ -743,7 +768,7 @@
     const el = e.target.closest('[data-act]');
     if (!el) { if (veil && e.target === veil) { overlay = null; render(); } return; }
     if (el.disabled) return;
-    const act = el.dataset.act;
+    const act = el.dataset.act; lastClick = { act, id: el.dataset.id };
     if (act === 'undo') { if (toast && toast.undo) toast.undo(); return; }
     if (A[act]) A[act](el.dataset);
   });
