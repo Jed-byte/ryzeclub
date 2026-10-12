@@ -302,6 +302,11 @@
     const others = S.follows.flatMap((cid) => sessions(club(cid), 0, 7)).filter((s) => s.at > now() && !ids.has(s.id));
     return mine.concat(others).sort((a, b) => a.at - b.at).slice(0, 6);
   }
+  // Everything on one day from the member's clubs: followed, RSVPed or attended.
+  function dayList(date) {
+    const ids = new Set(S.follows.concat(S.rsvps.map((x) => x.split('|')[0]), Object.keys(S.att).map((x) => x.split('|')[0])));
+    return [...ids].map(club).filter(Boolean).flatMap((c) => sessions(c, -8, 14)).filter((s) => ymd(s.at) === date).sort((a, b) => a.at - b.at);
+  }
   function wentThisWeek() { return Object.keys(S.att).filter((id) => S.att[id] === 'went').map(byId).filter((s) => s && sameWeek(s.at, now())); }
   function confirmWent(id) {
     const s = byId(id); if (!s) return;
@@ -428,7 +433,12 @@
 
   V.me = () => {
     const u = S.user; const n = now(); const ws = weekStart(n); const went = wentThisWeek(); const pend = pending(); const up = comingUp();
-    const days = [0, 1, 2, 3, 4, 5, 6].map((i) => { const d = new Date(ws); d.setDate(d.getDate() + i); const w = went.find((s) => ymd(s.at) === ymd(d)); const t = ymd(d) === ymd(n); return `<span class="${w ? 'f' : ''} ${t ? 't' : ''}" aria-label="${DAYL[d.getDay()]}${w ? ', attended ' + esc(w.club.name) : ''}"><i class="g${w ? 1 + (hash(w.id) % 6) : ''}"${w ? im(w.club.sport, hash(w.id)) : ''}></i>${DAY[d.getDay()][0]}</span>`; }).join('');
+    const days = [0, 1, 2, 3, 4, 5, 6].map((i) => {
+      const d = new Date(ws); d.setDate(d.getDate() + i); const key = ymd(d);
+      const w = went.find((s) => ymd(s.at) === key); const t = key === ymd(n); const list = dayList(key);
+      const mine = list.some((s) => has(s.id) && !isCancelled(s)); const dot = !w && list.length ? `<b class="dot${mine ? ' mine' : ''}" aria-hidden="true"></b>` : '';
+      const desc = w ? `attended ${esc(w.club.name)}` : mine ? 'you\'re going to a session' : list.length ? plural(list.length, 'session') + ' in your clubs' : 'no sessions';
+      return `<button class="${w ? 'f' : ''} ${t ? 't' : ''}" data-act="day" data-date="${key}" aria-label="${DAYL[d.getDay()]} ${d.getDate()}${t ? ', today' : ''}: ${desc}. Show this day."><i class="g${w ? 1 + (hash(w.id) % 6) : ''}"${w ? im(w.club.sport, hash(w.id)) : ''}>${dot}</i>${DAY[d.getDay()][0]}</button>`; }).join('');
     const left = up.filter((s) => sameWeek(s.at, n) && !isCancelled(s)).length;
     let status;
     if (S.weekDone) status = `This week is safe. ${went.length === 1 ? 'One session' : went.length + ' sessions'} done.`;
@@ -444,7 +454,7 @@
       ${S.note ? `<p class="note">${S.note}</p>` : ''}
       <div class="stack"><span class="cap">Hi ${esc(u.name)}</span>
         ${showNum ? `<button class="streak" data-act="profile" style="background:none;border:0;padding:0;text-align:left"><span class="n">${S.streak}</span><span><b class="disp" style="font-size:18px">week streak</b><br><span class="mut sm">${S.prot ? 'Protection available' : 'Protection used'} · ${plural(S.total, 'session')}</span><br><span class="det">Your milestones ${ic('chev')}</span></span></button>` : ''}
-        <div class="days">${days}</div><p><b>${status}</b></p></div>
+        <div class="days">${days}</div><p class="xs mut center">Tap a day to see its sessions</p><p><b>${status}</b></p></div>
       ${org}
       ${nextCard(up.find((s) => has(s.id) && !isCancelled(s)))}
       <div class="stack tight"><span class="cap">Coming up</span>
@@ -569,6 +579,31 @@
   O.signin = () => `<div class="sheet"><h2>${overlay.then && overlay.then.act === 'claim' ? 'Sign in to manage your club' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
     <label for="si-name">First name</label><input type="text" id="si-name" value="Alex" maxlength="20" autocomplete="off">
     <button class="btn block" data-act="dosignin">Continue with Google</button><button class="btn quiet block" data-act="close">Not now</button></div>`;
+  O.day = () => {
+    const key = overlay.date; const [y, mo, da] = key.split('-').map(Number); const d = new Date(y, mo - 1, da);
+    const list = dayList(key); const went = list.filter((s) => S.att[s.id] === 'went');
+    const isPast = day0(d) < day0(now());
+    const row = (s) => {
+      let tag;
+      if (isCancelled(s)) tag = '<span class="tag warn">Cancelled</span>';
+      else if (S.att[s.id] === 'went') tag = `<span class="tag ok">${ic('check')}Went</span>`;
+      else if (S.att[s.id] === 'missed') tag = '<span class="tag">Missed</span>';
+      else if (ended(s)) tag = has(s.id) ? '<span class="tag">Not confirmed</span>' : '<span class="tag">Finished</span>';
+      else if (has(s.id)) tag = `<span class="tag go">${ic('check')}Going</span>`;
+      else if (isFull(s)) tag = '<span class="tag">Full</span>';
+      else tag = `<span class="tag cta">RSVP ${ic('chev')}</span>`;
+      const ph = S.att[s.id] === 'went' ? myPhotos(s).concat(exPhotos(s.club, s, 0)).slice(0, 3) : [];
+      return `<div class="stack tight"><button class="item" data-act="session" data-id="${s.id}"><span class="when"><b>${s.t}</b><span class="mut sm">${s.type}</span></span><span class="grow"><b>${esc(s.club.name)}</b><br><span class="mut sm">${esc(s.place)}</span></span>${tag}</button>
+        ${ph.length ? `<div class="strip">${ph.map((p) => tile(p, p.mine ? 'yours' : '')).join('')}</div><button class="btn small ghost" data-act="post" data-id="${s.id}">${ic('plus')}Add your photos</button>` : ''}</div>`;
+    };
+    const summary = went.length ? `You went to ${plural(went.length, 'session')}. This week counts towards your streak.`
+      : list.some((s) => has(s.id) && !ended(s) && !isCancelled(s)) ? 'You\'re going. You\'ll get a reminder before it starts.'
+      : list.length ? (isPast ? 'You didn\'t go to a session this day.' : 'Nothing booked yet. Tap a session to join it.')
+      : '';
+    return `<div class="sheet"><div class="stack tight"><span class="cap">${dayWord(d) === 'Today' || dayWord(d) === 'Tomorrow' ? dayWord(d) : 'Your day'}</span><h2>${DAYL[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}</h2>${summary ? `<p class="sm">${summary}</p>` : ''}</div>
+      ${list.length ? `<div>${list.map(row).join('')}</div>` : `<p class="note">${isPast ? 'None of your clubs met this day.' : 'None of your clubs meet this day.'}</p><button class="btn ghost block" data-act="browse">${ic('find')}Find a club that does</button>`}
+      <button class="btn quiet block" data-act="close">Close</button></div>`;
+  };
   O.session = () => {
     const s = byId(overlay.id); const cancelled = isCancelled(s); const full = isFull(s); const mine = has(s.id); const over = ended(s);
     let act;
@@ -581,7 +616,7 @@
       <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}
       ${who(s, over)}
-      <button class="btn quiet block" data-act="close">Close</button></div>`;
+      ${overlay.from ? `<button class="btn quiet block" data-act="day" data-date="${overlay.from}">${ic('left')}Back to ${DAYL[s.at.getDay()]}</button>` : '<button class="btn quiet block" data-act="close">Close</button>'}</div>`;
   };
   function who(s, over) {
     if (!S.user || over || isCancelled(s)) return '';
@@ -679,7 +714,8 @@
       S.user.pro = d; save(); const sid = overlay.sid; overlay = sid ? { t: 'session', id: sid } : null; say('Profile saved.'); render();
     },
     club: (d) => go('club', { id: d.id }), clubs: () => go('clubs'), profile: () => go('profile'),
-    session: (d) => { overlay = { t: 'session', id: d.id }; render(); },
+    session: (d) => { overlay = { t: 'session', id: d.id, from: overlay && overlay.t === 'day' ? overlay.date : (overlay && overlay.from) || null }; render(); },
+    day: (d) => { overlay = { t: 'day', date: d.date }; render(); },
     close: () => { overlay = null; render(); },
     soon: (d) => { say(d.what); render(); },
     demo: () => { overlay = { t: 'demo' }; render(); },

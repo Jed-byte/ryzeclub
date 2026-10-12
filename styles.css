@@ -170,7 +170,12 @@ button.item { min-height: 56px; }
 .streak { display: flex; align-items: flex-end; gap: 12px; }
 .streak .n { font-family: var(--display); font-weight: 700; font-size: 84px; line-height: .85; color: var(--acc); font-variant-numeric: tabular-nums; }
 .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; font-size: 12px; color: var(--mut); }
-.days i { display: block; aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--line); margin-bottom: 4px; }
+.days button { background: none; border: 0; padding: 4px 0; font: inherit; color: inherit; border-radius: 12px; min-height: 44px; }
+.days i { position: relative; display: block; aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--line); margin-bottom: 4px; }
+/* A dot under a day means your clubs meet that day; accent means you're going. */
+.days .dot { position: absolute; left: 50%; bottom: 18%; width: 7px; height: 7px; border-radius: 50%; background: var(--mut); transform: translateX(-50%); }
+.days .dot.mine { background: var(--acc); width: 9px; height: 9px; }
+.days button:active i { transform: scale(.94); }
 .days .f i { border-color: var(--acc); border-width: 3px; background-size: cover; background-position: center; }
 .days .t i { border-color: var(--ink); border-style: dashed; }
 .days .t { color: var(--ink); font-weight: 700; }
@@ -263,6 +268,7 @@ button.item { min-height: 56px; }
 .streak { color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .btn, .card, .quiz-opt { transition: none; } .btn:active, .card:active, .quiz-opt:active { transform: none; } }
 @media (hover: hover) {
+  .days button:hover i { border-color: var(--ink); }
   .btn:hover { background: var(--acc-dk); }
   .btn.ghost:hover { background: var(--soft); }
   .btn.quiet:hover { background: var(--line); }

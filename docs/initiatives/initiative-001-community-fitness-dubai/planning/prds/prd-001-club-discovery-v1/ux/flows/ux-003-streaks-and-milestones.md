@@ -74,6 +74,7 @@ The 52-week milestone is the headline one: its celebration and share card are th
 5. **Club page standings** — the "Most consistent" section.
 6. **At-risk reminder** — a message by email or WhatsApp.
 7. **Season card** — on Home while a season is running for one of the member's clubs.
+8. **Day sheet** — opened by tapping a day marker: that day's sessions from the member's clubs.
 
 ## Main flows
 
@@ -117,6 +118,16 @@ The 52-week milestone is the headline one: its celebration and share card are th
 2. Ties are shown as ties, in alphabetical order.
 3. A signed-in member who is not in the top five sees their own line beneath: "You · 3 weeks".
 4. Above the list, one line for the whole club: "41 members showed up in the last 4 weeks."
+
+### H. Tap a day (from a usability session, 12 Oct 2026)
+
+1. Each of the seven day markers on Home is a button. Under the markers: "Tap a day to see its sessions".
+2. A day with sessions in the member's clubs shows a small dot; the dot is the accent colour when the member is going. An attended day shows the session photo, as before.
+3. Tapping a day opens the **Day sheet**: the date, one summary line, and each session that day from clubs the member follows, has RSVPed to or attended, in time order. Each row shows time, club, place and a status: "Went", "Missed", "Going", "Cancelled", "Finished", "Not confirmed", "Full", or an "RSVP" action.
+4. For an attended session, the row is followed by its photos and "Add your photos".
+5. Tapping a row opens the session sheet; its bottom button reads "Back to Tuesday" and returns to the Day sheet.
+6. A day with nothing shows "None of your clubs meet this day." (or "met", for a past day) with "Find a club that does".
+7. Summary lines: "You went to 1 session. This week counts towards your streak." · "You're going. You'll get a reminder before it starts." · "Nothing booked yet. Tap a session to join it." · "You didn't go to a session this day."
 
 ### G. Seasons
 
@@ -191,6 +202,9 @@ Destructive confirmation and permission-denied do not apply.
 | Season on club page | 18 members on track this season. |
 | Season off track | You can still finish 5 of 6 |
 | Season badge | Autumn Season complete. |
+| Day marker hint | Tap a day to see its sessions |
+| Day sheet, empty | None of your clubs meet this day. · Find a club that does |
+| Day sheet, back from a session | Back to Tuesday |
 
 ## Responsive behaviour
 
@@ -201,6 +215,7 @@ Destructive confirmation and permission-denied do not apply.
 
 - The streak is announced as a sentence: "6 week streak. This week is safe."
 - Day markers have text equivalents ("Monday, attended").
+- Day markers are buttons with labels such as "Tuesday 13, today: you're going to a session. Show this day."; the dots are decorative.
 - Attended, missed and protected weeks differ by shape or label, not only by colour.
 - The celebration's animation is removed when the device asks for reduced motion, and never flashes.
 - Focus moves into the milestone dialog and returns to Home on close.
@@ -262,3 +277,4 @@ All in-scope PRD IDs are mapped. States, visibility, platforms, accessibility an
 - 2026-10-07: created.
 - 2026-10-07: standings default, protection rule and longer milestones confirmed by the founder.
 - 2026-10-12: seasons added (PRD FR-29).
+- 2026-10-12: day markers made tappable with a Day sheet, after a usability session.
