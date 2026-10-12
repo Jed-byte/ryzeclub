@@ -612,16 +612,18 @@
     const today = wk.find((s) => !isCancelled(s) && s.at - now() < 18 * 36e5) || sessions(c, 0, 0).find((s) => !isCancelled(s) && !ended(s));
     const firsts = (s) => roster(s).filter((p) => p.first);
     const nowCard = today ? `<div class="orgnow"><div class="grow"><span class="cap">${dayWord(today.at)} · ${today.t}</span><b class="disp">${going(today)} going${firsts(today).length ? `, ${plural(firsts(today).length, 'first-timer')}` : ''}</b><span class="sm">${esc(today.type)} · ${esc(today.place)}</span></div><button class="btn" data-act="ocheck" data-id="${today.id}">${ic('check')}Check in</button></div>` : '';
-    const setup = ck.d && ck.s && ck.f ? '' : `<div class="stack tight"><span class="cap">Get your page ready · we filled it in</span><div class="ocard">
+    const allDone = ck.d && ck.s && ck.f;
+    const setup = allDone && !route.setup ? `<button class="okline okbtn" data-act="osetup">${ic('check')}<span class="grow">Your page is ready</span><span class="det">Review ${ic('chev')}</span></button>`
+      : `<div class="stack tight"><div class="row sp"><span class="cap">${allDone ? 'Your page checklist' : 'Get your page ready · we filled it in'}</span>${allDone ? '<button class="link sm" data-act="osetup">Hide</button>' : ''}</div><div class="ocard">
       ${[['d', 'Club details', 'Description, level, cost, what to bring', 'editclub'], ['s', 'Weekly sessions', meetDays(c), 'osched'], ['f', '"How to find us" note', c.find ? `“${esc(c.find)}”` : 'Shown to first-timers in their reminder', 'editclub']].map(([k, t, sub, act]) =>
-        `<div class="item"><span class="tick ${ck[k] ? 'on' : ''}" aria-hidden="true">${ck[k] ? '✓' : ''}</span><span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ck[k] ? '<span class="mut sm">Done</span>' : `<span class="oacts">${k !== 'f' ? `<button class="btn small" data-act="ock" data-k="${k}">${ic('check')}Looks right</button>` : ''}<button class="btn small ghost" data-act="${act}" data-id="${c.id}">${k === 'f' ? `${ic('plus')}Add a note` : `${ic('edit')}Edit`}</button></span>`}</div>`).join('')}</div></div>`;
+        `<div class="item"><span class="tick ${ck[k] ? 'on' : ''}" aria-hidden="true">${ck[k] ? '✓' : ''}</span><span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ck[k] ? `<span class="oacts"><span class="tag ok">${ic('check')}Done</span><button class="btn small ghost" data-act="${act}" data-id="${c.id}">${ic('edit')}Edit</button><button class="btn small quiet" data-act="ounck" data-k="${k}">Undo</button></span>` : `<span class="oacts">${k !== 'f' ? `<button class="btn small" data-act="ock" data-k="${k}">${ic('check')}Looks right</button>` : ''}<button class="btn small ghost" data-act="${act}" data-id="${c.id}">${k === 'f' ? `${ic('plus')}Add a note` : `${ic('edit')}Edit`}</button></span>`}</div>`).join('')}</div></div>`;
     const rows = wk.map((s) => { const f = firsts(s).length; return `<button class="item" data-act="osession" data-id="${s.id}"><span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${esc(s.type)}</b><br><span class="mut sm">${isCancelled(s) ? 'Cancelled' : f ? `${plural(f, 'first-timer')}` : 'No first-timers'}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : `<span class="big-n">${going(s)}</span>`}${ic('chev', 'chev')}</button>`; }).join('');
     const confirmed = S.conf[c.id] && now() - S.conf[c.id] < 7 * 864e5;
     return `<main class="pad-nav">${nowCard}${setup}
       <div class="summary"><div class="stack tight"><span class="cap">Your week</span><h2>${esc(c.name)}</h2><p class="sm mut">${plural(live.length, 'session')} · ${live.reduce((n, s) => n + going(s), 0)} RSVPs so far · last week ${cameLast} came</p></div>
         <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
         <div class="stack tight"><span class="cap">Waiting for you</span><p class="sm">Nothing waiting. Reported photos, attendance disputes and co-organiser requests appear here.</p></div>
-        <div class="stack">${confirmed ? `<p class="okline">${ic('check')}Up to date. Confirmed ${confirmedOn(c)}.</p>` : `<button class="btn block big" data-act="confirmclub" data-id="${c.id}">${ic('check')}All correct</button>`}
+        <div class="stack">${confirmed ? `<div class="okline">${ic('check')}<span class="grow">Up to date. Confirmed ${confirmedOn(c)}.</span><button class="link sm" data-act="ounconf">Undo</button></div>` : `<button class="btn block big" data-act="confirmclub" data-id="${c.id}">${ic('check')}All correct</button>`}
           <button class="btn ghost block" data-act="oshare">${ic('share')}Share this week</button>
           <button class="btn quiet block" data-act="osched">Change or cancel a session</button></div></div>
       <p class="mut xs center">You also get this summary every Sunday at 18:00 by email${S.set.wa ? ' and WhatsApp' : ''}.</p></main>`;
@@ -866,6 +868,9 @@
     oweek: () => { stack = []; go('o-week', {}, true); }, ochecks: () => { stack = []; go('o-checks', {}, true); }, oclub: () => { stack = []; go('o-club', {}, true); },
     ophotos: () => { stack = []; go('o-photos', { id: orgClub().id }, true); },
     osched: () => go('o-sched', { id: orgClub().id }), osession: (d) => go('o-session', { id: d.id }), ocheck: (d) => go('o-checkin', { id: d.id }),
+    ounconf: () => { delete S.conf[orgClub().id]; save(); say('Confirmation removed.'); render(); },
+    ounck: (d) => { delete ckOf(orgClub())[d.k]; save(); say('Marked as not done.'); render(); },
+    osetup: () => { route.setup = !route.setup; render(); },
     ock: (d) => { ckOf(orgClub())[d.k] = true; if (d.k === 'd') S.conf[orgClub().id] = now().getTime(); save(); say('Thanks. Marked as checked.'); render(); },
     oshare: () => { overlay = { t: 'oshare' }; render(); }, oinvite: () => { overlay = { t: 'oinvite' }; render(); },
     ci: (d) => { const t = (S.ci[d.id] = S.ci[d.id] || {}); t[d.name] = !t[d.name]; const o = (S.orgAtt[d.id] = S.orgAtt[d.id] || {}); o[d.name] = t[d.name] ? 'came' : 'no'; save(); render(); },

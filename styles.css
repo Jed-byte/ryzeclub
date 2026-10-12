@@ -323,4 +323,6 @@ body.org #app { background: #FBF8FB; }
 .citick { width: 34px; height: 34px; border-radius: 50%; border: 2.5px solid var(--line); display: grid; place-items: center; flex: none; background: var(--bg); }
 .cirow.on .citick { background: var(--ok); border-color: var(--ok); color: #FFFFFF; }
 .citick .ic { width: 20px; height: 20px; stroke-width: 3; }
-
+.okbtn { width: 100%; border: 0; text-align: left; font: inherit; font-weight: 700; }
+.okbtn .det { color: var(--ok); margin: 0; }
+.oacts .tag.ok { align-self: center; }
