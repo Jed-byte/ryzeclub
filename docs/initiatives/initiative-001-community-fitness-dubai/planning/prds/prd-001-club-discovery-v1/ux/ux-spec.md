@@ -48,6 +48,43 @@ The blend from `explorations/explore-001-visual-direction.md`: public club pages
 | UX-005 | `flows/ux-005-run-a-club-page.md` | draft |
 | UX-006 | `flows/ux-006-curate-the-directory.md` | draft |
 
+## Signifiers and wayfinding (added 2026-10-12)
+
+A usability session on the prototype showed people could not always tell what to tap next or how to get back. These rules apply to every slice and override softer styling in the flow files.
+
+**Button hierarchy**
+- **Primary:** filled accent, bold, at least 50 px tall (56 px for the main call to action on a screen). One per screen or sheet: the single next step ("Find my club", "I'm in", "Go to my week").
+- **Secondary:** 2 px ink outline, bold. Alternatives to the primary ("Browse all clubs", "Can't make it").
+- **Tertiary:** soft fill. Close, Cancel and Not now only.
+- Forward actions carry an arrow; actions that add carry a plus; confirmations carry a tick. The label always carries the meaning on its own.
+
+**Navigation**
+- The bottom navigation shows an icon and a bold label for each tab. The current tab is marked by the accent colour, a filled pill behind the icon and `aria-current`, never by colour alone.
+- Every screen that is not a tab root shows a labelled "Back" with an arrow at the top left. During the quiz, Back goes to the previous question.
+- The quiz shows a three-part progress bar and "Question 1 of 3".
+- Every sheet has a visible close button (top right, 44 px) and a grab handle, as well as its Close button.
+
+**Tappable things look tappable**
+- Cards end with a line that says where the tap goes ("View club", "Manage") with an arrow.
+- Rows that open something end with a chevron.
+- A row's own action is shown as an outlined accent pill ("RSVP"), distinct from status labels ("Going", "Full", "Cancelled").
+- In the session bar, the session summary is marked "Session details" so it reads as a link, not a caption.
+- In the organiser's attendee list, each name shows the action a tap will take ("Came", "Didn't come").
+
+**Primary action placement**
+- In a sheet, the primary action sits directly under the key facts, above any long list (for example, "Who's going").
+- On the club page, "I'm in" stays in the fixed session bar.
+
+**Entry points**
+- Members: "Find my club" (primary) and "Browse all clubs" (secondary) on Home, with "Three questions. No account needed."
+- Organisers: a framed "Run a club?" panel on Home and an "Is this your club?" panel with a "Claim" button on every unclaimed club page. Never a footnote link.
+- Managed clubs appear as framed rows with "Manage" on My week and My clubs.
+- Signed-out visitors see "Sign in" as a primary button in the header.
+
+**Touch behaviour**
+- Hover styles apply only on devices that can hover, so a tapped row does not stay tinted on a phone.
+- Pressed buttons and cards move slightly so a tap is felt to land; this is removed when reduced motion is requested.
+
 ## Dependencies and gaps
 
 - **Design system:** none exists. Visual direction for Ryze Club must be explored before detailed screens.
@@ -69,3 +106,4 @@ Coaches, dietitians, 1:1, payments, rewards redemption, partner-finding, a gener
 - 2026-10-07: created; six slices approved by the founder.
 - 2026-10-07: visual direction decided (the blend); UX-001 drafted.
 - 2026-10-12: retention and organiser-ease additions mapped to UX-002, UX-003, UX-005 and UX-006.
+- 2026-10-12: signifiers and wayfinding rules added after a usability session; prototype updated to match.

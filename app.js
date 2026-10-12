@@ -133,6 +133,18 @@
   const dayWord = (d) => { const diff = Math.round((day0(d) - day0(now())) / 864e5); return diff === 0 ? 'Today' : diff === 1 ? 'Tomorrow' : dateShort(d); };
   const whenShort = (d) => { const w = dayWord(d); return w === 'Today' || w === 'Tomorrow' ? w : `${DAY[d.getDay()]} ${d.getDate()}`; };
   const initials = (n) => n.split(' ').map((p) => p[0]).join('').slice(0, 2);
+  // Inline icons: signifiers for navigation and actions. Decorative; the text label always carries the meaning.
+  const ICONS = {
+    week: '<rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+    find: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
+    clubs: '<circle cx="9" cy="8" r="3.2"/><path d="M3 19.5c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14.3c2.4.2 4 1.8 4.5 4.7"/>',
+    me: '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.8-3.8 3.7-5.8 7.5-5.8s6.7 2 7.5 5.8"/>',
+    right: '<path d="M5 12h14M13 6l6 6-6 6"/>', left: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+    chev: '<path d="m9 5 7 7-7 7"/>', check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>',
+    edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>', flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>', plus: '<path d="M12 5v14M5 12h14"/>',
+    share: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6.5h14V13"/>'
+  };
+  const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[n]}</svg>`;
   const plural = (n, w) => (w === 'person' ? (n === 1 ? '1 person' : `${n} people`) : `${n} ${w}${n === 1 ? '' : 's'}`);
 
   function mk(c, d, s) {
@@ -237,14 +249,15 @@
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
       ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${c.cost === 'Free' ? 'Free' : 'Paid'}</span>`}
       <span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
+      <span class="go">View club ${ic('right')}</span>
     </span></button>`;
   }
   function sessionRow(s, showClub) {
     let tag = '';
     if (isCancelled(s)) tag = '<span class="tag warn">Cancelled</span>';
-    else if (has(s.id)) tag = '<span class="tag go">Going</span>';
+    else if (has(s.id)) tag = `<span class="tag go">${ic('check')}Going</span>`;
     else if (isFull(s)) tag = '<span class="tag">Full</span>';
-    else tag = '<span class="tag">RSVP</span>';
+    else tag = `<span class="tag cta">RSVP ${ic('chev')}</span>`;
     return `<button class="item" data-act="session" data-id="${s.id}">
       <span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span>
       <span class="grow"><b>${showClub ? esc(s.club.name) : s.type}</b><br><span class="mut sm">${showClub ? s.type + ' · ' : ''}${s.note}</span></span>${tag}</button>`;
@@ -319,28 +332,29 @@
   V.home = () => `<main>
     <div class="stack"><h1>Find your people. Keep showing up.</h1>
       <p class="mut">Free community clubs across Dubai for running, padel, yoga and pilates, volleyball, squash and cycling. Answer three questions and see the ones that fit you.</p></div>
-    <div class="stack"><button class="btn block" data-act="quiz">Find my club</button>
-      <button class="btn ghost block" data-act="browse">Browse all clubs</button></div>
+    <div class="stack"><button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button>
+      <button class="btn ghost block" data-act="browse">${ic('find')}Browse all clubs</button>
+      <p class="mut sm center">Three questions. No account needed.</p></div>
     <div class="stack"><span class="cap">This week in Dubai</span>${[club('mdr'), club('jps'), club('kbf')].map((c) => clubCard(c)).join('')}</div>
     <p class="note">This is a prototype. The clubs and people are examples, the photos are stock images, and nothing you do here is sent anywhere. Use <b>Demo</b> at the top to skip ahead in time or try the organiser view.</p>
-    <p class="center sm"><button class="link" data-act="browse">Run a club? Find it and tap "Is this your club?"</button></p>
+    <div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Run a club?</b><br><span class="sm mut">Claim its free page: RSVPs, headcounts and photos in one place.</span></div><button class="btn small ghost" data-act="browse">Find my club page</button></div>
   </main>`;
 
   V.quiz = () => {
     const step = route.step || 0;
-    const head = `<div class="row sp"><button class="link" data-act="${step ? 'quizback' : 'back'}">Back</button><span class="mut sm">${step + 1} of 3</span></div>`;
+    const head = `<div class="progress" role="progressbar" aria-label="Question ${step + 1} of 3" aria-valuemin="1" aria-valuemax="3" aria-valuenow="${step + 1}">${[0, 1, 2].map((i) => `<span class="${i <= step ? 'on' : ''}"></span>`).join('')}</div><span class="cap">Question ${step + 1} of 3</span>`;
     if (step === 0) return `<main>${head}<h1>What gets you moving?</h1><div class="quiz-opts">
-      <button class="quiz-opt g1"${im('running', 0)} data-act="q" data-k="sport" data-val="running">Running</button>
-      <button class="quiz-opt g2"${im('padel', 1)} data-act="q" data-k="sport" data-val="padel">Padel</button>
-      <button class="quiz-opt g4"${im('yoga', 0)} data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates</button>
-      <button class="quiz-opt g3" data-act="q" data-k="sport" data-val="volleyball">Volleyball</button>
-      <button class="quiz-opt g5" data-act="q" data-k="sport" data-val="squash">Squash</button>
-      <button class="quiz-opt g6" data-act="q" data-k="sport" data-val="cycling">Cycling</button></div>
+      <button class="quiz-opt g1"${im('running', 0)} data-act="q" data-k="sport" data-val="running">Running${ic('right')}</button>
+      <button class="quiz-opt g2"${im('padel', 1)} data-act="q" data-k="sport" data-val="padel">Padel${ic('right')}</button>
+      <button class="quiz-opt g4"${im('yoga', 0)} data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates${ic('right')}</button>
+      <button class="quiz-opt g3" data-act="q" data-k="sport" data-val="volleyball">Volleyball${ic('right')}</button>
+      <button class="quiz-opt g5" data-act="q" data-k="sport" data-val="squash">Squash${ic('right')}</button>
+      <button class="quiz-opt g6" data-act="q" data-k="sport" data-val="cycling">Cycling${ic('right')}</button></div>
       <p class="mut sm center">No account needed.</p></main>`;
     if (step === 1) return `<main>${head}<h1>Where are you based?</h1><div class="quiz-opts">
-      ${AREAS.concat(['Anywhere in Dubai']).map((a) => `<button class="quiz-opt plain" data-act="q" data-k="area" data-val="${a}">${a}</button>`).join('')}</div></main>`;
+      ${AREAS.concat(['Anywhere in Dubai']).map((a) => `<button class="quiz-opt plain" data-act="q" data-k="area" data-val="${a}">${a}${ic('chev')}</button>`).join('')}</div></main>`;
     return `<main>${head}<h1>How would you describe yourself?</h1><div class="quiz-opts">
-      ${Object.keys(LEVELS).map((k) => `<button class="quiz-opt plain" data-act="q" data-k="level" data-val="${k}">${LEVELS[k]}</button>`).join('')}</div></main>`;
+      ${Object.keys(LEVELS).map((k) => `<button class="quiz-opt plain" data-act="q" data-k="level" data-val="${k}">${LEVELS[k]}${ic('chev')}</button>`).join('')}</div></main>`;
   };
 
   V.results = () => {
@@ -348,12 +362,12 @@
     const top = m.exact.slice(0, 3);
     const near = m.all.filter((x) => !top.includes(x)).slice(0, 3 - top.length);
     const title = top.length ? `${top.length} ${top.length === 1 ? 'club fits' : 'clubs fit'} you` : 'No clubs match all three yet';
-    return `<main><div class="row sp"><button class="link" data-act="quiz">Change answers</button></div>
-      <div class="stack tight"><h1>${title}</h1><p class="mut">${SPORTS[q.sport]} · ${q.area} · ${LEVELS[q.level]}</p>
+    return `<main>
+      <div class="stack tight"><h1>${title}</h1><div class="row sp"><p class="mut">${SPORTS[q.sport]} · ${q.area} · ${LEVELS[q.level]}</p><button class="chip" data-act="quiz">${ic('edit')}Change</button></div>
       ${m.exact.length ? '' : '<p class="note">These are the nearest. Each one says how it differs from what you asked for.</p>'}</div>
       ${top.length ? `<div class="stack">${top.map((x) => clubCard(x.c, x.why)).join('')}</div>` : ''}
       ${near.length ? `<div class="stack">${top.length ? '<span class="cap">Close, but not an exact fit</span>' : ''}${near.map((x) => clubCard(x.c, x.why)).join('')}</div>` : ''}
-      <button class="btn ghost block" data-act="browse" data-sport="${q.sport}">See all ${SPORTS[q.sport].toLowerCase()} clubs</button></main>`;
+      <button class="btn ghost block" data-act="browse" data-sport="${q.sport}">See all ${SPORTS[q.sport].toLowerCase()} clubs ${ic('right')}</button></main>`;
   };
 
   V.browse = () => {
@@ -382,22 +396,23 @@
       ${S.user ? `<div>${c.top.map((r, i) => `<div class="rank"><b>${i + 1}</b><span>${r[0]}</span><span>${r[1]} weeks</span></div>`).join('')}${S.clubWeeks[c.id] ? `<div class="rank me"><b>·</b><span>You${S.set.standings ? '' : ' (hidden from others)'}</span><span>${plural(S.clubWeeks[c.id], 'week')}</span></div>` : ''}</div>` : '<p class="note">Sign in to see the standings.</p>'}</div>` : '';
     let bar;
     if (!n) bar = `<div class="info"><b>No session scheduled</b><br><span class="mut sm">Follow to hear when one is added</span></div><button class="btn" data-act="follow" data-id="${c.id}">${following ? 'Following' : 'Follow'}</button>`;
-    else if (has(n.id)) bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span></button><button class="btn quiet" data-act="session" data-id="${n.id}">You're going</button>`;
-    else if (isFull(n)) { const after = future(c).find((s) => s.id !== n.id && !isCancelled(s)); bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">Full · ${n.cap} of ${n.cap}</span></button>${after ? `<button class="btn ghost" data-act="session" data-id="${after.id}">See next session</button>` : ''}`; }
-    else bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span></button><button class="btn" data-act="rsvp" data-id="${n.id}">I'm in</button>`;
-    const claim = mine ? '' : S.claims[c.id] ? ' · <span class="mut">Your request to manage this club is with us.</span>' : ` · <button class="link" data-act="claim" data-id="${c.id}">Is this your club?</button>`;
+    else if (has(n.id)) bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn quiet" data-act="session" data-id="${n.id}">${ic('check')}You're going</button>`;
+    else if (isFull(n)) { const after = future(c).find((s) => s.id !== n.id && !isCancelled(s)); bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">Full · ${n.cap} of ${n.cap}</span><span class="det">Session details ${ic('chev')}</span></button>${after ? `<button class="btn ghost" data-act="session" data-id="${after.id}">See next session</button>` : ''}`; }
+    else bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn big" data-act="rsvp" data-id="${n.id}">I'm in</button>`;
+    const claim = mine ? '' : S.claims[c.id] ? '<p class="note">Your request to manage this club is with us. We\'ll confirm within 2 days.</p>' : `<div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Is this your club?</b><br><span class="sm mut">Claim it to keep the schedule right and see who's coming.</span></div><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`;
     return `<main class="flush pad-bar">${head}
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who ? `<div class="row">${who}</div>` : ''}
-      <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">Manage this club</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}">${following ? 'Following' : 'Follow this club'}</button></div>
+      <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Manage this club</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
       <div class="stack tight"><p>${esc(c.desc)}</p><p class="sm mut">${esc(c.level)}. Bring: ${esc(c.bring)}</p></div>
       <div class="stack tight"><span class="cap">Coming up</span><div>${fut.map((s) => sessionRow(s)).join('') || '<p class="mut sm">Nothing scheduled.</p>'}</div></div>
       ${recapHtml ? `<div class="stack"><span class="cap">Recent sessions</span>${recapHtml}</div>` : ''}
       ${top}
       <div class="stack tight sm"><div class="wrap"><button class="link" data-act="soon" data-what="This would open the club's Instagram.">Instagram</button><button class="link" data-act="soon" data-what="This would open the club's WhatsApp group.">WhatsApp group</button></div>
         <span class="mut">Last confirmed by the organiser on ${confirmedOn(c)}</span>
-        <span><button class="link" data-act="soon" data-what="Thanks. In the real product this goes to the Ryze Club curator.">Report a problem with this page</button>${claim}</span></div>
+        <span><button class="link" data-act="soon" data-what="Thanks. In the real product this goes to the Ryze Club curator.">Report a problem with this page</button></span></div>
+      ${claim}
     </main><div class="bar">${bar}</div>`;
   };
 
@@ -408,7 +423,7 @@
       <div><label class="switch" for="set-email"><span>Remind me by email</span><input type="checkbox" id="set-email" data-set="email" ${S.set.email ? 'checked' : ''}></label>
         <label class="switch" for="set-wa"><span>Remind me on WhatsApp<br><span class="mut sm">We'll only message you about sessions you've joined. Turn it off any time.</span></span><input type="checkbox" id="set-wa" data-set="wa" ${S.set.wa ? 'checked' : ''}></label></div>
       <p class="note">First time? Arrive 10 minutes early and say hi to the organiser. You'll get a reminder ${s.at.getHours() < 10 ? 'at 19:00 the evening before' : 'three hours before'}.</p>
-      <div class="stack"><button class="btn block" data-act="me">Go to my week</button><button class="btn ghost block" data-act="club" data-id="${s.club.id}">Back to the club</button></div></main>`;
+      <div class="stack"><button class="btn block big" data-act="me">Go to my week ${ic('right')}</button><button class="btn ghost block" data-act="club" data-id="${s.club.id}">Back to the club</button></div></main>`;
   };
 
   V.me = () => {
@@ -424,16 +439,16 @@
     const ask = pend.length ? `<div class="ask"><div><b class="disp" style="font-size:16px">Did you go to ${nounFor(pend[0])}?</b><br><span class="mut sm">${esc(pend[0].club.name)} · ${dateShort(pend[0].at)} ${pend[0].t}${pend.length > 1 ? ` · ${pend.length - 1} more to confirm` : ''}</span></div>
       <div class="row"><button class="btn grow" data-act="went" data-id="${pend[0].id}">I went</button><button class="btn ghost grow" data-act="missed" data-id="${pend[0].id}">I missed it</button></div></div>` : '';
     const showNum = S.total > 0 || S.streak > 0;
-    const org = S.manage.length ? `<div class="stack tight"><span class="cap">Clubs you manage</span>${S.manage.map((id) => `<button class="btn ghost block" data-act="manage" data-id="${id}">${esc(club(id).name)}</button>`).join('')}</div>` : '';
+    const org = S.manage.length ? `<div class="stack tight"><span class="cap">Clubs you manage</span>${S.manage.map((id) => `<button class="mrow" data-act="manage" data-id="${id}"><span class="orgcta-ic">${ic('flag')}</span><span class="grow"><b>${esc(club(id).name)}</b><br><span class="sm mut">Headcounts, schedule, photos</span></span><span class="go">Manage ${ic('chev')}</span></button>`).join('')}</div>` : '';
     return `<main class="pad-nav">${ask}
       ${S.note ? `<p class="note">${S.note}</p>` : ''}
       <div class="stack"><span class="cap">Hi ${esc(u.name)}</span>
-        ${showNum ? `<button class="streak" data-act="profile" style="background:none;border:0;padding:0;text-align:left"><span class="n">${S.streak}</span><span><b class="disp" style="font-size:18px">week streak</b><br><span class="mut sm">${S.prot ? 'Protection available' : 'Protection used'} · ${plural(S.total, 'session')}</span></span></button>` : ''}
+        ${showNum ? `<button class="streak" data-act="profile" style="background:none;border:0;padding:0;text-align:left"><span class="n">${S.streak}</span><span><b class="disp" style="font-size:18px">week streak</b><br><span class="mut sm">${S.prot ? 'Protection available' : 'Protection used'} · ${plural(S.total, 'session')}</span><br><span class="det">Your milestones ${ic('chev')}</span></span></button>` : ''}
         <div class="days">${days}</div><p><b>${status}</b></p></div>
       ${org}
       ${nextCard(up.find((s) => has(s.id) && !isCancelled(s)))}
       <div class="stack tight"><span class="cap">Coming up</span>
-        ${up.length ? `<div>${up.map((s) => sessionRow(s, true)).join('')}</div>` : (S.follows.length ? '<p class="mut">Nothing booked this week.</p>' : '<p class="mut">Follow a club to see your week.</p><button class="btn" data-act="quiz">Find my club</button>')}</div>
+        ${up.length ? `<div>${up.map((s) => sessionRow(s, true)).join('')}</div>` : (S.follows.length ? '<p class="mut">Nothing booked this week.</p>' : `<p class="mut">Follow a club to see your week.</p><button class="btn" data-act="quiz">Find my club ${ic('right')}</button>`)}</div>
       ${S.follows.length ? `<div class="stack tight"><span class="cap">From your clubs</span><div class="strip">${S.follows.slice(0, 3).map((id) => { const c = club(id); const p = leadPhotos(c)[0] || { g: 1, sp: c.sport, i: 0 }; return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="club" data-id="${id}">${esc(c.name.split(' ')[0])}</button>`; }).join('')}</div></div>` : ''}
     </main>`;
   };
@@ -452,27 +467,27 @@
     const tagged = !S.untag[s.id];
     const offer = next ? `<div class="stack"><span class="cap">${newcomer ? 'Same time next week?' : 'Next session'}</span><div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${next.type} · ${going(next)} going</span></span>
       ${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div></div>` : '';
-    const photos = `<div class="stack tight"><div class="row sp"><span class="cap">Photos from ${nounFor(s)}</span><button class="btn small ghost" data-act="post" data-id="${s.id}">Add yours</button></div>
+    const photos = `<div class="stack tight"><div class="row sp"><span class="cap">Photos from ${nounFor(s)}</span><button class="btn small ghost" data-act="post" data-id="${s.id}">${ic('plus')}Add yours</button></div>
       <div class="strip">${myPhotos(s).map((p) => tile(p, 'yours')).join('')}
         ${tagged ? tile({ sp: c.sport, i: k, g: 1 + (k % 6), by: 'Layla H.', sid: s.id, tagged: true }, "you're tagged") : ''}
         ${tile({ sp: c.sport, i: k + 2, g: 1 + ((k + 2) % 6), by: 'Omar S.', sid: s.id })}</div></div>`;
     return `<main class="pad-nav"><div class="stack tight"><h1>${route.weekJustDone ? `Week ${S.streak} done.` : 'Nice. That one counts too.'}</h1>
       <p class="mut">${esc(c.name)} · ${dateShort(s.at)}. ${plural(S.total, 'session')} in total.</p></div>
       ${newcomer ? offer + photos : photos + offer}
-      <button class="btn ghost block" data-act="me">Back to my week</button></main>`;
+      <button class="btn ghost block" data-act="me">${ic('left')}Back to my week</button></main>`;
   };
 
   V.missed = () => {
     const s = byId(route.id); const next = nextOpen(s.club);
     return `<main class="pad-nav"><div class="stack tight"><h1>No problem.</h1><p class="mut">${next ? `${DAYL[next.at.getDay()]}'s the next one.` : 'There is nothing scheduled yet.'}</p></div>
       ${next ? `<div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${esc(s.club.name)} · ${next.type}</span></span>${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div>` : ''}
-      <button class="btn ghost block" data-act="me">Back to my week</button></main>`;
+      <button class="btn ghost block" data-act="me">${ic('left')}Back to my week</button></main>`;
   };
 
   V.clubs = () => `<main class="pad-nav"><h1>My clubs</h1>
-    ${S.manage.length ? `<div class="stack tight"><span class="cap">You manage</span>${S.manage.map((id) => `<button class="btn ghost block" data-act="manage" data-id="${id}">${esc(club(id).name)}</button>`).join('')}</div>` : ''}
-    ${S.follows.length ? `<div class="stack">${S.follows.map((id) => { const c = club(id); const n = nextOpen(c); return `<button class="card" data-act="club" data-id="${c.id}"><span class="body"><span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span><span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t}` : 'No session scheduled'} · you: ${plural(S.clubWeeks[c.id] || 0, 'week')}</span></span></button>`; }).join('')}</div>` : '<p class="mut">You are not following any clubs yet.</p>'}
-    <button class="btn ghost block" data-act="quiz">Find another club</button></main>`;
+    ${S.manage.length ? `<div class="stack tight"><span class="cap">You manage</span>${S.manage.map((id) => `<button class="mrow" data-act="manage" data-id="${id}"><span class="orgcta-ic">${ic('flag')}</span><span class="grow"><b>${esc(club(id).name)}</b><br><span class="sm mut">Headcounts, schedule, photos</span></span><span class="go">Manage ${ic('chev')}</span></button>`).join('')}</div>` : ''}
+    ${S.follows.length ? `<div class="stack">${S.follows.map((id) => { const c = club(id); const n = nextOpen(c); return `<button class="card" data-act="club" data-id="${c.id}"><span class="body"><span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span><span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t}` : 'No session scheduled'} · you: ${plural(S.clubWeeks[c.id] || 0, 'week')}</span><span class="go">View club ${ic('right')}</span></span></button>`; }).join('')}</div>` : '<p class="mut">You are not following any clubs yet.</p>'}
+    <button class="btn ghost block" data-act="quiz">${ic('find')}Find another club</button></main>`;
 
   V.profile = () => { const m = myPro(); return `<main class="pad-nav"><div class="row">${face(S.user.name, m.photo, true)}<div class="stack tight"><h1>${esc(S.user.name)}</h1>
       <span class="mut sm">${[m.area, m.level && LEVELS[m.level], m.work].filter(Boolean).map(esc).join(' · ') || 'Add a photo and a few details so people know who to look for.'}</span>
@@ -481,7 +496,7 @@
     <p class="mut sm">People going to the same session as you can see your profile. Only you can see your streak and history.</p>
     <dl class="facts"><dt>Current streak</dt><dd>${plural(S.streak, 'week')}</dd><dt>Longest streak</dt><dd>${plural(S.longest, 'week')}</dd><dt>Sessions</dt><dd>${S.total}</dd><dt>Protection</dt><dd>${S.prot ? 'Available' : `Used. Returns after ${plural(Math.max(0, 4 - S.sinceProt), 'more week')} in a row`}</dd></dl>
     <div class="stack"><span class="cap">Milestones</span><div class="badges">${MS.map((m) => `<span class="badge ${S.badges.includes(m.id) ? 'on' : ''}" title="${m.t}" aria-label="${m.t}${S.badges.includes(m.id) ? ', earned' : ', not yet earned'}">${m.b}</span>`).join('')}</div>
-      ${S.streak > 0 ? '<button class="btn ghost" data-act="share">Share my streak</button>' : ''}</div>
+      ${S.streak > 0 ? `<button class="btn ghost" data-act="share">${ic('share')}Share my streak</button>` : ''}</div>
     <div><span class="cap">Settings</span>
       <label class="switch" for="p-st"><span>Show me in club standings</span><input type="checkbox" id="p-st" data-set="standings" ${S.set.standings ? 'checked' : ''}></label>
       <label class="switch" for="p-tg"><span>Let people tag me in photos</span><input type="checkbox" id="p-tg" data-set="tagging" ${S.set.tagging ? 'checked' : ''}></label>
@@ -495,37 +510,37 @@
     const wk = future(c).filter((s) => s.at - now() < 7 * 864e5); const rec = past(c).slice(0, 2);
     const row = (s) => { const list = roster(s); const over = ended(s);
       const sub = isCancelled(s) ? 'Cancelled' : over ? `${list.filter((p) => p.st === 'came').length} came · ${list.filter((p) => p.st === 'no').length} didn't turn up` : `${plural(list.filter((p) => p.first).length, 'first-timer')}`;
-      return `<button class="item" data-act="attend" data-id="${s.id}"><span class="when"><b>${over ? DAY[s.at.getDay()] + ' ' + s.at.getDate() : whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${s.type}</b><br><span class="mut sm">${sub}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : `<span class="big-n">${over ? list.filter((p) => p.st === 'came').length : going(s)}</span>`}</button>`; };
-    const tick = (on, label, act) => `<button class="item" data-act="${act}" data-id="${c.id}"><span class="tick ${on ? 'on' : ''}" aria-hidden="true">${on ? '✓' : ''}</span><span class="grow">${label}</span><span class="mut">›</span></button>`;
+      return `<button class="item" data-act="attend" data-id="${s.id}"><span class="when"><b>${over ? DAY[s.at.getDay()] + ' ' + s.at.getDate() : whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${s.type}</b><br><span class="mut sm">${sub}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : `<span class="big-n">${over ? list.filter((p) => p.st === 'came').length : going(s)}</span>`}${ic('chev', 'chev')}</button>`; };
+    const tick = (on, label, act) => `<button class="item" data-act="${act}" data-id="${c.id}"><span class="tick ${on ? 'on' : ''}" aria-hidden="true">${on ? '✓' : ''}</span><span class="grow">${label}</span>${ic('chev', 'chev')}</button>`;
     const allDone = ck.d && ck.s && ck.p;
-    return `<main class="pad-nav"><div class="stack tight"><span class="cap">Managing</span><h1 style="font-size:21px">${esc(c.name)}</h1>
-        <p class="mut sm">Last confirmed ${confirmedOn(c)} · <button class="link" data-act="club" data-id="${c.id}">View public page</button></p></div>
+    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${ic('flag')}Managing</span><h1 style="font-size:21px">${esc(c.name)}</h1>
+        <p class="mut sm">Last confirmed ${confirmedOn(c)}</p><button class="chip" data-act="club" data-id="${c.id}">View public page ${ic('right')}</button></div>
       ${allDone ? '' : `<div class="stack tight"><span class="cap">Get set up</span><div>${tick(ck.d, 'Check your details', 'editclub')}${tick(ck.s, 'Check your weekly sessions', 'sched')}${tick(ck.p, 'Add or tidy your photos', 'mphotos')}</div></div>`}
-      <div class="stack tight"><div class="row sp"><span class="cap">This week</span><span class="mut xs">going</span></div><div>${wk.map(row).join('') || '<p class="mut sm">No sessions this week.</p>'}</div></div>
+      <div class="stack tight"><div class="row sp"><span class="cap">This week</span><span class="mut xs">tap a session for who's coming</span></div><div>${wk.map(row).join('') || '<p class="mut sm">No sessions this week.</p>'}</div></div>
       <div class="stack tight"><div class="row sp"><span class="cap">Just finished</span><span class="mut xs">came</span></div><div>${rec.map(row).join('') || '<p class="mut sm">Nothing yet.</p>'}</div></div>
       <div class="note"><b>Is ${esc(c.name)} still meeting ${meetDays(c)}?</b><div class="row" style="margin-top:10px"><button class="btn small" data-act="confirmclub" data-id="${c.id}">Yes, all correct</button><button class="btn small ghost" data-act="sched" data-id="${c.id}">Update</button></div></div>
       <div class="stack tight"><span class="cap">Your club</span><div>
-        <button class="item" data-act="editclub" data-id="${c.id}"><span class="grow"><b>Club details</b><br><span class="mut sm">Description, level, cost, what to bring</span></span><span class="mut">›</span></button>
-        <button class="item" data-act="sched" data-id="${c.id}"><span class="grow"><b>Schedule</b><br><span class="mut sm">${meetDays(c)} · cancel a session</span></span><span class="mut">›</span></button>
-        <button class="item" data-act="mphotos" data-id="${c.id}"><span class="grow"><b>Photos</b><br><span class="mut sm">Pin the best, hide any you don't want</span></span><span class="mut">›</span></button>
-        <button class="item" data-act="soon" data-what="Inviting co-organisers is not in this prototype yet."><span class="grow"><b>Organisers</b><br><span class="mut sm">Just you</span></span><span class="mut">›</span></button></div></div>
+        <button class="item" data-act="editclub" data-id="${c.id}"><span class="grow"><b>Club details</b><br><span class="mut sm">Description, level, cost, what to bring</span></span>${ic('chev', 'chev')}</button>
+        <button class="item" data-act="sched" data-id="${c.id}"><span class="grow"><b>Schedule</b><br><span class="mut sm">${meetDays(c)} · cancel a session</span></span>${ic('chev', 'chev')}</button>
+        <button class="item" data-act="mphotos" data-id="${c.id}"><span class="grow"><b>Photos</b><br><span class="mut sm">Pin the best, hide any you don't want</span></span>${ic('chev', 'chev')}</button>
+        <button class="item" data-act="soon" data-what="Inviting co-organisers is not in this prototype yet."><span class="grow"><b>Organisers</b><br><span class="mut sm">Just you</span></span>${ic('chev', 'chev')}</button></div></div>
     </main>`;
   };
 
   V.attend = () => {
     const s = byId(route.id); const c = s.club; const list = roster(s); const over = ended(s);
-    const person = (p, clickable) => `<${clickable ? 'button' : 'div'} class="item" ${clickable ? `data-act="cyc" data-id="${s.id}" data-name="${p.name}"` : ''}><span class="av">${initials(p.name)}</span><span class="grow">${p.name}</span>${p.first ? '<span class="tag ok">First time</span>' : ''}${clickable ? `<span class="mut xs">${p.st === 'came' ? 'Move to didn’t turn up' : 'Mark as came'}</span>` : ''}</${clickable ? 'button' : 'div'}>`;
+    const person = (p, clickable) => `<${clickable ? 'button' : 'div'} class="item" ${clickable ? `data-act="cyc" data-id="${s.id}" data-name="${p.name}"` : ''}><span class="av">${initials(p.name)}</span><span class="grow">${p.name}</span>${p.first ? '<span class="tag ok">First time</span>' : ''}${clickable ? `<span class="mini">${p.st === 'came' ? 'Didn’t come' : `${ic('check')}Came`}</span>` : ''}</${clickable ? 'button' : 'div'}>`;
     const group = (st, title) => { const g = list.filter((p) => p.st === st); return g.length ? `<div class="stack tight"><span class="cap">${title} · ${g.length}</span><div>${g.map((p) => person(p, true)).join('')}</div></div>` : ''; };
     const head = `<div class="stack tight"><span class="cap">${esc(c.name)}</span><h1 style="font-size:21px">${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]} · ${s.t}</h1><p class="mut sm">${s.type} · ${s.place}</p></div>`;
     if (isCancelled(s)) return `<main class="pad-nav">${head}<p class="notice">This session is cancelled. Everyone who was going has been told.</p></main>`;
     if (!over) return `<main class="pad-nav">${head}
-      <div class="row sp"><span><span class="big-n">${list.length}</span> going${s.cap ? ` of ${s.cap}` : ''}</span><button class="btn small ghost" data-act="soon" data-what="Link copied. Paste it in your WhatsApp group or Instagram.">Share link</button></div>
+      <div class="row sp"><span><span class="big-n">${list.length}</span> going${s.cap ? ` of ${s.cap}` : ''}</span><button class="btn small ghost" data-act="soon" data-what="Link copied. Paste it in your WhatsApp group or Instagram.">${ic('share')}Share link</button></div>
       <p class="note">${plural(list.filter((p) => p.first).length, 'person')} coming for the first time. Say hello.</p>
       <div>${list.map((p) => person(p, false)).join('')}</div>
       <button class="btn ghost block" data-act="askcancel" data-id="${s.id}">Cancel this session</button></main>`;
     return `<main class="pad-nav">${head}
       <p class="note">Members answer "Did you go?" themselves. Tap a name to correct it.</p>
-      <button class="btn ghost block" data-act="allcame" data-id="${s.id}">Mark everyone as came</button>
+      <button class="btn block" data-act="allcame" data-id="${s.id}">${ic('check')}Mark everyone as came</button>
       ${group('came', 'Came')}${group('no', 'Didn’t turn up')}${group('wait', 'Not yet confirmed')}</main>`;
   };
 
@@ -564,8 +579,9 @@
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">I'm in</button>`;
     return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h2>${dayWord(s.at)} · ${s.t}</h2></div>
       <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
+      ${act}
       ${who(s, over)}
-      ${act}<button class="btn quiet block" data-act="close">Close</button></div>`;
+      <button class="btn quiet block" data-act="close">Close</button></div>`;
   };
   function who(s, over) {
     if (!S.user || over || isCancelled(s)) return '';
@@ -736,13 +752,16 @@
   function render() {
     const app = document.getElementById('app'); if (!app) return;
     if (!S.user && ['me', 'clubs', 'profile', 'result', 'missed', 'confirm', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v)) route = { v: 'home' };
-    const sub = !['home', 'me'].includes(route.v);
-    const top = `<header class="top"><div class="r">${sub && stack.length ? '<button class="pill" data-act="back" aria-label="Back">←</button>' : ''}<button class="logo" data-act="home">ryze club</button></div>
-      <div class="r"><button class="pill" data-act="demo">Demo</button>${S.user ? '' : '<button class="pill" data-act="signin">Sign in</button>'}</div></header>`;
+    // Tab roots are reached from the bottom navigation, so they show the logo; every other screen shows a labelled Back.
+    const roots = S.user ? ['home', 'me', 'browse', 'clubs', 'profile'] : ['home'];
+    const sub = !roots.includes(route.v);
+    const backAct = route.v === 'quiz' && route.step ? 'quizback' : 'back';
+    const top = `<header class="top"><div class="r">${sub ? `<button class="back" data-act="${backAct}">${ic('left')}Back</button>` : '<button class="logo" data-act="home">ryze club</button>'}</div>
+      <div class="r"><button class="pill" data-act="demo">Demo</button>${S.user ? '' : '<button class="btn small" data-act="signin">Sign in</button>'}</div></header>`;
     const showNav = S.user && route.v !== 'club' && route.v !== 'quiz';
-    const tab = (v, l, on) => `<button data-act="${v}" class="${on ? 'on' : ''}">${l}</button>`;
-    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('me', 'My week', ['me', 'result', 'missed'].includes(route.v))}${tab('browse', 'Find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', route.v === 'profile')}</nav>` : '';
-    const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
+    const tab = (v, l, i, on) => `<button data-act="${v}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
+    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('me', 'My week', 'week', ['me', 'result', 'missed', 'confirm'].includes(route.v))}${tab('browse', 'Find', 'find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', 'clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', 'me', route.v === 'profile')}</nav>` : '';
+    const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace(/^(<div class="sheet[^>]*>)/, '$1<button class="sheet-x" data-act="close" aria-label="Close">' + ic('x') + '</button>').replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
     const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
     app.innerHTML = top + (V[route.v] || V.home)() + nav + ov + ts;
     a11yOverlay(app);

@@ -54,5 +54,5 @@ Everything is under `docs/initiatives/initiative-001-community-fitness-dubai/`.
 
 - Product requirements: handoff-ready.
 - Design: six flows drafted, none reviewed.
-- Prototype: member and organiser journeys.
+- Prototype: member and organiser journeys, with the signifier rules from `ux/ux-spec.md` applied (12 Oct 2026).
 - Not started: design system, curator screens, technical design, the real build.
