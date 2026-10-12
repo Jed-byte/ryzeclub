@@ -411,7 +411,8 @@
     else if (isFull(n)) { const after = future(c).find((s) => s.id !== n.id && !isCancelled(s)); bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">Full · ${n.cap} of ${n.cap}</span><span class="det">Session details ${ic('chev')}</span></button>${after ? `<button class="btn ghost" data-act="session" data-id="${after.id}">See next session</button>` : ''}`; }
     else bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn big" data-act="rsvp" data-id="${n.id}">I'm in</button>`;
     const claim = mine ? '' : S.claims[c.id] ? '<p class="note">Your request to manage this club is with us. We\'ll confirm within 2 days.</p>' : `<div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Is this your club?</b><br><span class="sm mut">Claim it to keep the schedule right and see who's coming.</span></div><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`;
-    return `<main class="flush pad-bar">${head}
+    const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
+    return `<main class="flush pad-bar">${invite}${head}
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
@@ -605,28 +606,35 @@
       <p class="mut sm">Not listed? <button class="link" data-act="soon" data-what="This would open a short form. The Ryze Club curator sets up the page for you.">Ask us to add it</button></p></main>`;
   };
 
+  // Organiser landing: the next session to act on, then growing the club, then the week.
+  // One-off setup lives in the Club tab, with a single slim reminder here until it is done.
+  const inviteUrl = (c) => `${location.href.split('#')[0]}#join/${c.id}`;
+  const joinedVia = (c) => 6 + (hash(c.id) % 9) + ((S.joined || {})[c.id] || 0);
+  const setupLeft = (c) => { const ck = ckOf(c); return ['d', 's', 'f'].filter((k) => !ck[k]).length; };
   OV['o-week'] = () => {
-    const c = orgClub(); const ck = ckOf(c); const wk = future(c).filter((s) => s.at - now() < 7 * 864e5);
+    const c = orgClub(); const wk = future(c).filter((s) => s.at - now() < 7 * 864e5);
     const live = wk.filter((s) => !isCancelled(s)); const lastWk = past(c).filter((s) => now() - s.at < 7 * 864e5);
     const cameLast = lastWk.reduce((n, s) => n + roster(s).filter((p) => p.st === 'came').length, 0);
-    const today = wk.find((s) => !isCancelled(s) && s.at - now() < 18 * 36e5) || sessions(c, 0, 0).find((s) => !isCancelled(s) && !ended(s));
-    const firsts = (s) => roster(s).filter((p) => p.first);
-    const nowCard = today ? `<div class="orgnow"><div class="grow"><span class="cap">${dayWord(today.at)} · ${today.t}</span><b class="disp">${going(today)} going${firsts(today).length ? `, ${plural(firsts(today).length, 'first-timer')}` : ''}</b><span class="sm">${esc(today.type)} · ${esc(today.place)}</span></div><button class="btn" data-act="ocheck" data-id="${today.id}">${ic('check')}Check in</button></div>` : '';
-    const allDone = ck.d && ck.s && ck.f;
-    const setup = allDone && !route.setup ? `<button class="okline okbtn" data-act="osetup">${ic('check')}<span class="grow">Your page is ready</span><span class="det">Review ${ic('chev')}</span></button>`
-      : `<div class="stack tight"><div class="row sp"><span class="cap">${allDone ? 'Your page checklist' : 'Get your page ready · we filled it in'}</span>${allDone ? '<button class="link sm" data-act="osetup">Hide</button>' : ''}</div><div class="ocard">
-      ${[['d', 'Club details', 'Description, level, cost, what to bring', 'editclub'], ['s', 'Weekly sessions', meetDays(c), 'osched'], ['f', '"How to find us" note', c.find ? `“${esc(c.find)}”` : 'Shown to first-timers in their reminder', 'editclub']].map(([k, t, sub, act]) =>
-        `<div class="item"><span class="tick ${ck[k] ? 'on' : ''}" aria-hidden="true">${ck[k] ? '✓' : ''}</span><span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ck[k] ? `<span class="oacts"><span class="tag ok">${ic('check')}Done</span><button class="btn small ghost" data-act="${act}" data-id="${c.id}">${ic('edit')}Edit</button><button class="btn small quiet" data-act="ounck" data-k="${k}">Undo</button></span>` : `<span class="oacts">${k !== 'f' ? `<button class="btn small" data-act="ock" data-k="${k}">${ic('check')}Looks right</button>` : ''}<button class="btn small ghost" data-act="${act}" data-id="${c.id}">${k === 'f' ? `${ic('plus')}Add a note` : `${ic('edit')}Edit`}</button></span>`}</div>`).join('')}</div></div>`;
-    const rows = wk.map((s) => { const f = firsts(s).length; return `<button class="item" data-act="osession" data-id="${s.id}"><span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${esc(s.type)}</b><br><span class="mut sm">${isCancelled(s) ? 'Cancelled' : f ? `${plural(f, 'first-timer')}` : 'No first-timers'}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : `<span class="big-n">${going(s)}</span>`}${ic('chev', 'chev')}</button>`; }).join('');
+    const next = live[0]; const soon = next && next.at - now() < 18 * 36e5;
+    const firsts = (s) => roster(s).filter((p) => p.first).length;
+    const hero = next ? `<section class="orgnow"><p class="onow-when">${dayWord(next.at)} · ${next.t} · ${esc(next.type)}</p>
+        <p class="onow-n"><b>${going(next)}</b> going${firsts(next) ? ` · <b>${firsts(next)}</b> first time` : ''}</p>
+        <p class="onow-where">${esc(next.place)}</p>
+        <div class="onow-acts">${soon ? `<button class="btn" data-act="ocheck" data-id="${next.id}">${ic('check')}Check people in</button>` : `<button class="btn" data-act="osession" data-id="${next.id}">See who's coming ${ic('right')}</button>`}</div></section>`
+      : `<section class="orgnow"><p class="onow-when">Nothing scheduled this week</p><div class="onow-acts"><button class="btn" data-act="osched">Add a session</button></div></section>`;
+    const grow = `<section class="ogrow"><div class="ogrow-top"><span class="orgcta-ic">${ic('clubs')}</span><div class="grow"><h2>Bring your members over</h2><p class="sm mut">${joinedVia(c)} people joined from your link. Share it once in your WhatsApp group and they're in.</p></div></div>
+        <div class="ogrow-acts"><button class="btn" data-act="ojoin">${ic('share')}Invite members</button><button class="btn ghost" data-act="ojoin" data-qr="1">QR code</button></div></section>`;
+    const rows = wk.map((s) => { const f = firsts(s); return `<button class="item" data-act="osession" data-id="${s.id}"><span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${esc(s.type)}</b><br><span class="mut sm">${isCancelled(s) ? 'Cancelled' : f ? plural(f, 'first-timer') : 'No first-timers'}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : `<span class="big-n">${going(s)}</span>`}${ic('chev', 'chev')}</button>`; }).join('');
     const confirmed = S.conf[c.id] && now() - S.conf[c.id] < 7 * 864e5;
-    return `<main class="pad-nav">${nowCard}${setup}
-      <div class="summary"><div class="stack tight"><span class="cap">Your week</span><h2>${esc(c.name)}</h2><p class="sm mut">${plural(live.length, 'session')} · ${live.reduce((n, s) => n + going(s), 0)} RSVPs so far · last week ${cameLast} came</p></div>
+    const left = setupLeft(c);
+    return `<main class="pad-nav">${hero}${grow}
+      <section class="stack tight"><div class="row sp"><h2>This week</h2><span class="sm mut">${live.reduce((n, s) => n + going(s), 0)} RSVPs · last week ${cameLast} came</span></div>
         <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
-        <div class="stack tight"><span class="cap">Waiting for you</span><p class="sm">Nothing waiting. Reported photos, attendance disputes and co-organiser requests appear here.</p></div>
-        <div class="stack">${confirmed ? `<div class="okline">${ic('check')}<span class="grow">Up to date. Confirmed ${confirmedOn(c)}.</span><button class="link sm" data-act="ounconf">Undo</button></div>` : `<button class="btn block big" data-act="confirmclub" data-id="${c.id}">${ic('check')}All correct</button>`}
-          <button class="btn ghost block" data-act="oshare">${ic('share')}Share this week</button>
-          <button class="btn quiet block" data-act="osched">Change or cancel a session</button></div></div>
-      <p class="mut xs center">You also get this summary every Sunday at 18:00 by email${S.set.wa ? ' and WhatsApp' : ''}.</p></main>`;
+        <div class="wrap"><button class="btn small ghost" data-act="oshare">${ic('share')}Post the week to WhatsApp</button><button class="btn small quiet" data-act="osched">Change or cancel</button></div></section>
+      ${confirmed ? `<p class="okline">${ic('check')}<span class="grow">Schedule confirmed ${confirmedOn(c)}</span><button class="link sm" data-act="ounconf">Undo</button></p>`
+        : `<div class="oconfirm"><span class="grow"><b>Still meeting ${meetDays(c)}?</b><br><span class="sm mut">Keeps your page marked as current</span></span><button class="btn small" data-act="confirmclub" data-id="${c.id}">${ic('check')}Yes</button></div>`}
+      ${left ? `<button class="osetup-line" data-act="oclub"><span class="grow"><b>Finish checking your page</b> · ${3 - left} of 3 done</span><span class="det">Club ${ic('chev')}</span></button>` : ''}
+      <p class="mut xs center">You also get this every Sunday at 18:00 by email${S.set.wa ? ' and WhatsApp' : ''}.</p></main>`;
   };
 
   OV['o-checks'] = () => {
@@ -653,12 +661,19 @@
   OV['o-club'] = () => {
     const c = orgClub();
     const sec = (act, t, sub, ico) => `<button class="item" data-act="${act}" data-id="${c.id}">${ico ? `<span class="orgcta-ic">${ic(ico)}</span>` : ''}<span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ic('chev', 'chev')}</button>`;
-    return `<main class="pad-nav"><div class="stack tight"><span class="cap">Your club</span><h1 style="font-size:22px">${esc(c.name)}</h1><p class="mut sm">Last confirmed ${confirmedOn(c)}</p></div>
+    const ck = ckOf(c); const left = setupLeft(c);
+    const checklist = `<section class="stack tight"><div class="row sp"><h2>${left ? 'Check your page' : 'Your page is checked'}</h2><span class="sm mut">${3 - left} of 3</span></div><p class="sm mut">${left ? "We filled it in from your club's Instagram. Confirm each part or fix it." : 'Change anything here at any time.'}</p><div class="ocard">
+      ${[['d', 'Club details', 'Description, level, cost, what to bring', 'editclub'], ['s', 'Weekly sessions', meetDays(c), 'osched'], ['f', '"How to find us" note', c.find ? `“${esc(c.find)}”` : 'Shown to first-timers in their reminder', 'editclub']].map(([k, t, sub, act]) =>
+        `<div class="item"><span class="tick ${ck[k] ? 'on' : ''}" aria-hidden="true">${ck[k] ? '✓' : ''}</span><span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ck[k] ? `<span class="oacts"><button class="btn small ghost" data-act="${act}" data-id="${c.id}">${ic('edit')}Edit</button><button class="btn small quiet" data-act="ounck" data-k="${k}">Undo</button></span>` : `<span class="oacts">${k !== 'f' ? `<button class="btn small" data-act="ock" data-k="${k}">${ic('check')}Looks right</button>` : ''}<button class="btn small ghost" data-act="${act}" data-id="${c.id}">${k === 'f' ? `${ic('plus')}Add a note` : `${ic('edit')}Edit`}</button></span>`}</div>`).join('')}</div></section>`;
+    return `<main class="pad-nav"><div class="stack tight"><h1 style="font-size:22px">${esc(c.name)}</h1><p class="mut sm">Last confirmed ${confirmedOn(c)}</p></div>
+      ${left ? checklist : ''}
+      <button class="whobtn" data-act="ojoin"><span class="orgcta-ic">${ic('share')}</span><span class="grow"><b>Invite members</b><br><span class="mut sm">Link, QR code and WhatsApp message</span></span>${ic('chev', 'chev')}</button>
       <button class="whobtn" data-act="tomember" data-id="${c.id}"><span class="orgcta-ic">${ic('me')}</span><span class="grow"><b>See your public page</b><br><span class="mut sm">Opens it in the member app, as members see it</span></span>${ic('chev', 'chev')}</button>
       <div>${sec('editclub', 'Club details', 'Description, level, cost, what to bring', 'edit')}
         ${sec('editclub', 'How to find us', c.find ? `“${esc(c.find)}”` : 'Add a line for first-timers', 'flag')}
         ${sec('osched', 'Schedule', `${meetDays(c)} · change or cancel a session`, 'week')}
         ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}</div>
+      ${left ? '' : checklist}
       <button class="btn quiet block" data-act="soon" data-what="Pausing the club (for summer or Ramadan timings) is not in this prototype yet.">Pause the club</button></main>`;
   };
 
@@ -780,6 +795,23 @@
       <button class="btn block" data-act="soon" data-what="This would open WhatsApp with the message ready to send.">Send to WhatsApp</button>
       <button class="btn ghost block" data-act="soon" data-what="This would open Instagram with a story card.">Share to Instagram</button>
       <button class="btn quiet block" data-act="soon" data-what="Copied.">Copy text</button></div>`; };
+  const qrSvg = (text) => {
+    if (typeof window.qrcode !== 'function') return `<div class="qrfall">The QR code needs an internet connection to draw.<br>${esc(text)}</div>`;
+    try { const q = window.qrcode(0, 'M'); q.addData(text); q.make(); const n = q.getModuleCount(); let d = '';
+      for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) d += `M${k + 4} ${r + 4}h1v1h-1z`;
+      return `<svg class="qr" viewBox="0 0 ${n + 8} ${n + 8}" role="img" aria-label="QR code for ${esc(text)}"><rect width="100%" height="100%" fill="#FFFFFF"/><path d="${d}" fill="#2A1730"/></svg>`;
+    } catch (e) { return `<div class="qrfall">${esc(text)}</div>`; }
+  };
+  O.ojoin = () => { const c = orgClub(); const url = inviteUrl(c); const n = nextOpen(c);
+    const msg = `Hi all! We're using Ryze Club for ${c.name} now. Join here to see the schedule, RSVP and get a reminder before each session${n ? ` (next one: ${DAYL[n.at.getDay()]} ${n.t})` : ''}: ${url}`;
+    return `<div class="sheet"><div class="stack tight"><h2>Invite members</h2><p class="sm mut">Anyone with the link lands on your club page with a "Join" button. Nothing to download.</p></div>
+      ${overlay.qr ? `<div class="qrwrap">${qrSvg(url)}<p class="sm"><b>Show this at the meeting point</b> or print it for your flag. Phones scan it straight from the camera.</p></div>` : ''}
+      <div class="linkbox"><span class="grow">${esc(url.replace(/^[a-z]+:\/\//, ''))}</span><button class="btn small" data-act="copylink" data-url="${esc(url)}">Copy</button></div>
+      <button class="btn block" data-act="soon" data-what="This would open WhatsApp with the message ready for your group.">Send to your WhatsApp group</button>
+      <div class="msgprev">${esc(msg)}</div>
+      ${overlay.qr ? '' : `<button class="btn ghost block" data-act="ojoin" data-qr="1">Show QR code</button>`}
+      <button class="btn quiet block" data-act="soon" data-what="This would copy the link for your Instagram bio.">Add to your Instagram bio</button>
+      <p class="xs mut">${joinedVia(c)} people have joined from this link so far.</p></div>`; };
   O.oinvite = () => { const c = orgClub(); return `<div class="sheet"><h2>Invite a co-organiser</h2><p class="mut sm">Send this link to someone who helps run the club. The first person to open it and sign in joins as an organiser. It works once and expires in 7 days.</p>
       <div class="msgprev">Help run ${esc(c.name)} on Ryze Club: ryzeclub.ae/join/${c.id}-${hash(c.id + S.user.name) % 9000 + 1000}</div>
       <button class="btn block" data-act="soon" data-what="This would open WhatsApp with the invite ready to send.">Send by WhatsApp</button>
@@ -828,14 +860,14 @@
     },
     follow: (d) => {
       if (!S.user) { overlay = { t: 'signin', then: { act: 'follow', id: d.id } }; render(); return; }
-      const i = S.follows.indexOf(d.id); if (i >= 0) { S.follows.splice(i, 1); say('Unfollowed. Your history is kept.'); } else { S.follows.push(d.id); say('Following.'); }
+      const i = S.follows.indexOf(d.id); if (i >= 0) { S.follows.splice(i, 1); say('Unfollowed. Your history is kept.'); } else { S.follows.push(d.id); if (route.invited) { S.joined = S.joined || {}; S.joined[d.id] = (S.joined[d.id] || 0) + 1; say(`You've joined ${club(d.id).name}.`); } else say('Following.'); }
       save(); render();
     },
     dosignin: () => {
       const el = document.getElementById('si-name'); const name = (el && el.value.trim()) || 'Alex'; const then = overlay.then;
       S.user = { name }; save(); overlay = null;
       if (then && then.act === 'rsvp') { doRsvp(then.id); stack = []; go('confirm', { id: then.id }); }
-      else if (then && then.act === 'follow') { if (!S.follows.includes(then.id)) S.follows.push(then.id); save(); say('Following.'); render(); }
+      else if (then && then.act === 'follow') { if (!S.follows.includes(then.id)) { S.follows.push(then.id); if (route.invited) { S.joined = S.joined || {}; S.joined[then.id] = (S.joined[then.id] || 0) + 1; } } save(); say(route.invited ? `You've joined ${club(then.id).name}.` : 'Following.'); render(); }
       else if (then && then.act === 'claim') { overlay = { t: 'claim', id: then.id }; render(); }
       else if (then && then.act === 'who') { A.who({ id: then.id }); }
       else if (then && then.act === 'org') { go('o-week', {}, true); }
@@ -872,7 +904,9 @@
     ounck: (d) => { delete ckOf(orgClub())[d.k]; save(); say('Marked as not done.'); render(); },
     osetup: () => { route.setup = !route.setup; render(); },
     ock: (d) => { ckOf(orgClub())[d.k] = true; if (d.k === 'd') S.conf[orgClub().id] = now().getTime(); save(); say('Thanks. Marked as checked.'); render(); },
-    oshare: () => { overlay = { t: 'oshare' }; render(); }, oinvite: () => { overlay = { t: 'oinvite' }; render(); },
+    oshare: () => { overlay = { t: 'oshare' }; render(); },
+    ojoin: (d) => { overlay = { t: 'ojoin', qr: !!d.qr }; render(); },
+    copylink: (d) => { try { navigator.clipboard.writeText(d.url); } catch (e) { /* not available */ } say('Link copied.'); render(); }, oinvite: () => { overlay = { t: 'oinvite' }; render(); },
     ci: (d) => { const t = (S.ci[d.id] = S.ci[d.id] || {}); t[d.name] = !t[d.name]; const o = (S.orgAtt[d.id] = S.orgAtt[d.id] || {}); o[d.name] = t[d.name] ? 'came' : 'no'; save(); render(); },
     ciall: (d) => { const s = byId(d.id); const t = (S.ci[d.id] = {}); const o = (S.orgAtt[d.id] = {}); roster(s).forEach((p) => { t[p.name] = true; o[p.name] = 'came'; }); save(); say('Everyone checked in. Tap a name to untick.'); render(); },
     ciclear: (d) => { delete S.ci[d.id]; delete S.orgAtt[d.id]; save(); render(); },
@@ -911,7 +945,7 @@
     const body = (OV[v] || reuse[v])();
     const sub = ['o-sched', 'o-session', 'o-checkin'].includes(v);
     const top = `<header class="top otop"><div class="r">${sub ? `<button class="back" data-act="back">${ic('left')}Back</button>` : `<span class="ologo">ryze club <span class="obadge">Organiser</span></span>`}</div>
-      <div class="r">${S.user ? '<button class="pill" data-act="tomember">Member app</button>' : ''}<button class="pill" data-act="demo">Demo</button></div></header>`;
+      <div class="r"><button class="pill" data-act="demo">Demo</button></div></header>`;
     const tab = (act, l, i, on) => `<button data-act="${act}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
     const nav = c ? `<nav class="nav onav" aria-label="Organiser">${tab('oweek', 'This week', 'week', v === 'o-week' || v === 'o-session')}${tab('ochecks', 'Check-in', 'check', v === 'o-checks' || v === 'o-checkin')}${tab('ophotos', 'Photos', 'photo', v === 'o-photos')}${tab('oclub', 'Club', 'flag', v === 'o-club' || v === 'o-sched')}</nav>` : '';
     return top + body + nav;
@@ -983,8 +1017,12 @@
   document.addEventListener('input', (e) => { if (overlay && overlay.t === 'editpro' && e.target.id && e.target.id.startsWith('ep-')) readPro(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay) { overlay = null; render(); } });
 
-  window.addEventListener('hashchange', () => { S.mode = location.hash === '#organiser' ? 'org' : 'member'; stack = []; route = { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' }; render(); });
+  // An invite link (#join/<club>) opens that club in the member app with a welcome and a Join button.
+  const readJoin = () => { const m = location.hash.match(/^#join\/([a-z]+)$/); return m && club(m[1]) ? m[1] : null; };
+  window.addEventListener('hashchange', () => { const j = readJoin(); if (j) { S.mode = 'member'; stack = []; route = { v: 'club', id: j, invited: true }; render(); window.scrollTo(0, 0); return; }
+    S.mode = location.hash === '#organiser' ? 'org' : 'member'; stack = []; route = { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' }; render(); });
   applyEdits();
   route = { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' };
+  if (readJoin()) { S.mode = 'member'; route = { v: 'club', id: readJoin(), invited: true }; }
   render();
 })();

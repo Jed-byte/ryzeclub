@@ -300,12 +300,35 @@ body.org #app { background: #FBF8FB; }
 .ohero h1 { font-size: 28px; }
 .ohero p { color: #E6DCE8; }
 .ohero .obadge { align-self: flex-start; }
-/* Today's session: the thing to act on first */
-.orgnow { display: flex; align-items: center; gap: 12px; background: var(--acc); color: #FFFFFF; border-radius: 18px; padding: 16px; }
-.orgnow > .grow { display: flex; flex-direction: column; gap: 2px; }
-.orgnow .cap { color: #FFE3EA; }
-.orgnow .disp { font-size: 20px; }
-.orgnow .btn { background: #FFFFFF; color: var(--acc); box-shadow: none; flex: none; }
+/* The next session: the one thing to act on first. Stacked so the numbers and the action never squeeze each other. */
+.orgnow { display: flex; flex-direction: column; gap: 4px; background: var(--acc); color: #FFFFFF; border-radius: 16px; padding: 18px; }
+.orgnow p { margin: 0; }
+.onow-when { font-weight: 700; font-size: 14px; color: #FFE6EC; }
+.onow-n { font-family: var(--display); font-size: 22px; line-height: 1.15; }
+.onow-n b { font-size: 34px; }
+.onow-where { font-size: 14px; color: #FFE6EC; }
+.onow-acts { margin-top: 12px; }
+.onow-acts .btn { width: 100%; background: #FFFFFF; color: var(--acc); box-shadow: none; min-height: 52px; }
+/* Growing the club: invite link and QR, second only to the next session. */
+.ogrow { display: flex; flex-direction: column; gap: 14px; border: 2px solid var(--ink); border-radius: 16px; padding: 16px; background: var(--bg); }
+.ogrow-top { display: flex; gap: 12px; align-items: flex-start; }
+.ogrow h2 { font-size: 17px; margin-bottom: 4px; }
+.ogrow-acts { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.ogrow-acts .btn { padding-inline: 12px; font-size: 15px; }
+.oconfirm { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: var(--soft); }
+.osetup-line { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; border: 1.5px dashed var(--mut); border-radius: 12px; background: none; text-align: left; color: var(--ink); font-size: 14px; }
+.osetup-line .det { margin: 0; }
+.qrwrap { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.qr { width: min(240px, 70vw); height: auto; border-radius: 12px; border: 2px solid var(--ink); }
+.qrfall { padding: 20px; border: 2px dashed var(--line); border-radius: 12px; text-align: center; font-size: 13px; color: var(--mut); word-break: break-all; }
+.linkbox { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border: 2px solid var(--line); border-radius: 12px; font-weight: 700; font-size: 14px; }
+.linkbox .grow { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Member side: arriving from an organiser's invite link. */
+.invited { display: flex; flex-direction: column; gap: 8px; padding: 18px 16px; background: var(--ink); color: #FFFFFF; }
+.invited .cap { color: #FFC6D2; margin: 0; }
+.invited h2 { font-size: 22px; }
+.invited p { margin: 0; color: #EDE4EF; }
+.invited .btn { margin-top: 6px; }
 .ocard, .summary { background: var(--bg); border: 2px solid var(--ink); border-radius: 18px; padding: 14px; }
 .ocard .item { flex-wrap: wrap; }
 .ocard .item .grow { flex-basis: calc(100% - 40px); }

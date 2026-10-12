@@ -76,6 +76,7 @@ Measured over a pilot of about 8 weeks:
 | Organiser time on Ryze Club in a routine week | Median under 5 minutes |
 | Sessions where the organiser checked people in | Track, no target yet |
 | RSVPs that come from a link shared in a club's WhatsApp group | Track, no target yet |
+| Members who join from an organiser's invite link or QR code | Track, no target yet |
 | Lapsed members who RSVP within 14 days of a win-back message | Track, no target yet |
 
 ## 8. Value slices and functional requirements
@@ -215,6 +216,11 @@ Measured over a pilot of about 8 weeks:
 **FR-35 Ready-made page.** When an organiser claims a club, the curator has already filled in the page from the club's public channels: details, weekly sessions and a cover photo.
 - The organiser's first task is to check and confirm, not to type.
 - A new club request is completed by the curator in the same way before it goes live.
+
+**FR-36 Invite members.** An organiser can bring their existing members onto Ryze Club from the first screen of the organiser app.
+- One personal club link, shown with Copy, a ready-made WhatsApp message, an Instagram bio option and a QR code to show at the meeting point or print.
+- Opening the link lands on the club page with a "You're invited · Join the club" panel. Joining follows the club; signing in happens at that moment if needed.
+- The organiser sees how many people have joined from the link.
 
 ### VS-6 — Curation
 

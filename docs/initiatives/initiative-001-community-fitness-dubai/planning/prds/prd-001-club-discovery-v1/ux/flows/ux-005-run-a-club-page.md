@@ -60,6 +60,20 @@ Everything else (editing details, changing the schedule, moderating photos, addi
 
 Organisers use their own app, not screens inside the member app: its own address (`#organiser` in the prototype), a dark header with an "Organiser" badge, and its own tabs: **This week** (today's session, page checklist, weekly summary), **Check-in**, **Photos** and **Club**. It shares data with the member app. "Member app" in the header and "Open organiser app" on a managed club page switch between the two. Rationale: an organiser's jobs (headcounts, check-in, keeping the page right) have nothing in common with a member's week and streak, and mixing them made both harder to read.
 
+## Organiser landing screen (critique, 12 Oct 2026)
+
+A design critique from a volunteer organiser's point of view reordered **This week** around what they come to do:
+
+1. **Next session** in the accent colour: when, how many going, how many first-timers, and one full-width action ("Check people in" within 18 hours, otherwise "See who's coming").
+2. **Bring your members over**: "Invite members" (link, WhatsApp message, Instagram bio) and "QR code" (to show at the meeting point or print), with the count who joined from the link (PRD FR-36).
+3. **This week**: each session with its headcount and first-timers, then "Post the week to WhatsApp" and "Change or cancel".
+4. **Still meeting Tue, Thu and Sat?** with a single "Yes", replaced by "Schedule confirmed" once answered.
+5. Until the page is checked, one slim dashed line: "Finish checking your page · 1 of 3 done", leading to the Club tab.
+
+The "Check your page" checklist moved to the top of the **Club** tab while unfinished, and to its foot once done. It no longer takes the first screen. The duplicate "Member app" button left the header; "See your public page" in the Club tab and Demo switch apps.
+
+**Member side:** an invite link opens the club page with a dark "You're invited · Join [club]" panel above the photos and a full-width "Join the club" button. After joining, the panel disappears and the page is the normal club page.
+
 ## Surfaces
 
 1. **Claim** — a short request tied to an existing club page.
@@ -270,5 +284,6 @@ All in-scope PRD IDs are mapped. Not reviewed by anyone else. Status stays `draf
 ## Changelog
 
 - 2026-10-07: created.
+- 2026-10-12: landing screen reordered after a design critique; member invites (link, QR, WhatsApp) added; page checklist moved to the Club tab.
 - 2026-10-12: organiser view split into a separate app with its own tabs, after a usability session.
 - 2026-10-12: organiser effort budget; weekly summary, check-in, share sheet, invite by link, pre-filled page and "How to find us" added (PRD FR-27, FR-29 to FR-35).

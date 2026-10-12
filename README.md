@@ -19,12 +19,12 @@ As a member:
 As an organiser, open **https://jed-byte.github.io/ryzeclub/#organiser**. This is a separate app with its own look and tabs (This week, Check-in, Photos, Club); it shares the member app's data, so RSVPs made as a member appear in the headcounts.
 
 1. Sign in, pick your club and tap "Claim". Approve it straight away with "Approve my request" (in the real product the curator does this).
-2. **This week:** today's session with "Check in", the page checklist (pre-filled; tap "Looks right"), and the weekly summary with "All correct", "Share this week" and "Change or cancel a session".
+2. **This week:** the next session with "Check people in", "Invite members" and "QR code" for bringing members over, the week's sessions, and "Still meeting…? Yes".
 3. **Check-in:** tap names as people arrive, or "Everyone came". First-timers are at the top.
-4. **Club:** details and the "How to find us" note, schedule, invite a co-organiser by link, and "See your public page", which opens the member app.
+4. **Club:** "Check your page" (pre-filled; tap "Looks right"), details and the "How to find us" note, schedule, invite a co-organiser by link, and "See your public page", which opens the member app.
 5. **Photos:** pin or hide photos.
 
-"Member app" in the header switches back. From the member app, "Open organiser app" on a club you manage, or **Demo**, switches over.
+"See your public page" in the Club tab switches back to the member app. Invite links open as `…/ryzeclub/#join/mdr` with a "Join the club" panel; try it on your phone with the QR code. From the member app, "Open organiser app" on a club you manage, or **Demo**, switches over.
 
 Use the **Demo** button at the top to skip ahead in time, become an organiser, or reset.
 
