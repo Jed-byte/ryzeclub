@@ -56,6 +56,10 @@ The PRD caps an organiser's routine week at under five minutes on a phone. This 
 
 Everything else (editing details, changing the schedule, moderating photos, adding organisers) is occasional, not weekly. Nothing in Manage needs a desktop.
 
+## A separate organiser app (decided 2026-10-12)
+
+Organisers use their own app, not screens inside the member app: its own address (`#organiser` in the prototype), a dark header with an "Organiser" badge, and its own tabs: **This week** (today's session, page checklist, weekly summary), **Check-in**, **Photos** and **Club**. It shares data with the member app. "Member app" in the header and "Open organiser app" on a managed club page switch between the two. Rationale: an organiser's jobs (headcounts, check-in, keeping the page right) have nothing in common with a member's week and streak, and mixing them made both harder to read.
+
 ## Surfaces
 
 1. **Claim** — a short request tied to an existing club page.
@@ -266,4 +270,5 @@ All in-scope PRD IDs are mapped. Not reviewed by anyone else. Status stays `draf
 ## Changelog
 
 - 2026-10-07: created.
+- 2026-10-12: organiser view split into a separate app with its own tabs, after a usability session.
 - 2026-10-12: organiser effort budget; weekly summary, check-in, share sheet, invite by link, pre-filled page and "How to find us" added (PRD FR-27, FR-29 to FR-35).

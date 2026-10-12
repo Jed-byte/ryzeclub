@@ -102,13 +102,15 @@
   ];
 
   const fresh = () => ({ user: null, quiz: {}, rsvps: [], follows: [], att: {}, streak: 0, longest: 0, total: 0, weekDone: false, prot: true, sinceProt: 0, badges: [], posts: {}, untag: {}, offset: 0, clubWeeks: {}, set: { standings: true, tagging: true, email: true, wa: false }, note: '',
-    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {} });
+    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '' });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
   // Drop saved references to clubs and sports that have since been removed from the prototype.
   { const ok = (id) => CLUBS.some((c) => c.id === id.split('|')[0]);
     S.rsvps = S.rsvps.filter(ok); S.follows = S.follows.filter(ok); S.manage = S.manage.filter(ok);
     if (S.quiz.sport && !SPORTS[S.quiz.sport]) S.quiz = {}; }
+  // The organiser app lives at #organiser; everything else is the member app. Both share the same saved data.
+  S.mode = location.hash === '#organiser' ? 'org' : 'member';
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } };
 
   // view state (not saved)
@@ -142,7 +144,8 @@
     right: '<path d="M5 12h14M13 6l6 6-6 6"/>', left: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
     chev: '<path d="m9 5 7 7-7 7"/>', check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>',
     edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>', flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>', plus: '<path d="M12 5v14M5 12h14"/>',
-    share: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6.5h14V13"/>'
+    share: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6.5h14V13"/>',
+    photo: '<rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="9" cy="10.5" r="1.8"/><path d="m21 16-5-5-8 9"/>'
   };
   const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[n]}</svg>`;
   const plural = (n, w) => (w === 'person' ? (n === 1 ? '1 person' : `${n} people`) : `${n} ${w}${n === 1 ? '' : 's'}`);
@@ -239,7 +242,7 @@
 
   function say(msg, undo) { toast = { msg, undo }; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast = null; const el = document.querySelector('.toast'); if (el) el.remove(); }, 4500); }
   function go(v, p = {}, replace = false) { if (!replace) stack.push(route); route = Object.assign({ v }, p); overlay = null; render(); window.scrollTo(0, 0); }
-  function back() { route = stack.pop() || { v: S.user ? 'me' : 'home' }; overlay = null; render(); }
+  function back() { route = stack.pop() || { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' }; overlay = null; render(); }
 
   // ---------- pieces ----------
   function clubCard(c, why) {
@@ -412,7 +415,7 @@
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
-      <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Manage this club</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
+      <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
       <div class="stack tight"><p>${esc(c.desc)}</p><p class="sm mut">${esc(c.level)}. Bring: ${esc(c.bring)}</p></div>
       <div class="stack tight"><span class="cap">Coming up</span><div>${fut.map((s) => sessionRow(s)).join('') || '<p class="mut sm">Nothing scheduled.</p>'}</div></div>
       ${recapHtml ? `<div class="stack"><span class="cap">Recent sessions</span>${recapHtml}</div>` : ''}
@@ -548,6 +551,7 @@
     const head = `<div class="stack tight"><span class="cap">${esc(c.name)}</span><h1 style="font-size:21px">${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]} · ${s.t}</h1><p class="mut sm">${s.type} · ${s.place}</p></div>`;
     if (isCancelled(s)) return `<main class="pad-nav">${head}<p class="notice">This session is cancelled. Everyone who was going has been told.</p></main>`;
     if (!over) return `<main class="pad-nav">${head}
+      ${S.mode === 'org' ? `<button class="btn block big" data-act="ocheck" data-id="${s.id}">${ic('check')}Check people in</button>` : ''}
       <div class="row sp"><span><span class="big-n">${list.length}</span> going${s.cap ? ` of ${s.cap}` : ''}</span><button class="btn small ghost" data-act="soon" data-what="Link copied. Paste it in your WhatsApp group or Instagram.">${ic('share')}Share link</button></div>
       <p class="note">${plural(list.filter((p) => p.first).length, 'person')} coming for the first time. Say hello.</p>
       <div>${list.map((p) => person(p, false)).join('')}</div>
@@ -578,9 +582,87 @@
       <button class="btn ghost block" data-act="soon" data-what="On a phone this opens your photo library so you can seed the page.">Add photos</button></main>`;
   };
 
+  // ---------- organiser app ----------
+  // A separate app for people who run clubs: its own header, colours and tabs, built around the
+  // organiser's week (PRD FR-30 to FR-35). It reads and writes the same data as the member app.
+  const OV = {};
+  const orgClub = () => club(S.manage.includes(S.orgClub) ? S.orgClub : S.manage[0]);
+  const ckOf = (c) => (S.check[c.id] = S.check[c.id] || {});
+  const ticks = (s) => S.ci[s.id] || {};
+
+  OV['o-start'] = () => {
+    if (!S.user) return `<main><div class="ohero"><span class="obadge">For organisers</span><h1>Run your club in five minutes a week.</h1>
+      <p>Keep your page right, see who's coming and who's new, and check people in at the session. Free for every community club in Dubai.</p></div>
+      <button class="btn block big" data-act="signin" data-then="org">Sign in with Google ${ic('right')}</button>
+      <p class="mut sm center">Looking for a club to join? <button class="link" data-act="tomember">Go to the member app</button></p></main>`;
+    const pend = Object.keys(S.claims);
+    if (pend.length) return `<main><div class="stack tight"><span class="cap">Your request</span><h1>We're checking ${esc(club(pend[0]).name)}</h1>
+      <p class="mut">We'll confirm within 2 days, usually from the club's Instagram or WhatsApp group.</p></div>
+      <p class="note">Prototype only: approve it now to see the organiser app.</p><button class="btn block big" data-act="d-org">Approve my request ${ic('right')}</button></main>`;
+    return `<main><div class="stack tight"><span class="cap">Get started</span><h1>Which club do you run?</h1>
+      <p class="mut">We've already set up a page for each club from its Instagram. Claim yours and check it.</p></div>
+      <div>${CLUBS.map((c) => `<div class="item"><span class="grow"><b>${esc(c.name)}</b><br><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span></span><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`).join('')}</div>
+      <p class="mut sm">Not listed? <button class="link" data-act="soon" data-what="This would open a short form. The Ryze Club curator sets up the page for you.">Ask us to add it</button></p></main>`;
+  };
+
+  OV['o-week'] = () => {
+    const c = orgClub(); const ck = ckOf(c); const wk = future(c).filter((s) => s.at - now() < 7 * 864e5);
+    const live = wk.filter((s) => !isCancelled(s)); const lastWk = past(c).filter((s) => now() - s.at < 7 * 864e5);
+    const cameLast = lastWk.reduce((n, s) => n + roster(s).filter((p) => p.st === 'came').length, 0);
+    const today = wk.find((s) => !isCancelled(s) && s.at - now() < 18 * 36e5) || sessions(c, 0, 0).find((s) => !isCancelled(s) && !ended(s));
+    const firsts = (s) => roster(s).filter((p) => p.first);
+    const nowCard = today ? `<div class="orgnow"><div class="grow"><span class="cap">${dayWord(today.at)} · ${today.t}</span><b class="disp">${going(today)} going${firsts(today).length ? `, ${plural(firsts(today).length, 'first-timer')}` : ''}</b><span class="sm">${esc(today.type)} · ${esc(today.place)}</span></div><button class="btn" data-act="ocheck" data-id="${today.id}">${ic('check')}Check in</button></div>` : '';
+    const setup = ck.d && ck.s && ck.f ? '' : `<div class="stack tight"><span class="cap">Get your page ready · we filled it in</span><div class="ocard">
+      ${[['d', 'Club details', 'Description, level, cost, what to bring', 'editclub'], ['s', 'Weekly sessions', meetDays(c), 'osched'], ['f', '"How to find us" note', c.find ? `“${esc(c.find)}”` : 'Shown to first-timers in their reminder', 'editclub']].map(([k, t, sub, act]) =>
+        `<div class="item"><span class="tick ${ck[k] ? 'on' : ''}" aria-hidden="true">${ck[k] ? '✓' : ''}</span><span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ck[k] ? '<span class="mut sm">Done</span>' : `<span class="oacts">${k !== 'f' ? `<button class="btn small" data-act="ock" data-k="${k}">${ic('check')}Looks right</button>` : ''}<button class="btn small ghost" data-act="${act}" data-id="${c.id}">${k === 'f' ? `${ic('plus')}Add a note` : `${ic('edit')}Edit`}</button></span>`}</div>`).join('')}</div></div>`;
+    const rows = wk.map((s) => { const f = firsts(s).length; return `<button class="item" data-act="osession" data-id="${s.id}"><span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${esc(s.type)}</b><br><span class="mut sm">${isCancelled(s) ? 'Cancelled' : f ? `${plural(f, 'first-timer')}` : 'No first-timers'}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : `<span class="big-n">${going(s)}</span>`}${ic('chev', 'chev')}</button>`; }).join('');
+    const confirmed = S.conf[c.id] && now() - S.conf[c.id] < 7 * 864e5;
+    return `<main class="pad-nav">${nowCard}${setup}
+      <div class="summary"><div class="stack tight"><span class="cap">Your week</span><h2>${esc(c.name)}</h2><p class="sm mut">${plural(live.length, 'session')} · ${live.reduce((n, s) => n + going(s), 0)} RSVPs so far · last week ${cameLast} came</p></div>
+        <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
+        <div class="stack tight"><span class="cap">Waiting for you</span><p class="sm">Nothing waiting. Reported photos, attendance disputes and co-organiser requests appear here.</p></div>
+        <div class="stack">${confirmed ? `<p class="okline">${ic('check')}Up to date. Confirmed ${confirmedOn(c)}.</p>` : `<button class="btn block big" data-act="confirmclub" data-id="${c.id}">${ic('check')}All correct</button>`}
+          <button class="btn ghost block" data-act="oshare">${ic('share')}Share this week</button>
+          <button class="btn quiet block" data-act="osched">Change or cancel a session</button></div></div>
+      <p class="mut xs center">You also get this summary every Sunday at 18:00 by email${S.set.wa ? ' and WhatsApp' : ''}.</p></main>`;
+  };
+
+  OV['o-checks'] = () => {
+    const c = orgClub(); const list = sessions(c, -2, 7).filter((s) => !isCancelled(s));
+    const row = (s) => { const t = Object.values(ticks(s)).filter(Boolean).length; const done = t || S.orgAtt[s.id];
+      return `<button class="item" data-act="ocheck" data-id="${s.id}"><span class="when"><b>${ended(s) ? DAY[s.at.getDay()] + ' ' + s.at.getDate() : whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${esc(s.type)}</b><br><span class="mut sm">${done ? `${t || roster(s).filter((p) => p.st === 'came').length} checked in` : `${going(s)} going`}</span></span>${done ? `<span class="tag ok">${ic('check')}Done</span>` : `<span class="tag cta">${ended(s) ? 'Mark who came' : 'Check in'} ${ic('chev')}</span>`}</button>`; };
+    const up = list.filter((s) => !ended(s)); const prev = list.filter((s) => ended(s)).reverse();
+    return `<main class="pad-nav"><div class="stack tight"><h1>Check-in</h1><p class="mut sm">At the session, tap names as people arrive. It takes under a minute.</p></div>
+      <div class="stack tight"><span class="cap">Coming up</span><div>${up.map(row).join('') || '<p class="mut sm">Nothing in the next week.</p>'}</div></div>
+      <div class="stack tight"><span class="cap">Just finished</span><div>${prev.map(row).join('') || '<p class="mut sm">Nothing yet.</p>'}</div></div></main>`;
+  };
+
+  OV['o-checkin'] = () => {
+    const s = byId(route.id); const t = ticks(s);
+    const list = roster(s).sort((a, b) => (b.first - a.first) || a.name.localeCompare(b.name));
+    const here = list.filter((p) => t[p.name]).length;
+    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h1 style="font-size:22px">${DAYL[s.at.getDay()]} ${s.t} · ${esc(s.type)}</h1></div>
+      <div class="cihead"><span><span class="cin">${here}</span> of ${list.length} here</span><button class="btn small" data-act="ciall" data-id="${s.id}">${ic('check')}Everyone came</button></div>
+      <div class="cilist">${list.map((p) => `<button class="cirow ${t[p.name] ? 'on' : ''}" data-act="ci" data-id="${s.id}" data-name="${esc(p.name)}" aria-pressed="${!!t[p.name]}"><span class="citick">${t[p.name] ? ic('check') : ''}</span><span class="grow">${esc(p.name)}</span>${p.first ? '<span class="tag ok">First time · say hi</span>' : ''}</button>`).join('')}</div>
+      <p class="mut sm">Saved as you tap. People you check in aren't asked "Did you go?" and their streak counts straight away.</p>
+      ${here ? `<button class="btn quiet block" data-act="ciclear" data-id="${s.id}">Clear all ticks</button>` : ''}</main>`;
+  };
+
+  OV['o-club'] = () => {
+    const c = orgClub();
+    const sec = (act, t, sub, ico) => `<button class="item" data-act="${act}" data-id="${c.id}">${ico ? `<span class="orgcta-ic">${ic(ico)}</span>` : ''}<span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ic('chev', 'chev')}</button>`;
+    return `<main class="pad-nav"><div class="stack tight"><span class="cap">Your club</span><h1 style="font-size:22px">${esc(c.name)}</h1><p class="mut sm">Last confirmed ${confirmedOn(c)}</p></div>
+      <button class="whobtn" data-act="tomember" data-id="${c.id}"><span class="orgcta-ic">${ic('me')}</span><span class="grow"><b>See your public page</b><br><span class="mut sm">Opens it in the member app, as members see it</span></span>${ic('chev', 'chev')}</button>
+      <div>${sec('editclub', 'Club details', 'Description, level, cost, what to bring', 'edit')}
+        ${sec('editclub', 'How to find us', c.find ? `“${esc(c.find)}”` : 'Add a line for first-timers', 'flag')}
+        ${sec('osched', 'Schedule', `${meetDays(c)} · change or cancel a session`, 'week')}
+        ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}</div>
+      <button class="btn quiet block" data-act="soon" data-what="Pausing the club (for summer or Ramadan timings) is not in this prototype yet.">Pause the club</button></main>`;
+  };
+
   // ---------- overlays ----------
   const O = {};
-  O.signin = () => `<div class="sheet"><h2>${overlay.then && overlay.then.act === 'claim' ? 'Sign in to manage your club' : overlay.then && overlay.then.act === 'who' ? 'Sign in to see who\'s going' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
+  O.signin = () => `<div class="sheet"><h2>${overlay.then && (overlay.then.act === 'claim' || overlay.then.act === 'org') ? 'Sign in to manage your club' : overlay.then && overlay.then.act === 'who' ? 'Sign in to see who\'s going' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
     <label for="si-name">First name</label><input type="text" id="si-name" value="Alex" maxlength="20" autocomplete="off">
     <button class="btn block" data-act="dosignin">Continue with Google</button><button class="btn quiet block" data-act="close">Not now</button></div>`;
   O.day = () => {
@@ -683,19 +765,31 @@
     <label for="ed-level">Level or pace</label><input type="text" id="ed-level" maxlength="80" value="${esc(c.level)}">
     <label for="ed-cost">Cost</label><input type="text" id="ed-cost" maxlength="40" value="${esc(c.cost)}">
     <label for="ed-bring">What to bring</label><input type="text" id="ed-bring" maxlength="80" value="${esc(c.bring)}">
+    <label for="ed-find">How to find us<br><span class="mut sm">One line for first-timers, added to their reminder</span></label><input type="text" id="ed-find" maxlength="80" placeholder="For example: Look for the orange flag by Pier 7" value="${esc(c.find || '')}">
     <p class="mut xs">Changes show on your public page straight away.</p>
     <button class="btn block" data-act="saveclub" data-id="${c.id}">Save</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   O.cancel = () => { const s = byId(overlay.id); return `<div class="sheet"><div class="stack tight"><h2>Cancel ${nounFor(s)}?</h2><p class="mut sm">${dateShort(s.at)} · ${s.t} · ${s.type}</p></div>
     <p class="notice"><b>${plural(going(s), 'person')} will be told.</b> Their streak still counts this week.</p>
     <label for="cn-why">Reason (optional)</label><input type="text" id="cn-why" maxlength="80" placeholder="Weather, venue closed…">
     <button class="btn block" data-act="docancel" data-id="${s.id}">Cancel session</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
+  O.oshare = () => { const c = orgClub(); const wk = future(c).filter((s) => s.at - now() < 7 * 864e5 && !isCancelled(s));
+    return `<div class="sheet"><h2>Share this week</h2><p class="mut sm">Post it in your club's WhatsApp group. People RSVP from the link; chat stays in your group.</p>
+      <div class="msgprev"><b>This week at ${esc(c.name)}</b><br>${wk.map((s) => `${DAY[s.at.getDay()]} ${s.t} · ${esc(s.type)} · ${going(s)} going`).join('<br>')}<br>RSVP: ryzeclub.ae/${c.id}</div>
+      <button class="btn block" data-act="soon" data-what="This would open WhatsApp with the message ready to send.">Send to WhatsApp</button>
+      <button class="btn ghost block" data-act="soon" data-what="This would open Instagram with a story card.">Share to Instagram</button>
+      <button class="btn quiet block" data-act="soon" data-what="Copied.">Copy text</button></div>`; };
+  O.oinvite = () => { const c = orgClub(); return `<div class="sheet"><h2>Invite a co-organiser</h2><p class="mut sm">Send this link to someone who helps run the club. The first person to open it and sign in joins as an organiser. It works once and expires in 7 days.</p>
+      <div class="msgprev">Help run ${esc(c.name)} on Ryze Club: ryzeclub.ae/join/${c.id}-${hash(c.id + S.user.name) % 9000 + 1000}</div>
+      <button class="btn block" data-act="soon" data-what="This would open WhatsApp with the invite ready to send.">Send by WhatsApp</button>
+      <button class="btn ghost block" data-act="soon" data-what="This would open your email with the invite.">Send by email</button></div>`; };
   O.demo = () => { const n = now(); const pend = Object.keys(S.claims).length; return `<div class="sheet"><div class="stack tight"><h2>Demo controls</h2><p class="mut sm">Prototype time: ${DAYL[n.getDay()]} ${n.getDate()} ${MON[n.getMonth()]}, ${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}</p></div>
     <span class="cap">As a member</span>
     <button class="btn ghost block" data-act="d-after">Skip to after my next session</button>
     <button class="btn ghost block" data-act="d-week">End this week</button>
     <button class="btn ghost block" data-act="d-11">Give me an 11-week streak</button>
     <span class="cap">As an organiser</span>
-    <button class="btn ghost block" data-act="d-org">${pend ? 'Approve my club request' : 'Make me organiser of Marina Dawn Runners'}</button>
+    <button class="btn ghost block" data-act="d-org">${pend ? 'Approve my club request' : S.manage.length ? 'Open the organiser app' : 'Make me organiser of Marina Dawn Runners'}</button>
+    ${S.mode === 'org' ? '<button class="btn ghost block" data-act="tomember">Switch to the member app</button>' : ''}
     <span class="cap">Start again</span>
     <button class="btn ghost block" data-act="d-reset">Reset the prototype</button>
     <p class="mut xs">"Skip" needs an RSVP first. After an 11-week streak, your next "I went" earns the 12-week milestone.</p>
@@ -742,10 +836,11 @@
       else if (then && then.act === 'follow') { if (!S.follows.includes(then.id)) S.follows.push(then.id); save(); say('Following.'); render(); }
       else if (then && then.act === 'claim') { overlay = { t: 'claim', id: then.id }; render(); }
       else if (then && then.act === 'who') { A.who({ id: then.id }); }
+      else if (then && then.act === 'org') { go('o-week', {}, true); }
       else go('me');
     },
-    signin: () => { overlay = { t: 'signin' }; render(); },
-    signout: () => { S.user = null; save(); stack = []; go('home', {}, true); },
+    signin: (d) => { overlay = { t: 'signin', then: d && d.then ? { act: d.then } : null }; render(); },
+    signout: () => { S.user = null; save(); stack = []; go(S.mode === 'org' ? 'o-week' : 'home', {}, true); },
     unrsvp: (d) => { S.rsvps = S.rsvps.filter((x) => x !== d.id); save(); overlay = null; say('Removed. The club has been told.', () => { doRsvp(d.id); toast = null; render(); }); render(); },
     went: (d) => confirmWent(d.id),
     missed: (d) => { S.att[d.id] = 'missed'; save(); go('missed', { id: d.id }, true); },
@@ -765,15 +860,25 @@
     // organiser
     claim: (d) => { if (!S.user) { overlay = { t: 'signin', then: { act: 'claim', id: d.id } }; render(); return; } overlay = { t: 'claim', id: d.id }; render(); },
     sendclaim: (d) => { S.claims[d.id] = 'pending'; save(); overlay = null; say("Sent. We'll confirm within 2 days. (Use Demo to approve it now.)"); render(); },
-    manage: (d) => go('manage', { id: d.id }),
+    manage: (d) => A.toorg(d),
+    toorg: (d) => { S.mode = 'org'; if (d && d.id && S.manage.includes(d.id)) S.orgClub = d.id; save(); history.replaceState(null, '', '#organiser'); stack = []; go('o-week', {}, true); },
+    tomember: (d) => { S.mode = 'member'; save(); history.replaceState(null, '', location.pathname + location.search); stack = []; if (d && d.id) { go('club', { id: d.id }, true); } else go(S.user ? 'me' : 'home', {}, true); },
+    oweek: () => { stack = []; go('o-week', {}, true); }, ochecks: () => { stack = []; go('o-checks', {}, true); }, oclub: () => { stack = []; go('o-club', {}, true); },
+    ophotos: () => { stack = []; go('o-photos', { id: orgClub().id }, true); },
+    osched: () => go('o-sched', { id: orgClub().id }), osession: (d) => go('o-session', { id: d.id }), ocheck: (d) => go('o-checkin', { id: d.id }),
+    ock: (d) => { ckOf(orgClub())[d.k] = true; if (d.k === 'd') S.conf[orgClub().id] = now().getTime(); save(); say('Thanks. Marked as checked.'); render(); },
+    oshare: () => { overlay = { t: 'oshare' }; render(); }, oinvite: () => { overlay = { t: 'oinvite' }; render(); },
+    ci: (d) => { const t = (S.ci[d.id] = S.ci[d.id] || {}); t[d.name] = !t[d.name]; const o = (S.orgAtt[d.id] = S.orgAtt[d.id] || {}); o[d.name] = t[d.name] ? 'came' : 'no'; save(); render(); },
+    ciall: (d) => { const s = byId(d.id); const t = (S.ci[d.id] = {}); const o = (S.orgAtt[d.id] = {}); roster(s).forEach((p) => { t[p.name] = true; o[p.name] = 'came'; }); save(); say('Everyone checked in. Tap a name to untick.'); render(); },
+    ciclear: (d) => { delete S.ci[d.id]; delete S.orgAtt[d.id]; save(); render(); },
     attend: (d) => go('attend', { id: d.id }),
-    sched: (d) => { const id = d.id || route.id; (S.check[id] = S.check[id] || {}).s = true; save(); go('sched', { id }); },
+    sched: (d) => { const id = d.id || route.id; if (S.mode === 'org') { go('o-sched', { id }); return; } (S.check[id] = S.check[id] || {}).s = true; save(); go('sched', { id }); },
     mphotos: (d) => { const id = d.id || route.id; (S.check[id] = S.check[id] || {}).p = true; save(); go('mphotos', { id }); },
     editclub: (d) => { overlay = { t: 'edit', id: d.id }; render(); },
     saveclub: (d) => {
       const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; }; const c = club(d.id);
-      S.edits[d.id] = { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, cost: val('ed-cost') || c.cost, bring: val('ed-bring') || c.bring };
-      S.conf[d.id] = now().getTime(); (S.check[d.id] = S.check[d.id] || {}).d = true; save(); applyEdits(); overlay = null; say('Saved. Your public page is updated.'); render();
+      S.edits[d.id] = { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, cost: val('ed-cost') || c.cost, bring: val('ed-bring') || c.bring, find: val('ed-find') };
+      S.conf[d.id] = now().getTime(); const ck = (S.check[d.id] = S.check[d.id] || {}); ck.d = true; if (val('ed-find')) ck.f = true; save(); applyEdits(); overlay = null; say('Saved. Your public page is updated.'); render();
     },
     confirmclub: (d) => { S.conf[d.id] = now().getTime(); (S.check[d.id] = S.check[d.id] || {}).d = true; save(); say('Thanks. Marked as confirmed today.'); render(); },
     askcancel: (d) => { overlay = { t: 'cancel', id: d.id }; render(); },
@@ -788,13 +893,34 @@
     'd-after': () => { const nx = S.rsvps.map(byId).filter((s) => s && !ended(s)).sort((a, b) => a.at - b.at)[0]; if (!nx) { overlay = null; say('RSVP to a session first.'); render(); return; } S.offset += (nx.at.getTime() + 2 * 36e5 + 6e4) - now().getTime(); save(); stack = []; go('me', {}, true); },
     'd-week': needUser(() => { endWeek(); stack = []; go('me', {}, true); }),
     'd-11': needUser(() => { S.streak = 11; S.longest = Math.max(S.longest, 11); S.total = Math.max(S.total, 22); S.weekDone = false; ['s1', 'w4'].forEach((b) => { if (!S.badges.includes(b)) S.badges.push(b); }); save(); stack = []; go('me', {}, true); }),
-    'd-org': needUser(() => { const ids = Object.keys(S.claims); const list = ids.length ? ids : ['mdr']; list.forEach((id) => { if (!S.manage.includes(id)) S.manage.push(id); delete S.claims[id]; }); save(); stack = []; say(`You now manage ${club(list[0]).name}.`); go('manage', { id: list[0] }, true); }),
+    'd-org': needUser(() => { const ids = Object.keys(S.claims); const list = ids.length ? ids : S.manage.length ? [] : ['mdr']; list.forEach((id) => { if (!S.manage.includes(id)) S.manage.push(id); delete S.claims[id]; }); if (list.length) { S.orgClub = list[0]; say(`You now manage ${club(list[0]).name}.`); } A.toorg({ id: S.orgClub }); }),
     'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { sport: '', area: '', day: '', level: '' }; go('home', {}, true); }
   };
 
   // ---------- render ----------
+  function renderOrg(app) {
+    const c = S.user ? orgClub() : null;
+    let v = route.v.startsWith('o-') ? route.v : 'o-week'; if (!c) v = 'o-start';
+    if (v !== route.v) route = { v };
+    const reuse = { 'o-sched': V.sched, 'o-photos': V.mphotos, 'o-session': V.attend };
+    const body = (OV[v] || reuse[v])();
+    const sub = ['o-sched', 'o-session', 'o-checkin'].includes(v);
+    const top = `<header class="top otop"><div class="r">${sub ? `<button class="back" data-act="back">${ic('left')}Back</button>` : `<span class="ologo">ryze club <span class="obadge">Organiser</span></span>`}</div>
+      <div class="r">${S.user ? '<button class="pill" data-act="tomember">Member app</button>' : ''}<button class="pill" data-act="demo">Demo</button></div></header>`;
+    const tab = (act, l, i, on) => `<button data-act="${act}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
+    const nav = c ? `<nav class="nav onav" aria-label="Organiser">${tab('oweek', 'This week', 'week', v === 'o-week' || v === 'o-session')}${tab('ochecks', 'Check-in', 'check', v === 'o-checks' || v === 'o-checkin')}${tab('ophotos', 'Photos', 'photo', v === 'o-photos')}${tab('oclub', 'Club', 'flag', v === 'o-club' || v === 'o-sched')}</nav>` : '';
+    return top + body + nav;
+  }
+
   function render() {
     const app = document.getElementById('app'); if (!app) return;
+    document.body.classList.toggle('org', S.mode === 'org');
+    if (S.mode === 'org') {
+      const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace(/^(<div class="sheet[^>]*>)/, '$1<button class="sheet-x" data-act="close" aria-label="Close">' + ic('x') + '</button>').replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
+      const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
+      app.innerHTML = renderOrg(app) + ov + ts; a11yOverlay(app); return;
+    }
+    if (route.v.startsWith('o-')) route = { v: S.user ? 'me' : 'home' };
     if (!S.user && ['me', 'clubs', 'profile', 'result', 'missed', 'confirm', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v)) route = { v: 'home' };
     // Tab roots are reached from the bottom navigation, so they show the logo; every other screen shows a labelled Back.
     const roots = S.user ? ['home', 'me', 'browse', 'clubs', 'profile'] : ['home'];
@@ -852,7 +978,8 @@
   document.addEventListener('input', (e) => { if (overlay && overlay.t === 'editpro' && e.target.id && e.target.id.startsWith('ep-')) readPro(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay) { overlay = null; render(); } });
 
+  window.addEventListener('hashchange', () => { S.mode = location.hash === '#organiser' ? 'org' : 'member'; stack = []; route = { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' }; render(); });
   applyEdits();
-  route = { v: S.user ? 'me' : 'home' };
+  route = { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' };
   render();
 })();

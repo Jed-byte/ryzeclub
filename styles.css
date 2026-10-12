@@ -283,3 +283,44 @@ button.item { min-height: 56px; }
   .whobtn:hover { border-color: var(--ink); }
   .person:hover, .whobtn:hover { background-color: var(--soft); }
 }
+
+/* ---------- Organiser app: its own look, so it never feels like the member app ---------- */
+body.org { --page: #22132A; --acc-soft: #FCE6EB; }
+body.org #app { background: #FBF8FB; }
+.otop { background: var(--ink); color: #FFFFFF; border-bottom: 0; }
+.otop .pill { background: transparent; color: #FFFFFF; border-color: rgba(255, 255, 255, .35); }
+.otop .back { color: #FFFFFF; }
+.ologo { font-family: var(--display); font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+.obadge { display: inline-block; font-family: var(--body); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: var(--acc); color: #FFFFFF; border-radius: 6px; padding: 3px 7px; }
+.onav { background: var(--ink); border-top: 0; }
+.onav button { color: #CBBED0; }
+.onav button.on { color: #FFFFFF; }
+.onav button.on .ni { background: var(--acc); }
+.ohero { display: flex; flex-direction: column; gap: 12px; background: var(--ink); color: #FFFFFF; border-radius: 20px; padding: 22px 18px; }
+.ohero h1 { font-size: 28px; }
+.ohero p { color: #E6DCE8; }
+.ohero .obadge { align-self: flex-start; }
+/* Today's session: the thing to act on first */
+.orgnow { display: flex; align-items: center; gap: 12px; background: var(--acc); color: #FFFFFF; border-radius: 18px; padding: 16px; }
+.orgnow > .grow { display: flex; flex-direction: column; gap: 2px; }
+.orgnow .cap { color: #FFE3EA; }
+.orgnow .disp { font-size: 20px; }
+.orgnow .btn { background: #FFFFFF; color: var(--acc); box-shadow: none; flex: none; }
+.ocard, .summary { background: var(--bg); border: 2px solid var(--ink); border-radius: 18px; padding: 14px; }
+.ocard .item { flex-wrap: wrap; }
+.ocard .item .grow { flex-basis: calc(100% - 40px); }
+.oacts { display: flex; gap: 8px; flex-basis: 100%; padding-left: 36px; }
+.oacts .btn.small { min-height: 42px; padding: 6px 14px; }
+.summary { display: flex; flex-direction: column; gap: 16px; }
+.okline { display: flex; align-items: center; gap: 8px; color: var(--ok); font-weight: 700; background: #DCF1E8; border-radius: 12px; padding: 12px 14px; }
+.msgprev { background: #E7F6E9; border-radius: 14px 14px 14px 4px; padding: 12px 14px; font-size: 14px; line-height: 1.5; }
+/* Check-in: used standing up, outdoors, often at dawn, so names and targets are the largest in the product. */
+.cihead { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 68px; background: #FBF8FB; padding: 6px 0; z-index: 2; }
+.cin { font-family: var(--display); font-size: 32px; font-weight: 700; color: var(--acc); }
+.cilist { display: flex; flex-direction: column; gap: 8px; }
+.cirow { display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px 14px; border: 2px solid var(--line); border-radius: 16px; background: var(--bg); font-size: 18px; font-weight: 700; text-align: left; color: var(--ink); }
+.cirow.on { border-color: var(--ok); background: #EEF8F3; }
+.citick { width: 34px; height: 34px; border-radius: 50%; border: 2.5px solid var(--line); display: grid; place-items: center; flex: none; background: var(--bg); }
+.cirow.on .citick { background: var(--ok); border-color: var(--ok); color: #FFFFFF; }
+.citick .ic { width: 20px; height: 20px; stroke-width: 3; }
+

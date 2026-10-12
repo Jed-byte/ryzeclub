@@ -42,3 +42,4 @@ parent: prd.md
 | D31 | 2026-10-12 | Weekly organiser summary replaces routine organiser messages; organisers act from message links (FR-30, FR-33) | Decision | Founder, on recommendation | Brings the organiser's week into one message they already read |
 | D32 | 2026-10-12 | Curator pre-fills every claimed page; co-organisers can be invited by link (FR-34, FR-35) | Decision | Founder, on recommendation | Organisers check rather than type; WhatsApp groups are where co-organisers are found |
 | D33 | 2026-10-12 | Seasons are run by the curator in V1; clubs join with one tap; no prizes with real value | Decision | Founder, on recommendation | Keeps organiser effort near zero and stays within D20 |
+| D34 | 2026-10-12 | The organiser experience is a separate app with its own look and tabs, sharing data with the member app | Decision | Founder | Usability session: the organiser view sat inside the member app and needed to be a completely different view |
