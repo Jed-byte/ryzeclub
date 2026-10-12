@@ -254,10 +254,14 @@ button.item { min-height: 56px; }
 .ph.poster { flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 4px; min-height: 170px; border-radius: 14px; padding: 16px; font-size: 13px; letter-spacing: 0; text-transform: none; font-weight: 500; }
 .ph.poster .pt { font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.05; }
 .ph.poster .mut-on { font-size: 12px; font-weight: 700; opacity: .85; }
-.whobtn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; background: var(--soft); border: 2px solid var(--soft); border-radius: 12px; text-align: left; color: var(--ink); }
-.whobtn .av { border-color: var(--soft); background: var(--bg); }
+.whobtn { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 10px 12px 10px 14px; background: var(--bg); border: 2px solid var(--ink); border-radius: 14px; text-align: left; color: var(--ink); font-size: 15px; }
+.whobtn .avs .av { width: 34px; height: 34px; border-color: var(--bg); background: var(--acc-soft); color: var(--acc); }
+.whobtn:active { transform: scale(.99); }
+
 
 /* My week: next session card */
+.nx-main { display: flex; flex-direction: column; width: 100%; border: 0; background: none; padding: 0; text-align: left; color: var(--ink); }
+.nx-who { padding: 0 14px 14px; }
 .next { display: flex; flex-direction: column; width: 100%; border: 1.5px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--bg); padding: 0; text-align: left; color: var(--ink); }
 .next .ph { height: 140px; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 2px; padding: 14px; text-transform: none; letter-spacing: 0; }
 .next .nx-when { font-size: 12px; font-weight: 700; }
