@@ -2,7 +2,7 @@
 title: UX scope — Ryze Club V1
 status: provisional
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 parent: ../prd.md
 ---
 
@@ -17,11 +17,11 @@ parent: ../prd.md
 | ID | Slice | Actor | Entry | Exit / success | Surfaces | Key states | PRD IDs |
 |---|---|---|---|---|---|---|---|
 | UX-001 | Find a club and RSVP | Newcomer | Home quiz, or a club page opened from Instagram or search | RSVP made to a first session | Home, quiz, results, browse and filter, club page, session, sign-in | No match, no upcoming session, stale listing, session full | VS-1, FR-1, FR-2, FR-3, FR-5, UJ-1 |
-| UX-003 | Streaks and milestones | Member | After confirming attendance, or profile | Streak seen, milestone earned and shared | Profile, streak, milestone moment, club standings, share card | No streak yet, at risk, protection used, opted out of standings | VS-4, FR-12, FR-22, FR-23, FR-24, FR-25, FR-26 |
-| UX-002 | Turn up and come back | Member | Reminder, or My clubs | "I went" confirmed and next RSVP made | My clubs, session, reminder messages, attendance confirm, nudge | Cancelled or changed session, reminders off | VS-2, FR-4, FR-6, FR-11, FR-13, FR-14, UJ-2 |
+| UX-003 | Streaks and milestones | Member | After confirming attendance, or profile | Streak seen, milestone earned and shared | Profile, streak, milestone moment, club standings, share card | No streak yet, at risk, protection used, opted out of standings | VS-4, FR-12, FR-22, FR-23, FR-24, FR-25, FR-26, FR-29 |
+| UX-002 | Turn up and come back | Member | Reminder, or My clubs | "I went" confirmed and next RSVP made | My clubs, session, reminder messages, attendance confirm, nudge | Cancelled or changed session, reminders off | VS-2, FR-4, FR-6, FR-11, FR-13, FR-14, FR-27, FR-28, UJ-2, UJ-8 |
 | UX-004 | Post and manage photos | Member | A session they attended | Photos on the club page; unwanted tag or post removed | Post composer, session photos, club timeline, tag, report | Not eligible to post, upload failure, empty timeline, hidden post | VS-3, FR-7, FR-9, FR-10 (member), UJ-3, UJ-5 |
-| UX-005 | Run a club page | Organiser | Their club's listing | Page claimed, schedule correct, headcount visible, posts pinned or hidden | Claim, club editor, session editor, attendee list, confirm prompt, moderation | Claim pending, stale flag, several organisers | VS-5, FR-8, FR-15, FR-16, FR-17, FR-18, FR-10 (hide), UJ-4 |
-| UX-006 | Curate the directory | Curator | Curator area | Clubs added, claims approved, reports handled, pilot numbers visible | Club list, club editor, claims, reports, measures | Stale listings, open reports | VS-6, FR-19, FR-20, FR-21, UJ-6 |
+| UX-005 | Run a club page | Organiser | Their club's listing | Page claimed, schedule correct, headcount visible, posts pinned or hidden | Claim, club editor, session editor, attendee list, confirm prompt, moderation | Claim pending, stale flag, several organisers | VS-5, FR-8, FR-15, FR-16, FR-17, FR-18, FR-10 (hide), FR-27, FR-29 to FR-35, UJ-4, UJ-7 |
+| UX-006 | Curate the directory | Curator | Curator area | Clubs added, claims approved, reports handled, pilot numbers visible | Club list, club editor, claims, reports, measures | Stale listings, open reports | VS-6, FR-19, FR-20, FR-21, FR-29, FR-35, UJ-6 |
 
 UX-003 is designed second because the streak is the main retention device and sets the tone for the rest.
 
@@ -31,6 +31,7 @@ UX-003 is designed second because the streak is the main retention device and se
 - **Empty and problem states:** no matching clubs, no upcoming session, cancelled session, possibly out-of-date listing, empty photo timeline, hidden post.
 - **Visibility:** visitors see club pages; attendee names and posting need sign-in; organisers see their own club's tools; the curator sees everything.
 - **Form factor:** UX-001 to UX-004 are phone-first. UX-005 and UX-006 must work on phones and can be plainer.
+- **Organiser effort budget:** a routine organiser week takes under five minutes on a phone, mostly from messages (PRD section 10). UX-005 is designed to it.
 
 ## Visual direction (decided 2026-10-07)
 
@@ -67,3 +68,4 @@ Coaches, dietitians, 1:1, payments, rewards redemption, partner-finding, a gener
 
 - 2026-10-07: created; six slices approved by the founder.
 - 2026-10-07: visual direction decided (the blend); UX-001 drafted.
+- 2026-10-12: retention and organiser-ease additions mapped to UX-002, UX-003, UX-005 and UX-006.

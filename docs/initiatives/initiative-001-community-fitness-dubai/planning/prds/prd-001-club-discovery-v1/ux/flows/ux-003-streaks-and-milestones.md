@@ -2,7 +2,7 @@
 title: UX-003 — Streaks and milestones
 status: draft
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 parent: ../ux-spec.md
 ---
 
@@ -32,6 +32,7 @@ Same as UX-001: PRD handoff-ready, PRD review skipped by the founder, no design 
 | FR-24 Club streaks and standings | Club page standings |
 | FR-25 Shareable streak card | Share card |
 | FR-26 Rewards-ready record | Rules below; nothing shown to members in V1 |
+| FR-29 Seasons | Home season card, Season badge, Club page season line |
 
 Confirming attendance ("I went") is designed in UX-002. This slice starts from the result.
 
@@ -72,6 +73,7 @@ The 52-week milestone is the headline one: its celebration and share card are th
 4. **Profile** — history, milestones, settings for standings.
 5. **Club page standings** — the "Most consistent" section.
 6. **At-risk reminder** — a message by email or WhatsApp.
+7. **Season card** — on Home while a season is running for one of the member's clubs.
 
 ## Main flows
 
@@ -116,6 +118,16 @@ The 52-week milestone is the headline one: its celebration and share card are th
 3. A signed-in member who is not in the top five sees their own line beneath: "You · 3 weeks".
 4. Above the list, one line for the whole club: "41 members showed up in the last 4 weeks."
 
+### G. Seasons
+
+1. The curator sets up a season: a name, start and end weeks (four to six weeks), and a goal in attended weeks, for example "Show up every week for six weeks". One season each year runs alongside the Dubai Fitness Challenge.
+2. Organisers join their club with one tap from their weekly summary (UX-005). A club that does not join is unaffected.
+3. A member who follows a joined club sees a **Season card** on Home, under the streak: "Autumn Season · week 3 of 6 · 3 of 3 so far". There is nothing to sign up for; every member of a joined club takes part, and the card can be hidden.
+4. Progress counts the same recorded attendance as the streak, at any joined club. A week covered by streak protection does not count towards a season.
+5. Completing the goal opens the **Milestone moment** with the season badge, which then sits with the milestones on Profile and can be shared with the same card.
+6. The club page shows one line while the season runs: "18 members on track this season."
+7. A member who falls off track sees "You can still finish 5 of 6" or, once completion is impossible, the card says "Next season starts in March" and stops counting.
+
 ## States
 
 | State | Where | Behaviour |
@@ -133,6 +145,9 @@ The 52-week milestone is the headline one: its celebration and share card are th
 | Share not available on the device | Share card | Only "Save image" is shown |
 | Image could not be made | Share card | "We couldn't make your card. Try again." |
 | Offline | Home | Last known streak is shown with "Last updated" time |
+| Season running, club not joined | Home | No season card |
+| Season card hidden by the member | Home, Profile | Hidden from Home; progress still shown on Profile |
+| Season can no longer be completed | Season card | "Next season starts in March." and counting stops |
 
 Destructive confirmation and permission-denied do not apply.
 
@@ -153,6 +168,7 @@ Destructive confirmation and permission-denied do not apply.
 - No more than one streak message per week is sent outside the site.
 - Members appear in standings by default and can opt out in Profile with one switch. [ASSUMPTION: S4]
 - Nothing in V1 mentions rewards, points or cashback.
+- Seasons never ask the member to sign up and never ask the organiser for more than the one tap to join.
 
 ## Locked wording
 
@@ -171,6 +187,10 @@ Destructive confirmation and permission-denied do not apply.
 | Standings heading | Most consistent |
 | Opt-out switch | Show me in club standings |
 | Share buttons | Share · Save image |
+| Season card | Autumn Season · week 3 of 6 · 3 of 3 so far |
+| Season on club page | 18 members on track this season. |
+| Season off track | You can still finish 5 of 6 |
+| Season badge | Autumn Season complete. |
 
 ## Responsive behaviour
 
@@ -189,7 +209,7 @@ Destructive confirmation and permission-denied do not apply.
 
 ## Measurement the product needs to see
 
-Members with a streak of 2, 4 and 12 weeks; at-risk reminders sent and the RSVPs that follow; protections used; streaks ended and whether the member returns within two weeks; milestone moments shown and shared; standings opt-outs.
+Members with a streak of 2, 4 and 12 weeks; at-risk reminders sent and the RSVPs that follow; protections used; streaks ended and whether the member returns within two weeks; milestone moments shown and shared; standings opt-outs; clubs joining each season; members on track each week; seasons completed; return rate in the four weeks after a season ends compared with before it.
 
 ## Feature-specific visual guidance
 
@@ -207,6 +227,8 @@ Members with a streak of 2, 4 and 12 weeks; at-risk reminders sent and the RSVPs
 - The at-risk reminder must be sent once per member per week at most, and not to members who turned reminders off.
 - The share card is an image the member can save; it must not expose anything they chose to hide.
 - A member's streak is private to them.
+- A season belongs to the curator, has fixed start and end weeks in Dubai time, and counts the same attendance records as the streak; protection does not count towards it.
+- Season badges are kept like milestones and can be earned once per season.
 
 ## Assumptions
 
@@ -216,6 +238,7 @@ Members with a streak of 2, 4 and 12 weeks; at-risk reminders sent and the RSVPs
 | S2 | Seven days is long enough to confirm attendance late |
 | S3 | Thursday 18:00 is the right moment for the at-risk reminder, ahead of the weekend's sessions |
 | S4 | Appearing in standings by default is acceptable when opting out is one switch |
+| S5 | A season of four to six weeks gives a fresh goal before streak fatigue sets in, without competing with the streak |
 
 ## Open questions
 
@@ -238,3 +261,4 @@ All in-scope PRD IDs are mapped. States, visibility, platforms, accessibility an
 
 - 2026-10-07: created.
 - 2026-10-07: standings default, protection rule and longer milestones confirmed by the founder.
+- 2026-10-12: seasons added (PRD FR-29).

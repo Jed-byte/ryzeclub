@@ -1,7 +1,7 @@
 ---
 title: Decision log — PRD-001
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 parent: prd.md
 ---
 
@@ -37,3 +37,8 @@ parent: prd.md
 | D27 | 2026-10-07 | Early-session reminders go at 19:00 the evening before | Decision | Founder | |
 | D28 | 2026-10-07 | A week counts for the streak when the member's RSVPed session was cancelled by the club | Decision | Founder | Fairness; does not add to total sessions |
 | D16 | 2026-10-07 | Sign-in with Google; reminders by email and by WhatsApp with opt-in | Decision | Founder | Phone number is optional and only for WhatsApp |
+| D29 | 2026-10-12 | Add retention features to V1: first-timer welcome, win-back message, seasons, share-to-WhatsApp links, organiser check-in (FR-27 to FR-29, FR-31, FR-32) | Decision | Founder, on recommendation | People return for people; most drop-off is after the first visit; lapsed members otherwise hear nothing |
+| D30 | 2026-10-12 | Organiser effort budget: a routine week takes under five minutes on a phone; new regular organiser tasks need founder approval | Decision | Founder | "Make sure it's easier for organisers to manage"; organiser workload is make-or-break (concept verdict) |
+| D31 | 2026-10-12 | Weekly organiser summary replaces routine organiser messages; organisers act from message links (FR-30, FR-33) | Decision | Founder, on recommendation | Brings the organiser's week into one message they already read |
+| D32 | 2026-10-12 | Curator pre-fills every claimed page; co-organisers can be invited by link (FR-34, FR-35) | Decision | Founder, on recommendation | Organisers check rather than type; WhatsApp groups are where co-organisers are found |
+| D33 | 2026-10-12 | Seasons are run by the curator in V1; clubs join with one tap; no prizes with real value | Decision | Founder, on recommendation | Keeps organiser effort near zero and stays within D20 |

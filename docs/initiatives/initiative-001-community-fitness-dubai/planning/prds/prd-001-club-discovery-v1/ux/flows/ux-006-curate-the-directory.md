@@ -2,7 +2,7 @@
 title: UX-006 — Curate the directory
 status: draft
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 parent: ../ux-spec.md
 ---
 
@@ -30,6 +30,8 @@ Same as the other slices: PRD handoff-ready, PRD review skipped by the founder, 
 | FR-20 Report a listing | Reports |
 | FR-10 Moderation (remove) | Reports |
 | FR-21 Pilot measures | Pilot numbers |
+| FR-29 Seasons (create) | Seasons |
+| FR-35 Ready-made page | Club editor, Claims |
 | UJ-6 | Main flow |
 
 ## Surfaces
@@ -40,6 +42,7 @@ Same as the other slices: PRD handoff-ready, PRD review skipped by the founder, 
 4. **Claims** — requests to manage a club, and new club requests.
 5. **Reports** — reported listings and photos.
 6. **Pilot numbers** — the PRD's success signals.
+7. **Seasons** — create and end seasons; see which clubs joined.
 
 ## Main flows
 
@@ -61,6 +64,7 @@ Same as the other slices: PRD handoff-ready, PRD review skipped by the founder, 
 1. A claim shows the person's name and email, their stated role, the Instagram handle or WhatsApp link they gave, and the club page.
 2. The curator checks it outside the site, then chooses "Approve" or "Decline" with a short reason.
 3. A new club request opens the proposed page in the editor with "Make live" and "Decline".
+4. Before approving, the curator checks the page is fully filled in: details, weekly sessions, cover photo and, where known, a "How to find us" line. The organiser should only need to confirm (PRD FR-35). The **To do** item reads "Fill in before approving" until it is.
 
 ### D. Handle a report (UJ-6)
 
@@ -85,8 +89,16 @@ One page with the PRD's signals against their targets, for the last 7 days, the 
 - Sessions with at least one member photo (target: 50%)
 - Listings confirmed in the last 30 days (target: 80%)
 - Quiz completions leading to an RSVP (no target yet)
+- Organiser time in a routine week (target: median under 5 minutes)
+- Weekly summaries answered, sessions checked in, RSVPs from shared links, and win-back returns (no targets yet)
 
 Each number can be opened to see the clubs or sessions behind it. No member's personal details are shown here.
+
+### G. Seasons
+
+1. "New season" asks for a name, start week, length (four to six weeks) and a goal in attended weeks.
+2. Organisers are offered "Join the season" in their next weekly summary. The curator can also add a club on an organiser's behalf.
+3. While a season runs, the page shows clubs joined and members on track. It ends automatically on its last Sunday.
 
 ## States
 
@@ -176,3 +188,4 @@ All in-scope PRD IDs are mapped. Not reviewed by anyone else. Status stays `draf
 ## Changelog
 
 - 2026-10-07: created.
+- 2026-10-12: pre-filled pages before approval, seasons, and new pilot numbers added (PRD FR-29, FR-35).
