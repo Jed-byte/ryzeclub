@@ -16,7 +16,7 @@ As a member:
 4. Watch the weekly streak grow and earn milestones.
 5. Add photos, remove a tag, report a photo.
 
-As an organiser, open **https://jed-byte.github.io/ryzeclub/#organiser**. This is a separate app with its own look and tabs (This week, Check-in, Photos, Club); it shares the member app's data, so RSVPs made as a member appear in the headcounts.
+As an organiser, open **https://jed-byte.github.io/ryzeclub/#organiser**. This is a separate app with its own look and tabs (This week, Check-in, Members, Photos, Club); it shares the member app's data, so RSVPs made as a member appear in the headcounts.
 
 1. Sign in, pick your club and tap "Claim". Approve it straight away with "Approve my request" (in the real product the curator does this).
 2. **This week:** the next session with "Check people in", "Invite members" and "QR code" for bringing members over, the week's sessions, and "Still meeting…? Yes".

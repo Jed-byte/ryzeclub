@@ -102,7 +102,7 @@
   ];
 
   const fresh = () => ({ user: null, quiz: {}, rsvps: [], follows: [], att: {}, streak: 0, longest: 0, total: 0, weekDone: false, prot: true, sinceProt: 0, badges: [], posts: {}, untag: {}, offset: 0, clubWeeks: {}, set: { standings: true, tagging: true, email: true, wa: false }, note: '',
-    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '' });
+    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '', thanks: {}, nudged: {} });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
   // Drop saved references to clubs and sports that have since been removed from the prototype.
@@ -426,6 +426,7 @@
     const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
     return `<main class="flush pad-bar">${invite}${head}
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
+        <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
       <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
@@ -504,6 +505,7 @@
     return `<main class="pad-nav"><div class="stack tight"><h1>${route.weekJustDone ? `Week ${S.streak} done.` : 'Nice. That one counts too.'}</h1>
       <p class="mut">${esc(c.name)} · ${dateShort(s.at)}. ${plural(S.total, 'session')} in total.</p></div>
       ${newcomer ? offer + photos : photos + offer}
+      ${(S.thanked || {})[s.id] ? `<p class="okline">${ic('check')}<span class="grow">You thanked ${esc(founderOf(c).split(' ')[0])}</span></p>` : `<button class="btn ghost block" data-act="thank" data-id="${c.id}" data-sid="${s.id}">Say thanks to ${esc(founderOf(c).split(' ')[0])}, who ran it</button>`}
       <button class="btn ghost block" data-act="me">${ic('left')}Back to my week</button></main>`;
   };
 
@@ -601,6 +603,34 @@
   const OV = {};
   const orgClub = () => club(S.manage.includes(S.orgClub) ? S.orgClub : S.manage[0]);
   const ckOf = (c) => (S.check[c.id] = S.check[c.id] || {});
+
+  // Credit: every club names the people who run it, and organisers get a record built from confirmed attendance.
+  // Example numbers are derived from the club so they stay the same between visits.
+  const founderOf = (c) => PEOPLE[(hash(c.id) * 7) % PEOPLE.length];
+  const sinceOf = (c) => { const d = new Date(2026, 9, 1); d.setMonth(d.getMonth() - (8 + (hash(c.id) % 30))); return d; };
+  const organisers = (c) => (S.user && S.manage.includes(c.id) ? [S.user.name, founderOf(c)] : [founderOf(c)]);
+  const runBy = (c) => { const o = organisers(c); const d = sinceOf(c); return `Run by ${o.map(esc).join(' and ')} · since ${MON[d.getMonth()]} ${d.getFullYear()}`; };
+  const weeksRunning = (c) => Math.round((now() - sinceOf(c)) / (7 * 864e5));
+  const thanksFor = (c) => 40 + (hash(c.id) % 260) + (S.thanks[c.id] || 0);
+  function impact(c) {
+    const h = hash(c.id); const sessions = weeksRunning(c) * c.sched.length;
+    const newcomers = Math.round(sessions * (0.35 + (h % 20) / 100)); const stayed = Math.round(newcomers * (0.28 + (h % 15) / 100));
+    return { sessions, newcomers, stayed, checkins: sessions * (9 + (h % 8)), thanks: thanksFor(c) };
+  }
+  // Club health for the last 4 weeks, and regulars who haven't been for 2+ weeks.
+  function health(c) {
+    const h = hash(c.id); const top = c.top.map((r) => r[0]);
+    const pool = PEOPLE.filter((n) => !top.includes(n));
+    const drifting = [0, 1, 2].map((i) => { const name = pool[(h + i * 7) % pool.length]; const hh = hash(name + c.id); return { name, weeks: 2 + (hh % 4), before: 5 + (hh % 14) }; });
+    return { active: c.active, newFaces: 4 + (h % 9), cameBack: 2 + (h % 5), regulars: 8 + (h % 12), drifting };
+  }
+  // What lifts a club in Find: rewards good organising, not marketing.
+  const visibility = (c) => [
+    ['Page confirmed in the last 30 days', !!S.conf[c.id] && now() - S.conf[c.id] < 30 * 864e5, 'confirmclub', 'Confirm now'],
+    ['Check-ins at most sessions', Object.keys(S.ci).some((id) => id.startsWith(c.id + '|')) || Object.keys(S.orgAtt).some((id) => id.startsWith(c.id + '|')), 'ochecks', 'Check-in'],
+    ['Newcomers who come back', impact(c).stayed / Math.max(1, impact(c).newcomers) >= 0.3, 'onudgeall', 'Message drifters'],
+    ['"How to find us" note for first-timers', !!c.find, 'editclub', 'Add it']
+  ];
   const ticks = (s) => S.ci[s.id] || {};
 
   OV['o-start'] = () => {
@@ -639,7 +669,9 @@
     const rows = wk.map((s) => { const f = firsts(s); return `<button class="item" data-act="osession" data-id="${s.id}"><span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${esc(s.type)}</b><br><span class="mut sm">${isCancelled(s) ? 'Cancelled' : f ? plural(f, 'first-timer') : 'No first-timers'}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : `<span class="big-n">${going(s)}</span>`}${ic('chev', 'chev')}</button>`; }).join('');
     const confirmed = S.conf[c.id] && now() - S.conf[c.id] < 7 * 864e5;
     const left = setupLeft(c);
-    return `<main class="pad-nav">${hero}${grow}
+    const driftN = health(c).drifting.filter((m) => !(S.nudged[c.id] || {})[m.name]).length;
+    const driftLine = driftN ? `<button class="osetup-line" data-act="omembers"><span class="grow"><b>${plural(driftN, 'regular')} haven't been back</b> · send a "We missed you"</span><span class="det">Members ${ic('chev')}</span></button>` : '';
+    return `<main class="pad-nav">${hero}${driftLine}${grow}
       <section class="stack tight"><div class="row sp"><h2>This week</h2><span class="sm mut">${live.reduce((n, s) => n + going(s), 0)} RSVPs · last week ${cameLast} came</span></div>
         <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
         <div class="wrap"><button class="btn small ghost" data-act="oshare">${ic('share')}Post the week to WhatsApp</button><button class="btn small quiet" data-act="osched">Change or cancel</button></div></section>
@@ -687,6 +719,29 @@
         ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}</div>
       ${left ? '' : checklist}
       <button class="btn quiet block" data-act="soon" data-what="Pausing the club (for summer or Ramadan timings) is not in this prototype yet.">Pause the club</button></main>`;
+  };
+
+  OV['o-members'] = () => {
+    const c = orgClub(); const im = impact(c); const hl = health(c); const d = sinceOf(c); const vis = visibility(c); const lit = vis.filter((v) => v[1]).length;
+    const nudged = S.nudged[c.id] || {};
+    const drift = hl.drifting.map((m) => `<div class="item"><span>${face(m.name)}</span><span class="grow"><b>${esc(m.name)}</b><br><span class="mut sm">Came ${m.before} times · not seen for ${plural(m.weeks, 'week')}</span></span>
+      ${nudged[m.name] ? `<span class="tag ok">${ic('check')}Sent</span>` : `<button class="btn small ghost" data-act="onudge" data-name="${esc(m.name)}">We missed you</button>`}</div>`).join('');
+    return `<main class="pad-nav">
+      <section class="oimpact"><span class="obadge">Your impact</span>
+        <p class="oi-lead">Since ${MON[d.getMonth()]} ${d.getFullYear()} your club has hosted <b>${im.sessions}</b> sessions and welcomed <b>${im.newcomers}</b> newcomers. <b>${im.stayed}</b> of them came back 4 or more times.</p>
+        <div class="oi-stats"><span><b>${im.checkins.toLocaleString('en')}</b>check-ins</span><span><b>${im.thanks}</b>thanks from members</span><span><b>${weeksRunning(c)}</b>weeks running</span></div>
+        <button class="btn" data-act="oimpact">${ic('share')}Share your impact</button></section>
+      <section class="stack tight"><div class="row sp"><h2>Last 4 weeks</h2><span class="sm mut">${hl.active} people came</span></div>
+        <div class="ohealth"><span><b>${hl.newFaces}</b>new faces</span><span><b>${hl.cameBack}</b>of them came back</span><span><b>${hl.regulars}</b>regulars</span></div></section>
+      <section class="stack tight"><div class="row sp"><h2>Haven't been back</h2>${Object.keys(nudged).length < hl.drifting.length ? '<button class="btn small" data-act="onudgeall">Message all</button>' : ''}</div>
+        <p class="sm mut">Regulars who've missed 2 weeks or more. "We missed you" sends a short note from you with your next session.</p>
+        <div>${drift}</div></section>
+      <section class="stack tight"><h2>Recent thanks</h2>
+        <div>${people({ id: c.id + 'thanks' }, 3).map((n, i) => `<div class="item"><span>${face(n)}</span><span class="grow"><b>${esc(n)}</b><br><span class="mut sm">Thanked you after ${i ? 'the ' + DAYL[(c.sched[i % c.sched.length] || c.sched[0]).d] + ' session' : 'yesterday\'s session'}</span></span></div>`).join('')}</div></section>
+      <section class="stack tight"><div class="row sp"><h2>Your place in Find</h2><span class="sm mut">${lit} of ${vis.length}</span></div>
+        <p class="sm mut">Clubs that are well run show higher when newcomers search. It's earned by organising, never bought.</p>
+        <div>${vis.map(([t, on, act, cta]) => `<div class="item"><span class="tick ${on ? 'on' : ''}" aria-hidden="true">${on ? '✓' : ''}</span><span class="grow">${t}</span>${on ? '<span class="sr">Done</span>' : `<button class="btn small ghost" data-act="${act}" data-id="${c.id}">${cta}</button>`}</div>`).join('')}</div></section>
+      <p class="mut xs center">${runBy(c)}. This is how your club page credits you.</p></main>`;
   };
 
   // ---------- overlays ----------
@@ -742,6 +797,9 @@
       ${going(s) - (has(s.id) ? 1 : 0) > others.length ? `<p class="mut sm">and ${plural(going(s) - (has(s.id) ? 1 : 0) - others.length, 'other')}</p>` : ''}
       <p class="mut xs">Only people going to this session and the club's organisers can see these profiles.</p></div>`;
   }
+  O.impact = () => { const c = orgClub(); const im = impact(c); const d = sinceOf(c);
+    return `<div class="sheet"><div class="sharecard g${1 + (hash(c.id) % 6)}"${im ? '' : ''}><span class="disp" style="font-size:12px;font-weight:700">ryze club · organiser</span><span class="n">${im.newcomers}</span><b style="font-size:18px">newcomers welcomed</b><span>${im.sessions} sessions with ${esc(c.name)} since ${MON[d.getMonth()]} ${d.getFullYear()}</span><span>${esc(S.user.name)}</span></div>
+      <button class="btn block" data-act="soon" data-what="This would open your phone's share menu with the image.">${ic('share')}Share</button><button class="btn ghost block" data-act="soon" data-what="This would save the image, for LinkedIn or your CV.">Save image</button><button class="btn quiet block" data-act="close">Close</button></div>`; };
   O.person = () => {
     const m = memberPro(overlay.name);
     return `<div class="sheet"><div class="row">${face(m.name, '', true)}<div class="stack tight"><h2>${esc(m.name)}</h2><span class="mut sm">${esc(m.area)} · ${LEVELS[m.level]}</span></div></div>
@@ -909,6 +967,11 @@
     manage: (d) => A.toorg(d),
     toorg: (d) => { S.mode = 'org'; if (d && d.id && S.manage.includes(d.id)) S.orgClub = d.id; save(); history.replaceState(null, '', '#organiser'); stack = []; go('o-week', {}, true); },
     tomember: (d) => { S.mode = 'member'; save(); history.replaceState(null, '', location.pathname + location.search); stack = []; if (d && d.id) { go('club', { id: d.id }, true); } else go(S.user ? 'me' : 'home', {}, true); },
+    omembers: () => { stack = []; go('o-members', {}, true); },
+    oimpact: () => { overlay = { t: 'impact' }; render(); },
+    onudge: (d) => { const c = orgClub(); (S.nudged[c.id] = S.nudged[c.id] || {})[d.name] = true; save(); say(`Sent to ${d.name.split(' ')[0]}, from you, with your next session.`); render(); },
+    onudgeall: () => { const c = orgClub(); const n = (S.nudged[c.id] = S.nudged[c.id] || {}); health(c).drifting.forEach((m) => { n[m.name] = true; }); save(); say('Sent to everyone who hasn\'t been back.'); render(); },
+    thank: (d) => { S.thanks[d.id] = (S.thanks[d.id] || 0) + 1; (S.thanked = S.thanked || {})[d.sid] = true; save(); say(`Thanks sent to ${founderOf(club(d.id)).split(' ')[0]}.`); render(); },
     oweek: () => { stack = []; go('o-week', {}, true); }, ochecks: () => { stack = []; go('o-checks', {}, true); }, oclub: () => { stack = []; go('o-club', {}, true); },
     ophotos: () => { stack = []; go('o-photos', { id: orgClub().id }, true); },
     osched: () => go('o-sched', { id: orgClub().id }), osession: (d) => go('o-session', { id: d.id }), ocheck: (d) => go('o-checkin', { id: d.id }),
@@ -959,7 +1022,7 @@
     const top = `<header class="top otop"><div class="r">${sub ? `<button class="back" data-act="back">${ic('left')}Back</button>` : `<span class="ologo">ryze club <span class="obadge">Organiser</span></span>`}</div>
       <div class="r"><button class="pill" data-act="demo">Demo</button></div></header>`;
     const tab = (act, l, i, on) => `<button data-act="${act}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
-    const nav = c ? `<nav class="nav onav" aria-label="Organiser">${tab('oweek', 'This week', 'week', v === 'o-week' || v === 'o-session')}${tab('ochecks', 'Check-in', 'check', v === 'o-checks' || v === 'o-checkin')}${tab('ophotos', 'Photos', 'photo', v === 'o-photos')}${tab('oclub', 'Club', 'flag', v === 'o-club' || v === 'o-sched')}</nav>` : '';
+    const nav = c ? `<nav class="nav onav" aria-label="Organiser">${tab('oweek', 'This week', 'week', v === 'o-week' || v === 'o-session')}${tab('ochecks', 'Check-in', 'check', v === 'o-checks' || v === 'o-checkin')}${tab('omembers', 'Members', 'clubs', v === 'o-members')}${tab('ophotos', 'Photos', 'photo', v === 'o-photos')}${tab('oclub', 'Club', 'flag', v === 'o-club' || v === 'o-sched')}</nav>` : '';
     return top + body + nav;
   }
 
