@@ -2,7 +2,7 @@
 title: PRFAQ — Community fitness platform for Dubai
 status: draft
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-14
 ---
 
 # PRFAQ — Community fitness platform for Dubai
@@ -91,6 +91,8 @@ See the success signals in `concept-verdict.md`.
 | Padel court booking is solved by Playtomic | Supported | 73 of 91 Dubai clubs use it (Redline Sports Club guide, July 2026) |
 | Clubs stitch together WhatsApp, a website and Instagram | User-stated | One example: The Padel Mob. Need more examples |
 | Newcomers struggle to find a club | Assumed | Anecdotal press (GQ Middle East). No interviews |
+| Newcomers to Dubai crave connection, and community is becoming a paid commodity | Weakly supported | Opinion piece: Raisa Malika, "Should Community Have a Cost?", *Half-Light*, p. 53 (read 14 Oct 2026). Describes Dubai as "a forever transient city" of immigrants "craving connection"; paid community events at 300–400 AED; events "ready for the reels". One writer's view, not research |
+| Run clubs in Dubai are plentiful, especially at Kite Beach | Weakly supported | Same article ("I swear if I see another one setting off down Kite Beach"). Supports curation over adding more clubs |
 | Clubs will keep their pages updated | Unproven | Pilot |
 | Members will post photos if it takes under 30 seconds | Unproven | Pilot |
 | Photos and streaks drive return visits | Unproven | Pilot |

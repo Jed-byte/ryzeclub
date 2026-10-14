@@ -117,7 +117,7 @@
   let overlay = null;
   let toast = null;
   let toastTimer = null;
-  let filt = { sport: '', area: '', day: '', level: '' };
+  let filt = { sport: '', area: '', day: '', level: '', price: '' };
 
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -125,6 +125,15 @@
   const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const hash = (s) => { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100003; return h; };
   const club = (id) => CLUBS.find((c) => c.id === id);
+  // Price: "Free..." is free; otherwise the first AED amount, if there is one.
+  const isFree = (c) => /^free/i.test(c.cost);
+  const aed = (c) => { const m = c.cost.match(/AED\s*(\d+)/i); return m ? Number(m[1]) : null; };
+  const priceShort = (c) => (isFree(c) ? 'Free' : aed(c) !== null ? `About AED ${aed(c)}` : 'Paid');
+  // Photos: members can post once they've been to 5 sessions with a club. Organisers always can.
+  const PHOTO_MIN = 5;
+  const sessionsAt = (c) => Math.max(Object.keys(S.att).filter((id) => S.att[id] === 'went' && id.split('|')[0] === c.id).length, S.clubWeeks[c.id] || 0);
+  const canPost = (c) => S.manage.includes(c.id) || sessionsAt(c) >= PHOTO_MIN;
+  const postNote = (c) => `<p class="note">Members can post photos after ${PHOTO_MIN} sessions with ${esc(c.name)}. You've been to ${Math.min(sessionsAt(c), PHOTO_MIN)} of ${PHOTO_MIN}.</p>`;
   const applyEdits = () => { CLUBS.forEach((c, i) => Object.assign(c, JSON.parse(JSON.stringify(ORIG[i])), S.edits[c.id] || {})); };
   const day0 = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
   const weekStart = (d) => { const x = day0(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
@@ -216,7 +225,7 @@
     return `<article class="recap">${head}
       ${media}${by}
       ${!all.length && IMG[c.sport] ? '<p class="mut sm">No photos from this one yet.</p>' : ''}
-      ${inIt ? `<button class="btn small ghost" data-act="post" data-id="${s.id}">Add your photos</button>` : ''}</article>`;
+      ${inIt ? (canPost(c) ? `<button class="btn small ghost" data-act="post" data-id="${s.id}">Add your photos</button>` : postNote(c)) : ''}</article>`;
   }
 
   // organiser: the attendee list for a session
@@ -235,7 +244,7 @@
     const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
     return `<button class="card" data-act="club" data-id="${c.id}">${head}<span class="body">
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
-      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${c.cost === 'Free' ? 'Free' : 'Paid'}</span>`}
+      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${priceShort(c)}</span>`}
       <span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
     </span></button>`;
   }
@@ -357,7 +366,8 @@
   };
 
   V.browse = () => {
-    const list = CLUBS.filter((c) => (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day)));
+    const list = CLUBS.filter((c) => (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
+      && (!filt.price || (filt.price === 'free' ? isFree(c) : isFree(c) || (aed(c) !== null && aed(c) <= Number(filt.price)))));
     const opt = (v, l, cur) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`;
     return `<main class="${S.user ? 'pad-nav' : ''}"><h1>All clubs</h1>
       <div class="wrap">${[['', 'All']].concat(Object.entries(SPORTS)).map(([k, l]) => `<button class="chip ${filt.sport === k ? 'on' : ''}" data-act="filt" data-k="sport" data-val="${k}">${l}</button>`).join('')}</div>
@@ -365,7 +375,9 @@
         <select id="f-area" data-filt="area" aria-label="Area">${opt('', 'Any area', filt.area)}${AREAS.map((a) => opt(a, a, filt.area)).join('')}</select>
         <select id="f-day" data-filt="day" aria-label="Day">${opt('', 'Any day', filt.day)}${[1, 2, 3, 4, 5, 6, 0].map((d) => opt(d, DAYL[d], filt.day)).join('')}</select>
         <select id="f-level" data-filt="level" aria-label="Level">${opt('', 'Any level', filt.level)}${Object.entries(LEVELS).map(([k, l]) => opt(k, l, filt.level)).join('')}</select>
+        <select id="f-price" data-filt="price" aria-label="Price">${opt('', 'Any price', filt.price)}${opt('free', 'Free only', filt.price)}${opt('50', 'Up to AED 50', filt.price)}</select>
       </div>
+      <p class="mut sm">${list.filter(isFree).length} of ${list.length} free. Paid clubs show what the money covers.</p>
       <div class="stack">${list.length ? list.map((c) => clubCard(c)).join('') : `<p class="note">Nothing matches those filters yet.</p><button class="btn ghost" data-act="clearfilt">Clear filters</button>`}</div></main>`;
   };
 
@@ -452,7 +464,7 @@
     const tagged = !S.untag[s.id];
     const offer = next ? `<div class="stack"><span class="cap">${newcomer ? 'Same time next week?' : 'Next session'}</span><div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${next.type} · ${going(next)} going</span></span>
       ${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div></div>` : '';
-    const photos = `<div class="stack tight"><div class="row sp"><span class="cap">Photos from ${nounFor(s)}</span><button class="btn small ghost" data-act="post" data-id="${s.id}">Add yours</button></div>
+    const photos = `<div class="stack tight"><div class="row sp"><span class="cap">Photos from ${nounFor(s)}</span>${canPost(c) ? `<button class="btn small ghost" data-act="post" data-id="${s.id}">Add yours</button>` : ''}</div>${canPost(c) ? '' : postNote(c)}
       <div class="strip">${myPhotos(s).map((p) => tile(p, 'yours')).join('')}
         ${tagged ? tile({ sp: c.sport, i: k, g: 1 + (k % 6), by: 'Layla H.', sid: s.id, tagged: true }, "you're tagged") : ''}
         ${tile({ sp: c.sport, i: k + 2, g: 1 + ((k + 2) % 6), by: 'Omar S.', sid: s.id })}</div></div>`;
@@ -643,7 +655,7 @@
     <button class="btn ghost block" data-act="d-org">${pend ? 'Approve my club request' : 'Make me organiser of Marina Dawn Runners'}</button>
     <span class="cap">Start again</span>
     <button class="btn ghost block" data-act="d-reset">Reset the prototype</button>
-    <p class="mut xs">"Skip" needs an RSVP first. After an 11-week streak, your next "I went" earns the 12-week milestone.</p>
+    <p class="mut xs">"Skip" needs an RSVP first. After an 11-week streak, your next "I went" earns the 12-week milestone, and you can post photos to your first club (members need 5 sessions with a club).</p>
     <button class="btn quiet block" data-act="close">Close</button></div>`; };
 
   // ---------- actions ----------
@@ -652,8 +664,8 @@
     home: () => go(S.user ? 'me' : 'home'), me: () => go('me'), back, quiz: () => go('quiz', { step: 0 }),
     quizback: () => { route.step -= 1; render(); },
     q: (d) => { S.quiz[d.k] = d.val; save(); if ((route.step || 0) < 2) { route.step = (route.step || 0) + 1; render(); window.scrollTo(0, 0); } else go('results', {}, true); },
-    browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '' }; go('browse'); },
-    filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '' }; render(); },
+    browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '', price: '' }; go('browse'); },
+    filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '' }; render(); },
     person: (d) => { overlay = { t: 'person', name: d.name, sid: d.sid }; render(); },
     editpro: () => { const sid = overlay && overlay.t === 'session' ? overlay.id : null; overlay = { t: 'editpro', d: myPro(), sid }; render(); },
     rmphoto: () => { readPro(); overlay.d.photo = ''; render(); },
@@ -690,7 +702,7 @@
     went: (d) => confirmWent(d.id),
     missed: (d) => { S.att[d.id] = 'missed'; save(); go('missed', { id: d.id }, true); },
     share: () => { overlay = { t: 'share' }; render(); },
-    post: (d) => { overlay = { t: 'post', id: d.id, sel: [] }; render(); },
+    post: (d) => { const s = byId(d.id); if (!s || !canPost(s.club)) { say(`Photos open up after ${PHOTO_MIN} sessions with a club.`); render(); return; } overlay = { t: 'post', id: d.id, sel: [] }; render(); },
     pick: (d) => { const g = Number(d.g); const el = document.getElementById('po-cap'); overlay.cap = el ? el.value : ''; overlay.sel = overlay.sel.includes(g) ? overlay.sel.filter((x) => x !== g) : overlay.sel.concat(g); render(); },
     dopost: () => {
       const el = document.getElementById('po-cap'); if (!overlay.sel.length) { say('Choose at least one photo.'); render(); return; }
@@ -727,9 +739,9 @@
     // demo
     'd-after': () => { const nx = S.rsvps.map(byId).filter((s) => s && !ended(s)).sort((a, b) => a.at - b.at)[0]; if (!nx) { overlay = null; say('RSVP to a session first.'); render(); return; } S.offset += (nx.at.getTime() + 2 * 36e5 + 6e4) - now().getTime(); save(); stack = []; go('me', {}, true); },
     'd-week': needUser(() => { endWeek(); stack = []; go('me', {}, true); }),
-    'd-11': needUser(() => { S.streak = 11; S.longest = Math.max(S.longest, 11); S.total = Math.max(S.total, 22); S.weekDone = false; ['s1', 'w4'].forEach((b) => { if (!S.badges.includes(b)) S.badges.push(b); }); save(); stack = []; go('me', {}, true); }),
+    'd-11': needUser(() => { const cid = S.follows[0] || 'mdr'; S.clubWeeks[cid] = Math.max(S.clubWeeks[cid] || 0, 11); S.streak = 11; S.longest = Math.max(S.longest, 11); S.total = Math.max(S.total, 22); S.weekDone = false; ['s1', 'w4'].forEach((b) => { if (!S.badges.includes(b)) S.badges.push(b); }); save(); stack = []; go('me', {}, true); }),
     'd-org': needUser(() => { const ids = Object.keys(S.claims); const list = ids.length ? ids : ['mdr']; list.forEach((id) => { if (!S.manage.includes(id)) S.manage.push(id); delete S.claims[id]; }); save(); stack = []; say(`You now manage ${club(list[0]).name}.`); go('manage', { id: list[0] }, true); }),
-    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { sport: '', area: '', day: '', level: '' }; go('home', {}, true); }
+    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { sport: '', area: '', day: '', level: '', price: '' }; go('home', {}, true); }
   };
 
   // ---------- render ----------
