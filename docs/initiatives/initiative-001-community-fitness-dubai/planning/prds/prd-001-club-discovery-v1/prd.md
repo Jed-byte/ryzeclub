@@ -2,7 +2,7 @@
 title: PRD-001 — Community club discovery and return loop (V1)
 status: handoff-ready
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 parent: ../../../discovery/concept-verdict.md
 ---
 
@@ -36,7 +36,7 @@ Dubai's community clubs are spread across Instagram, WhatsApp groups and one-off
 
 1. A newcomer can go from landing on the site to an RSVP for a suitable session in one sitting.
 2. A member has a reason to return every week.
-3. A club page stays current and alive without heavy organiser effort.
+3. A club page stays current and alive with no more than five minutes of organiser effort a week (section 10, organiser effort budget).
 4. The pilot answers the unproven claims in section 12.
 
 ## 5. Non-goals (not in V1)
@@ -73,6 +73,11 @@ Measured over a pilot of about 8 weeks:
 | Sessions with at least one member photo | At least 50% |
 | Quiz completions that lead to an RSVP | Track, no target yet |
 | Share of listings confirmed in the last 30 days | At least 80% |
+| Organiser time on Ryze Club in a routine week | Median under 5 minutes |
+| Sessions where the organiser checked people in | Track, no target yet |
+| RSVPs that come from a link shared in a club's WhatsApp group | Track, no target yet |
+| Members who join from an organiser's invite link or QR code | Track, no target yet |
+| Lapsed members who RSVP within 14 days of a win-back message | Track, no target yet |
 
 ## 8. Value slices and functional requirements
 
@@ -150,6 +155,23 @@ Measured over a pilot of about 8 weeks:
 
 **FR-25 Shareable streak card.** A member can share a milestone or streak as an image to Instagram or WhatsApp, carrying the Ryze Club name and their club.
 
+**FR-27 First-timer welcome.** A newcomer's first session with a club is easy to find, and the organiser knows they are coming.
+- A club can have a one-line "How to find us" note (for example, "Look for the orange flag by Pier 7"), written once by the organiser or the curator. It is added to a member's reminder for their first session with that club.
+- Before the session, organisers see first-timers by first name, marked "First time", in the attendee list and the weekly summary (FR-30), with the prompt to say hello.
+- The flag is information only. It asks nothing extra of the organiser.
+
+**FR-28 Win-back.** A member who has attended at least one session and has no attended session for 21 days receives one message.
+- It names the club they attended most, how many sessions that club has run since their last visit, and its next session with a one-tap RSVP.
+- It is sent once per lapse. Nothing more is sent until the member attends again.
+- It follows the member's message settings and never describes the absence as a failure.
+
+**FR-29 Seasons.** The curator can run a season: a challenge of four to six weeks, counted in attended weeks (for example, "Show up every week for six weeks").
+- Clubs join with one tap from the organiser's weekly summary (FR-30). Organisers have no other work.
+- Members of a joined club see the season and their progress on Home. Completing it earns a season badge alongside the milestones (FR-22).
+- A club page shows how many of its members are on track.
+- One season each year is timed to the Dubai Fitness Challenge.
+- Seasons count recorded attendance only and carry no prize with real value in V1.
+
 **FR-26 Rewards-ready record.** The record of streaks, milestones and attendance is kept in a form that can later be exchanged for rewards.
 - No rewards are offered in V1.
 - Before any reward with real value is offered, attendance must be confirmed by the organiser or another check, not only by the member. [ASSUMPTION: A9]
@@ -166,6 +188,39 @@ Measured over a pilot of about 8 weeks:
 
 **FR-18 Confirm prompt.** An organiser is periodically asked to confirm that the club details are still correct.
 - One tap confirms. A club not confirmed for a set period is flagged as possibly out of date on its page.
+- "All correct" in the weekly summary (FR-30) counts as a confirmation, so an organiser who answers the summary never receives a separate prompt.
+
+**FR-30 Weekly organiser summary.** Each Sunday at 18:00, every organiser receives one message by email, and by WhatsApp if they opted in, covering their club's coming week.
+- It lists each session with the headcount so far and any first-timers, last week's turnout, and anything waiting for them (a co-organiser request, an attendance dispute, a reported photo).
+- It offers, each as one tap: "All correct", "Share this week" (FR-32), "Cancel a session", and joining a running season (FR-29).
+- It replaces separate routine messages to organisers. Only session-day check-in notices (FR-31) are sent in addition.
+
+**FR-31 Check-in at the session.** At the session, an organiser can tick people off as they arrive, or tap "Everyone came" and untick anyone who did not.
+- A "Session today" notice opens check-in in one tap. It works on a phone held in one hand and takes under a minute for 20 people.
+- Check-in records attendance as organiser-confirmed and replaces the member's "Did you go?" for that session.
+- It is optional. If the organiser does nothing, members' own answers stand (FR-11).
+
+**FR-32 Share to the club's group.** An organiser can share a session, or the whole week, to the club's WhatsApp group or Instagram in one tap.
+- The ready-made text gives the day, time, place, how many are going, and an RSVP link.
+- The link opens the session for anyone. Signing in is only needed at the moment of RSVP.
+- The club's WhatsApp group stays the place for chat; Ryze Club holds the schedule, RSVPs and attendance.
+
+**FR-33 Act from a message.** An organiser can confirm details, cancel a session and check in from the links in their messages, without signing in again on the device that received them.
+- Links are personal to the organiser and expire after seven days.
+- Cancelling from a message still states how many people will be told before it happens.
+
+**FR-34 Co-organiser invite link.** An organiser can invite a co-organiser by sharing a link, for example in the club's WhatsApp group, as well as by email.
+- The first person to accept with Google sign-in becomes a co-organiser. The link works once and expires after seven days.
+- Every organiser sees who joined and can remove them.
+
+**FR-35 Ready-made page.** When an organiser claims a club, the curator has already filled in the page from the club's public channels: details, weekly sessions and a cover photo.
+- The organiser's first task is to check and confirm, not to type.
+- A new club request is completed by the curator in the same way before it goes live.
+
+**FR-36 Invite members.** An organiser can bring their existing members onto Ryze Club from the first screen of the organiser app.
+- One personal club link, shown with Copy, a ready-made WhatsApp message, an Instagram bio option and a QR code to show at the meeting point or print.
+- Opening the link lands on the club page with a "You're invited · Join the club" panel. Joining follows the club; signing in happens at that moment if needed.
+- The organiser sees how many people have joined from the link.
 
 ### VS-6 — Curation
 
@@ -195,6 +250,12 @@ A member is tagged in a photo they dislike. They remove the tag and report the p
 **UJ-6 Stale listing.** (VS-5, VS-6; FR-18, FR-19, FR-20)
 A club stops updating. Its page is flagged as possibly out of date. A visitor reports it. The curator contacts the club or hides the listing.
 
+**UJ-7 Organiser's week.** (VS-5; FR-30, FR-31, FR-32, FR-27)
+On Sunday evening the weekly summary arrives: three sessions, 14 going on Tuesday including two first-timers. The organiser taps "All correct", then "Share this week" into the club's WhatsApp group. On Tuesday at 05:40 a "Session today" notice opens check-in; they tap "Everyone came" and untick two names. The whole week takes under five minutes.
+
+**UJ-8 Lapsed member comes back.** (VS-4; FR-28)
+A member who came to four runs has not been for three weeks. They receive one message: Marina Dawn Runners have run six times since their last visit, and the next one is Thursday at 05:45. They tap "I'm in".
+
 ## 10. Cross-cutting requirements
 
 - **Privacy and data.** Collect the minimum: name, contact for reminders, area, sport and level. No health or medical data. Explicit consent at sign-up, and a way to delete an account and its posts, in line with the UAE Personal Data Protection Law.
@@ -206,6 +267,7 @@ A club stops updating. Its page is flagged as possibly out of date. A visitor re
 - **Language.** English at launch. [ASSUMPTION: A5]
 - **Extensibility.** A session must later be able to carry a host who is a coach, a price and a 1:1 capacity without being redesigned.
 - **Legal position.** The platform lists and does not organise. Permit and licensing work is deferred by the founder and recorded as an accepted risk.
+- **Organiser effort budget.** An organiser's routine week (read the summary, confirm, share the week's link, check in at sessions) takes under five minutes in total on a phone. Every organiser task fits on one screen and needs no desktop. Organisers are never required to post content, message members, or fill in anything beyond the schedule. Any new feature that adds a regular organiser task must state its time cost and needs founder approval.
 - **Support.** A visible contact route and the report links are the only support channels in V1.
 
 ## 11. Assumptions index
@@ -222,6 +284,10 @@ A club stops updating. Its page is flagged as possibly out of date. A visitor re
 | A6 | Members will post photos if it takes under 30 seconds | Unproven; pilot question |
 | A7 | Organisers will claim and maintain pages | Unproven; pilot question |
 | A8 | An AI match is better than a filtered list | Unproven; compare in pilot |
+| A11 | Organisers will share Ryze Club RSVP links in their WhatsApp groups when it takes one tap | Unproven; pilot question |
+| A12 | Organisers will check people in at the session when it takes under a minute | Unproven; pilot question |
+| A13 | One win-back message brings lapsed members back without feeling like spam | Unproven; pilot question |
+| A14 | Organisers will read a weekly summary and answer it | Unproven; pilot question |
 
 ## 12. Open questions
 
@@ -245,7 +311,7 @@ Resolved 2026-10-07: product name is Ryze Club; reminders go by email and WhatsA
 
 - Two primary flows to design first: UJ-1 (newcomer to RSVP) and UJ-3 (photo post).
 - The streak is the main retention device. Design the streak, milestone moments, the at-risk reminder and the share card as a set, and keep them encouraging, not punishing.
-- The organiser experience must feel lighter than running a website.
+- The organiser experience must feel lighter than running a website or a WhatsApp poll. Design to the organiser effort budget in section 10: messages and one-tap actions first, the Manage screens second.
 - The look should be clean and uncluttered: no ads, no feed, photos as the main visual content.
 - States to cover: no matching clubs, no upcoming session, cancelled session, stale listing, empty photo timeline, reported or hidden post.
 - The club page is the most important page and is public, so it is also the landing page from Instagram and search.
@@ -260,7 +326,8 @@ Product-facing needs only; technical choices belong to architecture.
 - Reminders must be delivered reliably and on time.
 - The match can start as simple rules and be improved later; the product only requires ranked results with reasons.
 - Sessions must be extensible to hosts, prices and 1:1 (section 10).
-- Pilot measures in section 7 must be collectable from day one.
+- Pilot measures in section 7 must be collectable from day one, including time spent in Manage per organiser per week.
+- Organiser message links act without a fresh sign-in, are personal, and expire after seven days (FR-33).
 - Account and post deletion must be possible.
 
 ## 15. Launch readiness

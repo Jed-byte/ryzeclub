@@ -2,7 +2,7 @@
 title: UX-002 — Turn up and come back
 status: draft
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 parent: ../ux-spec.md
 ---
 
@@ -31,6 +31,11 @@ Same as UX-001 and UX-003: PRD handoff-ready, PRD review skipped by the founder,
 | FR-11 Attendance | "Did you go?", Attendance result |
 | FR-13 Newcomer nudge | After "I went", Nudge message |
 | FR-14 My clubs | My clubs, Coming up |
+| FR-27 First-timer welcome (member side) | First-session reminder |
+| FR-28 Win-back | Win-back message |
+| FR-31 Check-in (effect on member) | Alternate paths |
+| FR-32 Share to the club's group (arrival) | Alternate paths |
+| UJ-8 | Win-back path |
 | UJ-2 | Main flow |
 
 RSVP itself is in UX-001. What attendance does to the streak is in UX-003. Posting photos is in UX-004. Organiser corrections to attendance are in UX-005.
@@ -40,11 +45,13 @@ RSVP itself is in UX-001. What attendance does to the streak is in UX-003. Posti
 | Message | When | Channel |
 |---|---|---|
 | **Reminder** | Sessions starting before 10:00: at 19:00 the evening before. Later sessions: three hours before. One per session. [ASSUMPTION: T1] | Email, and WhatsApp if opted in |
+| **First-session reminder** | Replaces the reminder for a member's first session with a club. Adds the club's "How to find us" line and "The organiser knows you're coming." | Same |
 | **Session changed** | As soon as the organiser changes time or place | Same |
 | **Session cancelled** | As soon as the organiser cancels | Same |
 | **Did you go?** | Two hours after the session's start time, only if the member has not already confirmed on the site. [ASSUMPTION: T2] | Same |
 | **Next session nudge** | Two days after a newcomer's attended session, only if they have no RSVP with that club. Stops after their third attended session with the club. [ASSUMPTION: T3] | Same |
 | **Streak at risk** | Defined in UX-003 | Same |
+| **Win-back** | 21 days after the member's last attended session, if they have attended at least one. Once per lapse. [ASSUMPTION: T5] | Same |
 
 Rules for all messages:
 - Only about sessions the member RSVPed to, or clubs they follow.
@@ -92,6 +99,10 @@ flowchart TD
 - **Can't make it.** From the reminder or the sheet. One tap, with "Undo". The count of people going drops.
 - **Session changed.** The session in "Coming up" shows "Time changed" with the old time struck through. The RSVP stays in place.
 - **Session cancelled.** The session shows "Cancelled" and the club's next session is offered beneath. If the club cancels a session the member had RSVPed to and the member attends nothing else that week, the week still counts towards their streak and Home says "Thursday's run was cancelled. Your week still counts." It does not add to total sessions.
+- **First session with a club.** The reminder reads "Tomorrow 05:45 · Marina Dawn Runners. Look for the orange flag by Pier 7. The organiser knows you're coming." If the club has no "How to find us" line, the second sentence is left out.
+- **Checked in by the organiser.** If the organiser checked the member in at the session (UX-005), no "Did you go?" is sent; Home shows the Attendance result the next time the member opens the site.
+- **Arrived from a club's WhatsApp group.** A shared link opens the session sheet with "I'm in". A visitor without an account signs in with Google at that moment and returns to the session with the RSVP made (as in UX-001).
+- **Lapsed (UJ-8).** 21 days after their last attended session, a member who has attended at least once receives one message: "Marina Dawn Runners have run 6 times since you last came. Next one: Thursday 05:45." with "I'm in" and "Not now". It names the club they attended most. "Not now" sends nothing further. No more win-back messages are sent until they attend again. It is grouped under next-session nudges in Message settings.
 - **Follows a club, no RSVP.** The club's sessions appear in "Coming up" marked "RSVP". No reminders are sent for them.
 
 ## My clubs
@@ -151,6 +162,9 @@ Permission-denied and destructive confirmation do not apply.
 | After "I missed it" | No problem. Thursday's the next one. |
 | Newcomer offer | Same time next week? |
 | Nudge message | Marina Dawn Runners meet again Thursday 05:45. Want in? |
+| First-session reminder | Tomorrow 05:45 · Marina Dawn Runners. Look for the orange flag by Pier 7. The organiser knows you're coming. |
+| Win-back | Marina Dawn Runners have run 6 times since you last came. Next one: Thursday 05:45. |
+| Win-back actions | I'm in · Not now |
 | WhatsApp footer | Replies here aren't read. Manage messages in your profile. |
 | Dispute | I was there |
 | Coming up labels | Going · RSVP · Today · Cancelled · Time changed |
@@ -172,7 +186,7 @@ Permission-denied and destructive confirmation do not apply.
 
 ## Measurement the product needs to see
 
-Reminders sent and opened; RSVPs cancelled from a reminder; "Did you go?" answered on site versus from a message; share answering "I went"; second RSVP within 14 days of a first session (the PRD's main signal); nudges sent and the RSVPs that follow; reminder opt-outs by channel.
+Reminders sent and opened; RSVPs cancelled from a reminder; "Did you go?" answered on site versus from a message; share answering "I went"; second RSVP within 14 days of a first session (the PRD's main signal); nudges sent and the RSVPs that follow; win-back messages sent and the RSVPs within 14 days; second RSVPs for first-timers whose club had a "How to find us" line versus those without; RSVPs arriving from shared links; reminder opt-outs by channel.
 
 ## Feature-specific visual guidance
 
@@ -191,6 +205,8 @@ Reminders sent and opened; RSVPs cancelled from a reminder; "Did you go?" answer
 - A member is never sent messages about a session after cancelling their RSVP.
 - Answers given offline are held and sent later without duplicates.
 - Who missed a session is never exposed to other members.
+- Win-back is sent at most once per lapse and resets only on an attended session.
+- A session checked in by the organiser suppresses "Did you go?" for those members.
 
 ## Assumptions
 
@@ -200,6 +216,7 @@ Reminders sent and opened; RSVPs cancelled from a reminder; "Did you go?" answer
 | T2 | Two hours after the start is late enough that most sessions have finished |
 | T3 | Three sessions is where a newcomer becomes a regular, so nudges stop there |
 | T4 | One-tap confirmation from a message is acceptable for badges and streaks in V1, though too weak for rewards later |
+| T5 | 21 days is long enough to count as lapsed and short enough that the member still feels part of the club |
 
 ## Open questions
 
@@ -222,3 +239,4 @@ All in-scope PRD IDs are mapped. Success and failure paths, states, visibility, 
 
 - 2026-10-07: created.
 - 2026-10-07: no-shows visible to organisers, reminder timing and cancelled-session rule confirmed by the founder.
+- 2026-10-12: first-session reminder, win-back, organiser check-in and shared-link arrival added (PRD FR-27, FR-28, FR-31, FR-32).

@@ -16,13 +16,15 @@ As a member:
 4. Watch the weekly streak grow and earn milestones.
 5. Add photos, remove a tag, report a photo.
 
-As an organiser:
+As an organiser, open **https://jed-byte.github.io/ryzeclub/#organiser**. This is a separate app with its own look and tabs (This week, Check-in, Photos, Club); it shares the member app's data, so RSVPs made as a member appear in the headcounts.
 
-1. Tap "Is this your club?" on a club page and send a request.
-2. Approve it from **Demo** (in the real product the curator does this).
-3. See this week's headcounts and first-timers, and who came afterwards.
-4. Edit club details, cancel a session, confirm the page is still correct.
-5. Pin or hide photos.
+1. Sign in, pick your club and tap "Claim". Approve it straight away with "Approve my request" (in the real product the curator does this).
+2. **This week:** the next session with "Check people in", "Invite members" and "QR code" for bringing members over, the week's sessions, and "Still meeting…? Yes".
+3. **Check-in:** tap names as people arrive, or "Everyone came". First-timers are at the top.
+4. **Club:** "Check your page" (pre-filled; tap "Looks right"), details and the "How to find us" note, schedule, invite a co-organiser by link, and "See your public page", which opens the member app.
+5. **Photos:** pin or hide photos.
+
+"See your public page" in the Club tab switches back to the member app. Invite links open as `…/ryzeclub/#join/mdr` with a "Join the club" panel; try it on your phone with the QR code. From the member app, "Open organiser app" on a club you manage, or **Demo**, switches over.
 
 Use the **Demo** button at the top to skip ahead in time, become an organiser, or reset.
 
@@ -35,6 +37,7 @@ Use the **Demo** button at the top to skip ahead in time, become an organiser, o
 - Reminders, WhatsApp, calendar and sharing are described, not sent.
 - Editing session times, adding sessions, pausing a club and co-organisers are not built yet.
 - Curator screens are not built yet.
+- In the organiser app, sharing, invites and WhatsApp are shown, not sent; pausing a club and editing session times are not built yet.
 
 ## Documents
 
@@ -54,5 +57,5 @@ Everything is under `docs/initiatives/initiative-001-community-fitness-dubai/`.
 
 - Product requirements: handoff-ready.
 - Design: six flows drafted, none reviewed.
-- Prototype: member and organiser journeys.
+- Prototype: member and organiser journeys, with the signifier rules from `ux/ux-spec.md` applied (12 Oct 2026).
 - Not started: design system, curator screens, technical design, the real build.
