@@ -1,7 +1,11 @@
 /* Ryze Club — clickable prototype. Exploratory: example data, nothing is saved to a server. */
 (() => {
   const KEY = 'ryze-proto-v1';
-  const AREAS = ['Marina', 'JVC', 'Dubai Hills', 'Downtown', 'Jumeirah', 'Palm', 'Mirdif'];
+  const CITIES = { Dubai: ['Marina', 'JVC', 'Dubai Hills', 'Downtown', 'Jumeirah', 'Palm', 'Mirdif'], 'Abu Dhabi': ['Corniche', 'Saadiyat', 'Yas Island', 'Al Reem Island', 'Khalifa City'] };
+  const AREAS = Object.values(CITIES).flat();
+  const cityOf = (area) => Object.keys(CITIES).find((k) => CITIES[k].includes(area));
+  const ANY = (city) => `Anywhere in ${city}`;
+  const placeOf = (c) => (cityOf(c.area) === 'Dubai' ? c.area : `${c.area}, ${cityOf(c.area)}`);
   const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', basketball: 'Basketball', football: 'Football', futsal: 'Indoor football (5-a-side)', cycling: 'Cycling' };
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
   const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -11,13 +15,19 @@
   const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', cycling: 'ride' };
 
   // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
-  // Volleyball, basketball, football, indoor football and cycling have none yet, so they show a session poster instead.
+  // Volleyball, cycling, basketball, football and indoor football use free Unsplash photos by page ID (~), which
+  // load through Unsplash's download link. If one can't load, the tile falls back to its colour gradient.
   const IMG = {
     running: ['1590333748338-d629e4564ad9', '1552674605-db6ffd4facb5', '1613936360976-8f35cf0e5461', '1540539234-c14a20fb7c7b', '1602263515015-dd72f8e9f301', '1551927336-09d50efd69cd', '1667781838690-5f32ea0ccea6', '1739368732843-800f36a9b7d0', '1716573094354-e4c3226ba887', '1759674861540-afed9f86f94a'],
     padel: ['1646649852033-7e0f3d679f8b', '1646651105426-e8c8ee9badde', '1646649851780-d9701b7c3c04', '1646649853703-7645147474ba', '1646649851800-48dba35edc76', '1646649852046-b758d2d573f3', '1658723826297-fe4d1b1e6600', '1612534847738-b3af9bc31f0c', '1657704358775-ed705c7388d2', '1526888935184-a82d2a4b7e67'],
-    yoga: ['1723406251847-168ea7a02077', '1687436874174-977fdd9e2cb8', '1636619297905-54f124aa90b2', '1687180948630-2780c8b3f7f6', '1543858828-7cf1a9beb95c', '1545205597-3d9d02c29597', '1564282350350-a8355817fd2e', '1687875495230-96dfea96d9da', '1758797315487-b3b225dff7d8', '1758274535230-3641d0632878']
+    yoga: ['1723406251847-168ea7a02077', '1687436874174-977fdd9e2cb8', '1636619297905-54f124aa90b2', '1687180948630-2780c8b3f7f6', '1543858828-7cf1a9beb95c', '1545205597-3d9d02c29597', '1564282350350-a8355817fd2e', '1687875495230-96dfea96d9da', '1758797315487-b3b225dff7d8', '1758274535230-3641d0632878'],
+    volleyball: ['~v22HQ78Xc9o', '~0NaQQsLWLkA', '~EDXhKsNQDRU', '~lLZQcmullqA'],
+    cycling: ['~FkFCGm4OcXA', '~1Hc963RqDUc', '~nQYqEwimp5o', '~hluVWYt3sUM'],
+    basketball: ['~3MfzD21eVMY', '~Pkyy5J8OKIY', '~OanNTH36NbQ'],
+    football: ['~6lS_Lt5XPJU', '~9gaAQAmmoFg', '~N5jZksBBIaM'],
+    futsal: ['~qZWMMkvesc4', '~GAXPpOnyI-c', '~FxXn1qvmBtY']
   };
-  const im = (sp, i) => { const a = IMG[sp]; if (!a) return ''; const n = ((Number(i) % a.length) + a.length) % a.length; return ` style="--img:url('https://images.unsplash.com/photo-${a[n]}?w=800&q=70&auto=format&fit=crop')"`; };
+  const im = (sp, i) => { const a = IMG[sp]; if (!a) return ''; const n = ((Number(i) % a.length) + a.length) % a.length; const u = a[n][0] === '~' ? `https://unsplash.com/photos/${a[n].slice(1)}/download?force=true&w=800` : `https://images.unsplash.com/photo-${a[n]}?w=800&q=70&auto=format&fit=crop`; return ` style="--img:url('${u}')"`; };
 
   // Example clubs. None of these are real.
   const CLUBS = [
@@ -100,7 +110,27 @@
     { id: 'nsr', name: 'Nad Al Sheba Night Riders', sport: 'cycling', area: 'Mirdif', levels: ['new', 'some'], cost: 'Free, bike hire on site', level: 'No-drop, easy pace', photos: 2, confirmed: 3,
       desc: 'Evening laps on the lit, car-free cycle park. No one gets dropped, and the ride leader waits at every lap.', bring: 'Helmet and water. Hire bikes are available at the park.',
       sched: [{ d: 2, t: '19:30', type: 'Evening laps', note: 'Easy pace', place: 'Nad Al Sheba Cycle Park, main entrance' }],
-      top: [['Farah A.', 9], ['Tom R.', 6]], active: 19 }
+      top: [['Farah A.', 9], ['Tom R.', 6]], active: 19 },
+    { id: 'acr', name: 'Corniche Sunrise Runners', sport: 'running', area: 'Corniche', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Pace groups from 5:30 to 7:30 per km', photos: 3, confirmed: 5, venue: 'Outdoor',
+      desc: 'Flat runs along the Corniche before the heat, with a walk-run group for beginners. Breakfast after on Fridays.', bring: 'Water. Showers at the beach club for a small fee.',
+      sched: [{ d: 2, t: '05:45', type: '6 km easy', note: 'All paces', place: 'Corniche promenade, by the Lake Park entrance' }, { d: 5, t: '06:00', type: 'Long run', note: '10–14 km', place: 'Corniche promenade, by the Lake Park entrance' }],
+      top: [['Reem Q.', 13], ['Jonas P.', 10], ['Priya V.', 8]], active: 37 },
+    { id: 'yrc', name: 'Yas Tuesday Riders', sport: 'cycling', area: 'Yas Island', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'No-drop groups by speed', photos: 2, confirmed: 4, venue: 'Outdoor',
+      desc: 'Evening laps on the circuit when it opens to cyclists. Three speed groups, and nobody rides alone.', bring: 'Helmet, lights and water. Bike hire on site.',
+      sched: [{ d: 2, t: '18:30', type: 'Circuit laps', note: 'Three speed groups', place: 'Yas Marina Circuit, cyclists\' entrance' }],
+      top: [['Mei L.', 11], ['Tom R.', 7]], active: 29 },
+    { id: 'sbv', name: 'Saadiyat Beach Volley', sport: 'volleyball', area: 'Saadiyat', levels: ['new', 'some'], cost: 'Free', level: 'Mixed level', photos: 2, confirmed: 6, venue: 'Outdoor',
+      desc: 'Relaxed sunset games on the public beach courts. Teams are mixed on the night.', bring: 'Water and sunscreen. Balls provided.',
+      sched: [{ d: 4, t: '17:30', type: 'Sunset games', note: 'Mixed level', place: 'Saadiyat public beach, volleyball courts', cap: 18 }],
+      top: [['Chloe D.', 9], ['Khalid Z.', 6]], active: 19 },
+    { id: 'rip', name: 'Reem Island Padel Social', sport: 'padel', area: 'Al Reem Island', levels: ['some', 'regular'], cost: 'Court share, about AED 55', level: 'Rotating doubles, intermediate', photos: 2, confirmed: 3, venue: 'Indoor',
+      desc: 'Rotating doubles every Wednesday, so you play with and against new people each round.', bring: 'Racket (spares available) and indoor shoes.',
+      sched: [{ d: 3, t: '20:00', type: 'Americano', note: 'Intermediate', place: 'Reem Island padel club, courts 2–4', cap: 16 }],
+      top: [['Omar S.', 10], ['Aisha N.', 8]], active: 21 },
+    { id: 'kcf', name: 'Khalifa City Five-a-Side', sport: 'futsal', area: 'Khalifa City', levels: ['new', 'some', 'regular'], cost: 'Pitch share, about AED 35', level: '5-a-side, all levels', photos: 2, confirmed: 7, venue: 'Indoor',
+      desc: 'Friendly indoor 5-a-side for regulars and newcomers alike. Teams are reshuffled every 10 minutes.', bring: 'Indoor or astro shoes, and water.',
+      sched: [{ d: 6, t: '19:00', type: '5-a-side', note: 'All levels', place: 'Khalifa City indoor pitch, pitch 1', cap: 20 }],
+      top: [['Sam W.', 9], ['Yuki O.', 7]], active: 17 }
   ];
   // Indoor or outdoor. Padel venues vary; everything else listed before these sports meets outdoors.
   const VENUE = { jps: 'Indoor', jpm: 'Outdoor', mpb: 'Indoor and outdoor' };
@@ -300,7 +330,7 @@
     const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
     return `<button class="card" data-act="club" data-id="${c.id}">${head}<span class="body">
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
-      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.venue)} · ${priceShort(c)}</span>`}
+      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}</span>`}
       <span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
       <span class="go">View club ${ic('right')}</span>
     </span></button>`;
@@ -331,9 +361,9 @@
   function match() {
     const q = S.quiz; const pool = CLUBS.filter((c) => c.sport === q.sport);
     const scored = pool.map((c) => {
-      const a = !q.area || q.area === 'Anywhere in Dubai' || c.area === q.area; const l = c.levels.includes(q.level);
+      const anyCity = Object.keys(CITIES).find((k) => q.area === ANY(k)); const a = !q.area || c.area === q.area || (anyCity && cityOf(c.area) === anyCity); const l = c.levels.includes(q.level);
       const bits = [];
-      bits.push(a ? (q.area && q.area !== 'Anywhere in Dubai' ? `In ${c.area}` : c.area) : `${c.area}, a drive away`);
+      bits.push(a ? (q.area && !anyCity ? `In ${c.area}` : placeOf(c)) : cityOf(c.area) === (anyCity || cityOf(q.area)) ? `${c.area}, a drive away` : `In ${cityOf(c.area)}`);
       bits.push(l ? (q.level === 'new' ? 'Beginners welcome' : q.level === 'some' ? 'Suits some experience' : 'Regulars train here') : (c.levels.includes('new') ? 'Mostly beginners' : 'More experienced group'));
       return { c, a, l, score: (a ? 2 : 0) + (l ? 2 : 0), why: bits.join(' · ') };
     }).sort((x, y) => y.score - x.score);
@@ -389,11 +419,11 @@
 
   V.home = () => `<main>
     <div class="stack"><h1>Find your people. Keep showing up.</h1>
-      <p class="mut">Free community clubs across Dubai for running, padel, yoga and pilates, volleyball, basketball, football and cycling. Answer three questions and see the ones that fit you.</p></div>
+      <p class="mut">Free community clubs across Dubai and Abu Dhabi for running, padel, yoga and pilates, volleyball, basketball, football and cycling. Answer three questions and see the ones that fit you.</p></div>
     <div class="stack"><button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button>
       <button class="btn ghost block" data-act="browse">${ic('find')}Browse all clubs</button>
       <p class="mut sm center">Three questions. No account needed.</p></div>
-    <div class="stack"><span class="cap">This week in Dubai</span>${[club('mdr'), club('jps'), club('kbf')].map((c) => clubCard(c)).join('')}</div>
+    <div class="stack"><span class="cap">This week near you</span>${[club('mdr'), club('jps'), club('kbf')].map((c) => clubCard(c)).join('')}</div>
     <p class="note">This is a prototype. The clubs and people are examples, the photos are stock images, and nothing you do here is sent anywhere. Use <b>Demo</b> at the top to skip ahead in time or try the organiser view.</p>
     <div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Run a club?</b><br><span class="sm mut">Claim its free page: RSVPs, headcounts and photos in one place.</span></div><button class="btn small ghost" data-act="browse">Find my club page</button></div>
   </main>`;
@@ -405,14 +435,14 @@
       <button class="quiz-opt g1"${im('running', 0)} data-act="q" data-k="sport" data-val="running">Running${ic('right')}</button>
       <button class="quiz-opt g2"${im('padel', 1)} data-act="q" data-k="sport" data-val="padel">Padel${ic('right')}</button>
       <button class="quiz-opt g4"${im('yoga', 0)} data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates${ic('right')}</button>
-      <button class="quiz-opt g3" data-act="q" data-k="sport" data-val="volleyball">Volleyball${ic('right')}</button>
-      <button class="quiz-opt g5" data-act="q" data-k="sport" data-val="basketball">Basketball${ic('right')}</button>
-      <button class="quiz-opt g2" data-act="q" data-k="sport" data-val="football">Football${ic('right')}</button>
-      <button class="quiz-opt g1" data-act="q" data-k="sport" data-val="futsal">Indoor football (5-a-side)${ic('right')}</button>
-      <button class="quiz-opt g6" data-act="q" data-k="sport" data-val="cycling">Cycling${ic('right')}</button></div>
+      <button class="quiz-opt g3"${im('volleyball', 0)} data-act="q" data-k="sport" data-val="volleyball">Volleyball${ic('right')}</button>
+      <button class="quiz-opt g5"${im('basketball', 0)} data-act="q" data-k="sport" data-val="basketball">Basketball${ic('right')}</button>
+      <button class="quiz-opt g2"${im('football', 0)} data-act="q" data-k="sport" data-val="football">Football${ic('right')}</button>
+      <button class="quiz-opt g1"${im('futsal', 0)} data-act="q" data-k="sport" data-val="futsal">Indoor football (5-a-side)${ic('right')}</button>
+      <button class="quiz-opt g6"${im('cycling', 0)} data-act="q" data-k="sport" data-val="cycling">Cycling${ic('right')}</button></div>
       <p class="mut sm center">No account needed.</p></main>`;
     if (step === 1) return `<main>${head}<h1>Where are you based?</h1><div class="quiz-opts">
-      ${AREAS.concat(['Anywhere in Dubai']).map((a) => `<button class="quiz-opt plain" data-act="q" data-k="area" data-val="${a}">${a}${ic('chev')}</button>`).join('')}</div></main>`;
+      ${Object.entries(CITIES).map(([city, list]) => `<span class="cap">${city}</span>${list.concat([ANY(city)]).map((a) => `<button class="quiz-opt plain" data-act="q" data-k="area" data-val="${a}">${a}${ic('chev')}</button>`).join('')}`).join('')}</div></main>`;
     return `<main>${head}<h1>How would you describe yourself?</h1><div class="quiz-opts">
       ${Object.keys(LEVELS).map((k) => `<button class="quiz-opt plain" data-act="q" data-k="level" data-val="${k}">${LEVELS[k]}${ic('chev')}</button>`).join('')}</div></main>`;
   };
@@ -431,14 +461,14 @@
   };
 
   V.browse = () => {
-    const list = CLUBS.filter((c) => (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
+    const list = CLUBS.filter((c) => (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area || (filt.area.startsWith('Anywhere in ') && cityOf(c.area) === filt.area.slice(12))) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
       && (!filt.venue || c.venue === filt.venue || c.venue === 'Indoor and outdoor')
       && (!filt.price || (filt.price === 'free' ? isFree(c) : isFree(c) || (aed(c) !== null && aed(c) <= Number(filt.price)))));
     const opt = (v, l, cur) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`;
     return `<main class="${S.user ? 'pad-nav' : ''}"><h1>All clubs</h1>
       <div class="wrap">${[['', 'All']].concat(Object.entries(SPORTS)).map(([k, l]) => `<button class="chip ${filt.sport === k ? 'on' : ''}" data-act="filt" data-k="sport" data-val="${k}">${l}</button>`).join('')}</div>
       <div class="wrap">
-        <select id="f-area" data-filt="area" aria-label="Area">${opt('', 'Any area', filt.area)}${AREAS.map((a) => opt(a, a, filt.area)).join('')}</select>
+        <select id="f-area" data-filt="area" aria-label="Area">${opt('', 'Any area', filt.area)}${Object.entries(CITIES).map(([city, list]) => `<optgroup label="${city}">${opt(ANY(city), ANY(city), filt.area)}${list.map((a) => opt(a, a, filt.area)).join('')}</optgroup>`).join('')}</select>
         <select id="f-day" data-filt="day" aria-label="Day">${opt('', 'Any day', filt.day)}${[1, 2, 3, 4, 5, 6, 0].map((d) => opt(d, DAYL[d], filt.day)).join('')}</select>
         <select id="f-level" data-filt="level" aria-label="Level">${opt('', 'Any level', filt.level)}${Object.entries(LEVELS).map(([k, l]) => opt(k, l, filt.level)).join('')}</select>
         <select id="f-price" data-filt="price" aria-label="Price">${opt('', 'Any price', filt.price)}${opt('free', 'Free only', filt.price)}${opt('50', 'Up to AED 50', filt.price)}</select>
@@ -470,7 +500,7 @@
     const claim = mine ? '' : S.claims[c.id] ? '<p class="note">Your request to manage this club is with us. We\'ll confirm within 2 days.</p>' : `<div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Is this your club?</b><br><span class="sm mut">Claim it to keep the schedule right and see who's coming.</span></div><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`;
     const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
     return `<main class="flush pad-bar">${invite}${head}
-      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.venue)} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
+      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
@@ -680,7 +710,7 @@
 
   OV['o-start'] = () => {
     if (!S.user) return `<main><div class="ohero"><span class="obadge">For organisers</span><h1>Run your club in five minutes a week.</h1>
-      <p>Keep your page right, see who's coming and who's new, and check people in at the session. Free for every community club in Dubai.</p></div>
+      <p>Keep your page right, see who's coming and who's new, and check people in at the session. Free for every community club in Dubai and Abu Dhabi.</p></div>
       <button class="btn block big" data-act="signin" data-then="org">Sign in with Google ${ic('right')}</button>
       <p class="mut sm center">Looking for a club to join? <button class="link" data-act="tomember">Go to the member app</button></p></main>`;
     const pend = Object.keys(S.claims);
