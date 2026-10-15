@@ -249,6 +249,25 @@
     return people(s, n).map((name) => { const h = hash(name + s.id); const def = h % 10 < 7 ? 'came' : h % 10 < 9 ? 'no' : 'wait'; return { name, first: h % 6 === 0, st: ended(s) ? (over[name] || def) : 'going' }; });
   }
 
+  // Haptic tap: Android vibrates; iOS Safari 18+ plays its system haptic when a native switch toggles.
+  function haptic(kind) {
+    const pat = { tap: 10, success: [12, 40, 18], celebrate: [14, 50, 14, 50, 30] }[kind] || 10;
+    try { if (navigator.vibrate && navigator.vibrate(pat)) return; } catch (e) { /* not supported */ }
+    try {
+      let l = document.getElementById('hap');
+      if (!l) { document.body.insertAdjacentHTML('beforeend', '<label id="hap" aria-hidden="true" style="position:fixed;left:-99px;top:0;width:1px;height:1px;overflow:hidden"><input type="checkbox" switch tabindex="-1"></label>'); l = document.getElementById('hap'); }
+      l.click();
+    } catch (e) { /* no haptics */ }
+  }
+  // Response animation for the element(s) that changed, applied after the next render.
+  let fx = null;
+  const cue = (sel, cls = 'fx-pop fx-ring') => { fx = { sel, cls, until: Date.now() + 400 }; };
+  function runFx() {
+    // Kept for 400ms so a render that follows straight after (a milestone, a toast) doesn't swallow it.
+    if (!fx) return; if (Date.now() > fx.until) { fx = null; return; } const { sel, cls } = fx;
+    document.querySelectorAll(sel).forEach((el) => { el.classList.remove(...cls.split(' ')); void el.offsetWidth; el.classList.add(...cls.split(' ')); el.addEventListener('animationend', () => el.classList.remove(...cls.split(' ')), { once: true }); });
+  }
+
   function say(msg, undo) { toast = { msg, undo }; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast = null; const el = document.querySelector('.toast'); if (el) el.remove(); }, 4500); }
   function go(v, p = {}, replace = false) { if (!replace) stack.push(route); route = Object.assign({ v }, p); overlay = null; render(); window.scrollTo(0, 0); }
   function back() { route = stack.pop() || { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' }; overlay = null; render(); }
@@ -836,7 +855,7 @@
     <p class="mut xs">Photos here are public. Only post people who are happy to be seen.</p>
     <button class="btn block" data-act="dopost">Post</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   O.photo = () => { const p = overlay; const s = p.sid ? byId(p.sid) : null;
-    const acts = p.confirmDel ? `<p><b>Delete this photo? This can't be undone.</b></p><div class="row"><button class="btn quiet grow" data-act="keep">Keep</button><button class="btn grow" data-act="delphoto">Delete</button></div>`
+    const acts = p.confirmDel ? `<p><b>Delete this photo? This can't be undone.</b></p><div class="row"><button class="btn quiet grow" data-act="keep">Keep</button><button class="btn danger grow" data-act="delphoto">Delete</button></div>`
       : p.report ? `<span class="cap">Why are you reporting this?</span>${['I’m in this and want it removed', 'It’s not from this session', 'It’s inappropriate'].map((r) => `<button class="btn ghost block" data-act="sendreport">${r}</button>`).join('')}`
       : `${p.tagged ? '<button class="btn block" data-act="untag">Remove my tag</button>' : ''}${p.mine ? '<button class="btn ghost block" data-act="askdel">Delete</button>' : '<button class="btn ghost block" data-act="report">Report</button>'}`;
     return `<div class="sheet"><span class="ph g${p.g} photo-big"${im(p.sp, p.i)}>${p.tagged ? "you're tagged" : ''}</span>
@@ -858,7 +877,7 @@
   O.cancel = () => { const s = byId(overlay.id); return `<div class="sheet"><div class="stack tight"><h2>Cancel ${nounFor(s)}?</h2><p class="mut sm">${dateShort(s.at)} · ${s.t} · ${s.type}</p></div>
     <p class="notice"><b>${plural(going(s), 'person')} will be told.</b> Their streak still counts this week.</p>
     <label for="cn-why">Reason (optional)</label><input type="text" id="cn-why" maxlength="80" placeholder="Weather, venue closed…">
-    <button class="btn block" data-act="docancel" data-id="${s.id}">Cancel session</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
+    <button class="btn danger block" data-act="docancel" data-id="${s.id}">Cancel session</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
   O.oshare = () => { const c = orgClub(); const wk = future(c).filter((s) => s.at - now() < 7 * 864e5 && !isCancelled(s));
     return `<div class="sheet"><h2>Share this week</h2><p class="mut sm">Post it in your club's WhatsApp group. People RSVP from the link; chat stays in your group.</p>
       <div class="msgprev"><b>This week at ${esc(c.name)}</b><br>${wk.map((s) => `${DAY[s.at.getDay()]} ${s.t} · ${esc(s.type)} · ${going(s)} going`).join('<br>')}<br>RSVP: ryzeclub.ae/${c.id}</div>
@@ -869,7 +888,7 @@
     if (typeof window.qrcode !== 'function') return `<div class="qrfall">The QR code needs an internet connection to draw.<br>${esc(text)}</div>`;
     try { const q = window.qrcode(0, 'M'); q.addData(text); q.make(); const n = q.getModuleCount(); let d = '';
       for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) d += `M${k + 4} ${r + 4}h1v1h-1z`;
-      return `<svg class="qr" viewBox="0 0 ${n + 8} ${n + 8}" role="img" aria-label="QR code for ${esc(text)}"><rect width="100%" height="100%" fill="#FFFFFF"/><path d="${d}" fill="#2A1730"/></svg>`;
+      return `<svg class="qr" viewBox="0 0 ${n + 8} ${n + 8}" role="img" aria-label="QR code for ${esc(text)}"><rect width="100%" height="100%" fill="#FFFFFF"/><path d="${d}" fill="#1C2B3A"/></svg>`;
     } catch (e) { return `<div class="qrfall">${esc(text)}</div>`; }
   };
   O.ojoin = () => { const c = orgClub(); const url = inviteUrl(c); const n = nextOpen(c);
@@ -926,18 +945,19 @@
     demo: () => { overlay = { t: 'demo' }; render(); },
     rsvp: (d) => {
       if (!S.user) { overlay = { t: 'signin', then: { act: 'rsvp', id: d.id } }; render(); return; }
-      doRsvp(d.id); overlay = null; say("You're going."); render();
+      doRsvp(d.id); overlay = null; haptic('success'); cue(`.bar .btn, [data-act="session"][data-id="${d.id}"] .tag`); say("You're going."); render();
     },
     follow: (d) => {
       if (!S.user) { overlay = { t: 'signin', then: { act: 'follow', id: d.id } }; render(); return; }
-      const i = S.follows.indexOf(d.id); if (i >= 0) { S.follows.splice(i, 1); say('Unfollowed. Your history is kept.'); } else { S.follows.push(d.id); if (route.invited) { S.joined = S.joined || {}; S.joined[d.id] = (S.joined[d.id] || 0) + 1; say(`You've joined ${club(d.id).name}.`); } else say('Following.'); }
+      const i = S.follows.indexOf(d.id); if (i < 0) { haptic('success'); cue(`[data-act="follow"][data-id="${d.id}"]`); }
+      if (i >= 0) { S.follows.splice(i, 1); say('Unfollowed. Your history is kept.'); } else { S.follows.push(d.id); if (route.invited) { S.joined = S.joined || {}; S.joined[d.id] = (S.joined[d.id] || 0) + 1; say(`You've joined ${club(d.id).name}.`); } else say('Following.'); }
       save(); render();
     },
     dosignin: () => {
       const el = document.getElementById('si-name'); const name = (el && el.value.trim()) || 'Alex'; const then = overlay.then;
       S.user = { name }; save(); overlay = null;
-      if (then && then.act === 'rsvp') { doRsvp(then.id); stack = []; go('confirm', { id: then.id }); }
-      else if (then && then.act === 'follow') { if (!S.follows.includes(then.id)) { S.follows.push(then.id); if (route.invited) { S.joined = S.joined || {}; S.joined[then.id] = (S.joined[then.id] || 0) + 1; } } save(); say(route.invited ? `You've joined ${club(then.id).name}.` : 'Following.'); render(); }
+      if (then && then.act === 'rsvp') { haptic('success'); cue('main h1', 'fx-rise'); doRsvp(then.id); stack = []; go('confirm', { id: then.id }); }
+      else if (then && then.act === 'follow') { haptic('success'); cue(`[data-act="follow"][data-id="${then.id}"]`); if (!S.follows.includes(then.id)) { S.follows.push(then.id); if (route.invited) { S.joined = S.joined || {}; S.joined[then.id] = (S.joined[then.id] || 0) + 1; } } save(); say(route.invited ? `You've joined ${club(then.id).name}.` : 'Following.'); render(); }
       else if (then && then.act === 'claim') { overlay = { t: 'claim', id: then.id }; render(); }
       else if (then && then.act === 'who') { A.who({ id: then.id }); }
       else if (then && then.act === 'org') { go('o-week', {}, true); }
@@ -946,7 +966,7 @@
     signin: (d) => { overlay = { t: 'signin', then: d && d.then ? { act: d.then } : null }; render(); },
     signout: () => { S.user = null; save(); stack = []; go(S.mode === 'org' ? 'o-week' : 'home', {}, true); },
     unrsvp: (d) => { S.rsvps = S.rsvps.filter((x) => x !== d.id); save(); overlay = null; say('Removed. The club has been told.', () => { doRsvp(d.id); toast = null; render(); }); render(); },
-    went: (d) => confirmWent(d.id),
+    went: (d) => { haptic('celebrate'); cue('main h1, .streak .n', 'fx-rise'); confirmWent(d.id); },
     missed: (d) => { S.att[d.id] = 'missed'; save(); go('missed', { id: d.id }, true); },
     share: () => { overlay = { t: 'share' }; render(); },
     post: (d) => { const s = byId(d.id); if (!s || !canPost(s.club)) { say(`Photos open up after ${PHOTO_MIN} sessions with a club.`); render(); return; } overlay = { t: 'post', id: d.id, sel: [] }; render(); },
@@ -982,8 +1002,8 @@
     oshare: () => { overlay = { t: 'oshare' }; render(); },
     ojoin: (d) => { overlay = { t: 'ojoin', qr: !!d.qr }; render(); },
     copylink: (d) => { try { navigator.clipboard.writeText(d.url); } catch (e) { /* not available */ } say('Link copied.'); render(); }, oinvite: () => { overlay = { t: 'oinvite' }; render(); },
-    ci: (d) => { const t = (S.ci[d.id] = S.ci[d.id] || {}); t[d.name] = !t[d.name]; const o = (S.orgAtt[d.id] = S.orgAtt[d.id] || {}); o[d.name] = t[d.name] ? 'came' : 'no'; save(); render(); },
-    ciall: (d) => { const s = byId(d.id); const t = (S.ci[d.id] = {}); const o = (S.orgAtt[d.id] = {}); roster(s).forEach((p) => { t[p.name] = true; o[p.name] = 'came'; }); save(); say('Everyone checked in. Tap a name to untick.'); render(); },
+    ci: (d) => { const t = (S.ci[d.id] = S.ci[d.id] || {}); t[d.name] = !t[d.name]; if (t[d.name]) { haptic('tap'); cue(`.cirow[data-name="${CSS.escape(d.name)}"] .citick`, 'fx-pop'); } const o = (S.orgAtt[d.id] = S.orgAtt[d.id] || {}); o[d.name] = t[d.name] ? 'came' : 'no'; save(); render(); },
+    ciall: (d) => { haptic('success'); cue('.citick', 'fx-pop'); const s = byId(d.id); const t = (S.ci[d.id] = {}); const o = (S.orgAtt[d.id] = {}); roster(s).forEach((p) => { t[p.name] = true; o[p.name] = 'came'; }); save(); say('Everyone checked in. Tap a name to untick.'); render(); },
     ciclear: (d) => { delete S.ci[d.id]; delete S.orgAtt[d.id]; save(); render(); },
     attend: (d) => go('attend', { id: d.id }),
     sched: (d) => { const id = d.id || route.id; if (S.mode === 'org') { go('o-sched', { id }); return; } (S.check[id] = S.check[id] || {}).s = true; save(); go('sched', { id }); },
@@ -1032,7 +1052,7 @@
     if (S.mode === 'org') {
       const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace(/^(<div class="sheet[^>]*>)/, '$1<button class="sheet-x" data-act="close" aria-label="Close">' + ic('x') + '</button>').replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
       const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
-      app.innerHTML = renderOrg(app) + ov + ts; a11yOverlay(app); return;
+      app.innerHTML = renderOrg(app) + ov + ts; a11yOverlay(app); runFx(); return;
     }
     if (route.v.startsWith('o-')) route = { v: S.user ? 'me' : 'home' };
     if (!S.user && ['me', 'clubs', 'profile', 'result', 'missed', 'confirm', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v)) route = { v: 'home' };
@@ -1049,6 +1069,7 @@
     const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
     app.innerHTML = top + (V[route.v] || V.home)() + nav + ov + ts;
     a11yOverlay(app);
+    runFx();
   }
 
   // Sheets behave as modal dialogs: focus moves in when one opens, the page behind can't be reached,
