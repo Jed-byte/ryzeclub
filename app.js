@@ -2,16 +2,16 @@
 (() => {
   const KEY = 'ryze-proto-v1';
   const AREAS = ['Marina', 'JVC', 'Dubai Hills', 'Downtown', 'Jumeirah', 'Palm', 'Mirdif'];
-  const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', squash: 'Squash', cycling: 'Cycling' };
+  const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', basketball: 'Basketball', football: 'Football', futsal: 'Indoor football (5-a-side)', cycling: 'Cycling' };
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
   const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
-  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', squash: 'squash', cycling: 'ride' };
+  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', cycling: 'ride' };
 
   // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
-  // Volleyball, squash and cycling have none yet, so they show the colour gradient instead.
+  // Volleyball, basketball, football, indoor football and cycling have none yet, so they show a session poster instead.
   const IMG = {
     running: ['1590333748338-d629e4564ad9', '1552674605-db6ffd4facb5', '1613936360976-8f35cf0e5461', '1540539234-c14a20fb7c7b', '1602263515015-dd72f8e9f301', '1551927336-09d50efd69cd', '1667781838690-5f32ea0ccea6', '1739368732843-800f36a9b7d0', '1716573094354-e4c3226ba887', '1759674861540-afed9f86f94a'],
     padel: ['1646649852033-7e0f3d679f8b', '1646651105426-e8c8ee9badde', '1646649851780-d9701b7c3c04', '1646649853703-7645147474ba', '1646649851800-48dba35edc76', '1646649852046-b758d2d573f3', '1658723826297-fe4d1b1e6600', '1612534847738-b3af9bc31f0c', '1657704358775-ed705c7388d2', '1526888935184-a82d2a4b7e67'],
@@ -69,14 +69,30 @@
       desc: 'A relaxed group for people learning the basics. The first half hour is drills, then easy games.', bring: 'Water. Bare feet on the sand.',
       sched: [{ d: 1, t: '18:00', type: 'Learn and play', note: 'First-timers', place: 'JBR Beach, courts by The Walk', cap: 18 }],
       top: [['Zara I.', 8], ['Luca C.', 6]], active: 21 },
-    { id: 'dsq', name: 'Downtown Squash Ladder', sport: 'squash', area: 'Downtown', levels: ['some', 'regular'], cost: 'Court share, about AED 40', level: 'Club level and up', photos: 2, confirmed: 7,
-      desc: 'A weekly ladder with matches set by level. Win and you move up; everyone plays at least three games.', bring: 'Your own racket, non-marking shoes and eye protection.',
-      sched: [{ d: 2, t: '19:30', type: 'Ladder night', note: 'Club level', place: 'Downtown Sports Club, courts 1–4', cap: 8 }, { d: 0, t: '07:00', type: 'Early rallies', note: 'Some experience', place: 'Downtown Sports Club, courts 1–4', cap: 8 }],
-      top: [['Hassan B.', 12], ['Anna F.', 10], ['Khalid Z.', 8]], active: 18 },
-    { id: 'jsq', name: 'JVC Squash Starters', sport: 'squash', area: 'JVC', levels: ['new'], cost: 'Court share, about AED 35', level: 'Never played is fine', photos: 2, confirmed: 10,
-      desc: 'A patient group for first-timers. A volunteer coach covers the basics before friendly games.', bring: 'Non-marking shoes. Rackets, balls and eye protection provided.',
-      sched: [{ d: 4, t: '19:00', type: 'Learn and play', note: 'First-timers', place: 'JVC Community Courts, squash court 2', cap: 6 }],
-      top: [['Noor E.', 9], ['Sam W.', 6]], active: 12 },
+    { id: 'mbb', name: 'Marina Streetball Social', sport: 'basketball', area: 'Marina', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Pick-up games, all levels', photos: 2, confirmed: 6, venue: 'Outdoor',
+      desc: 'Pick-up games on the outdoor courts after sunset. Teams are picked on the night, so come alone or bring friends.', bring: 'Water and basketball shoes. Balls provided.',
+      sched: [{ d: 2, t: '19:30', type: 'Sunset pick-up', note: 'All levels', place: 'Marina outdoor courts, by the tram stop', cap: 20 }, { d: 5, t: '18:00', type: 'Weekend runs', note: 'Some experience', place: 'Marina outdoor courts, by the tram stop', cap: 20 }],
+      top: [['Sam W.', 10], ['Diego M.', 8], ['Zara I.', 6]], active: 26 },
+    { id: 'dhb', name: 'Dubai Hills Indoor Hoops', sport: 'basketball', area: 'Dubai Hills', levels: ['some', 'regular'], cost: 'Court share, about AED 35', level: 'Played before, full-court 5-on-5', photos: 2, confirmed: 5, venue: 'Indoor',
+      desc: 'Air-conditioned full-court games all year round. A short skills warm-up, then rotating 5-on-5.', bring: 'Non-marking shoes, plus a light and a dark shirt.',
+      sched: [{ d: 3, t: '20:00', type: 'Full-court 5s', note: 'Some experience', place: 'Dubai Hills sports hall, court 1', cap: 20 }],
+      top: [['Khalid Z.', 11], ['Tom R.', 9]], active: 18 },
+    { id: 'dhf', name: 'Dubai Hills Sunday Football', sport: 'football', area: 'Dubai Hills', levels: ['some', 'regular'], cost: 'Pitch share, about AED 40', level: '7-a-side, friendly', photos: 3, confirmed: 4, venue: 'Outdoor',
+      desc: '7-a-side on a full-size grass pitch, split into two games. Teams are balanced on the night; bibs and balls provided.', bring: 'Boots or astro shoes, shin pads and water.',
+      sched: [{ d: 0, t: '19:00', type: '7-a-side', note: 'Friendly', place: 'Dubai Hills Park, football pitch', cap: 28 }],
+      top: [['Omar S.', 12], ['Luca C.', 10], ['Ravi T.', 7]], active: 31 },
+    { id: 'jbf', name: 'Jumeirah Beach Football', sport: 'football', area: 'Jumeirah', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Open, mixed teams', photos: 2, confirmed: 8, venue: 'Outdoor',
+      desc: 'Barefoot games on the sand at sunrise. Mixed teams, short games and plenty of breaks.', bring: 'Water and sunscreen. Bare feet on the sand.',
+      sched: [{ d: 6, t: '07:00', type: 'Beach games', note: 'Open level', place: 'Kite Beach, sand pitch by the lifeguard tower' }],
+      top: [['Hassan B.', 9], ['Ben J.', 6]], active: 22 },
+    { id: 'jif', name: 'JVC Five-a-Side Social', sport: 'futsal', area: 'JVC', levels: ['new', 'some'], cost: 'Pitch share, about AED 45', level: '5-a-side, never played is fine', photos: 2, confirmed: 3, venue: 'Indoor',
+      desc: 'Indoor 5-a-side in an air-conditioned hall. Short games and rolling subs, with a mixed beginners\' game first.', bring: 'Indoor or astro shoes, and water.',
+      sched: [{ d: 1, t: '20:00', type: '5-a-side', note: 'Beginners first', place: 'JVC indoor sports hall, pitch 2', cap: 20 }, { d: 4, t: '20:30', type: '5-a-side', note: 'Some experience', place: 'JVC indoor sports hall, pitch 2', cap: 20 }],
+      top: [['Ivan U.', 11], ['Noor E.', 8]], active: 24 },
+    { id: 'mif', name: 'Mirdif Indoor 5s', sport: 'futsal', area: 'Mirdif', levels: ['some', 'regular'], cost: 'Pitch share, about AED 40', level: '5-a-side, regular players', photos: 2, confirmed: 9, venue: 'Indoor',
+      desc: 'Competitive but friendly indoor 5-a-side, with a small weekly league table.', bring: 'Indoor shoes, plus a light and a dark shirt.',
+      sched: [{ d: 3, t: '21:00', type: 'League night', note: 'Regular players', place: 'Mirdif indoor arena, pitch A', cap: 25 }],
+      top: [['Farah A.', 10], ['Jonas P.', 9]], active: 20 },
     { id: 'aqr', name: 'Al Qudra Dawn Riders', sport: 'cycling', area: 'JVC', levels: ['some', 'regular'], cost: 'Free', level: 'Steady 28–32 km/h', photos: 3, confirmed: 4,
       desc: 'Road rides on the Al Qudra track before the heat. One loop at a steady pace, with a regroup at the halfway shade stop.', bring: 'Road bike, helmet, lights and two bottles of water.',
       sched: [{ d: 6, t: '05:30', type: 'Long loop', note: '50 km, steady', place: 'Al Qudra Cycle Track, Bab Al Shams start' }, { d: 3, t: '05:45', type: 'Midweek spin', note: '30 km, social pace', place: 'Al Qudra Cycle Track, Bab Al Shams start' }],
@@ -86,6 +102,10 @@
       sched: [{ d: 2, t: '19:30', type: 'Evening laps', note: 'Easy pace', place: 'Nad Al Sheba Cycle Park, main entrance' }],
       top: [['Farah A.', 9], ['Tom R.', 6]], active: 19 }
   ];
+  // Indoor or outdoor. Padel venues vary; everything else listed before these sports meets outdoors.
+  const VENUE = { jps: 'Indoor', jpm: 'Outdoor', mpb: 'Indoor and outdoor' };
+  CLUBS.forEach((c) => { c.venue = c.venue || VENUE[c.id] || 'Outdoor'; });
+  const VENUES = ['Indoor', 'Outdoor', 'Indoor and outdoor'];
   const ORIG = JSON.parse(JSON.stringify(CLUBS));
 
   const MS = [
@@ -119,7 +139,7 @@
   let overlay = null;
   let toast = null;
   let toastTimer = null;
-  let filt = { sport: '', area: '', day: '', level: '', price: '' };
+  let filt = { sport: '', area: '', day: '', level: '', price: '', venue: '' };
 
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -223,7 +243,9 @@
     padel: ['Americano done, rematch on Thursday.', 'Best rallies of the month.', 'Two first-timers won their first game.', 'Lights, sweat, smiles.'],
     yoga: ['Calm start to the week.', 'Sunset flow by the water.', 'Mats out, phones away.', 'Three newcomers today. Welcome.'],
     volleyball: ['Sand everywhere. Worth it.', 'Mixed teams, no egos.', 'Sunset game went to 25–23.', 'Ten new faces this week.'],
-    squash: ['Ladder shake-up: two new names in the top four.', 'Long rallies tonight.', 'First-timers already hitting the back wall.', 'Good games, cold drinks.'],
+    basketball: ['Next-up rotation ran all night.', 'Three first-timers hit their first threes.', 'Courts were packed. Come early.', 'Good runs, no egos.'],
+    football: ['Two games, nobody injured, everyone muddy.', 'Last-minute winner on the far pitch.', 'Teams were perfectly even tonight.', 'Sunrise and sand everywhere.'],
+    futsal: ['Rolling subs, nonstop games.', 'Beginners\' game was the best one.', 'Cold hall, warm games.', 'League table is tight this month.'],
     cycling: ['50 km before the heat.', 'Nobody dropped, as promised.', 'Spotted gazelles at Al Qudra.', 'Fastest regroup yet.']
   };
   const captionFor = (s) => { const a = CAPS[s.club.sport] || CAPS.running; return a[hash(s.id) % a.length]; };
@@ -278,7 +300,7 @@
     const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
     return `<button class="card" data-act="club" data-id="${c.id}">${head}<span class="body">
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
-      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${priceShort(c)}</span>`}
+      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.venue)} · ${priceShort(c)}</span>`}
       <span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
       <span class="go">View club ${ic('right')}</span>
     </span></button>`;
@@ -367,7 +389,7 @@
 
   V.home = () => `<main>
     <div class="stack"><h1>Find your people. Keep showing up.</h1>
-      <p class="mut">Free community clubs across Dubai for running, padel, yoga and pilates, volleyball, squash and cycling. Answer three questions and see the ones that fit you.</p></div>
+      <p class="mut">Free community clubs across Dubai for running, padel, yoga and pilates, volleyball, basketball, football and cycling. Answer three questions and see the ones that fit you.</p></div>
     <div class="stack"><button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button>
       <button class="btn ghost block" data-act="browse">${ic('find')}Browse all clubs</button>
       <p class="mut sm center">Three questions. No account needed.</p></div>
@@ -384,7 +406,9 @@
       <button class="quiz-opt g2"${im('padel', 1)} data-act="q" data-k="sport" data-val="padel">Padel${ic('right')}</button>
       <button class="quiz-opt g4"${im('yoga', 0)} data-act="q" data-k="sport" data-val="yoga">Yoga &amp; pilates${ic('right')}</button>
       <button class="quiz-opt g3" data-act="q" data-k="sport" data-val="volleyball">Volleyball${ic('right')}</button>
-      <button class="quiz-opt g5" data-act="q" data-k="sport" data-val="squash">Squash${ic('right')}</button>
+      <button class="quiz-opt g5" data-act="q" data-k="sport" data-val="basketball">Basketball${ic('right')}</button>
+      <button class="quiz-opt g2" data-act="q" data-k="sport" data-val="football">Football${ic('right')}</button>
+      <button class="quiz-opt g1" data-act="q" data-k="sport" data-val="futsal">Indoor football (5-a-side)${ic('right')}</button>
       <button class="quiz-opt g6" data-act="q" data-k="sport" data-val="cycling">Cycling${ic('right')}</button></div>
       <p class="mut sm center">No account needed.</p></main>`;
     if (step === 1) return `<main>${head}<h1>Where are you based?</h1><div class="quiz-opts">
@@ -408,6 +432,7 @@
 
   V.browse = () => {
     const list = CLUBS.filter((c) => (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
+      && (!filt.venue || c.venue === filt.venue || c.venue === 'Indoor and outdoor')
       && (!filt.price || (filt.price === 'free' ? isFree(c) : isFree(c) || (aed(c) !== null && aed(c) <= Number(filt.price)))));
     const opt = (v, l, cur) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`;
     return `<main class="${S.user ? 'pad-nav' : ''}"><h1>All clubs</h1>
@@ -417,6 +442,7 @@
         <select id="f-day" data-filt="day" aria-label="Day">${opt('', 'Any day', filt.day)}${[1, 2, 3, 4, 5, 6, 0].map((d) => opt(d, DAYL[d], filt.day)).join('')}</select>
         <select id="f-level" data-filt="level" aria-label="Level">${opt('', 'Any level', filt.level)}${Object.entries(LEVELS).map(([k, l]) => opt(k, l, filt.level)).join('')}</select>
         <select id="f-price" data-filt="price" aria-label="Price">${opt('', 'Any price', filt.price)}${opt('free', 'Free only', filt.price)}${opt('50', 'Up to AED 50', filt.price)}</select>
+        <select id="f-venue" data-filt="venue" aria-label="Indoor or outdoor">${opt('', 'Indoor or outdoor', filt.venue)}${opt('Indoor', 'Indoor', filt.venue)}${opt('Outdoor', 'Outdoor', filt.venue)}</select>
       </div>
       <p class="mut sm">${list.filter(isFree).length} of ${list.length} free. Paid clubs show what the money covers.</p>
       <div class="stack">${list.length ? list.map((c) => clubCard(c)).join('') : `<p class="note">Nothing matches those filters yet.</p><button class="btn ghost" data-act="clearfilt">Clear filters</button>`}</div></main>`;
@@ -444,7 +470,7 @@
     const claim = mine ? '' : S.claims[c.id] ? '<p class="note">Your request to manage this club is with us. We\'ll confirm within 2 days.</p>' : `<div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Is this your club?</b><br><span class="sm mut">Claim it to keep the schedule right and see who's coming.</span></div><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`;
     const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
     return `<main class="flush pad-bar">${invite}${head}
-      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
+      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${c.area} · ${esc(c.venue)} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
@@ -802,7 +828,7 @@
     else if (full) act = `<p class="notice">Full · ${s.cap} of ${s.cap}. There is no waiting list.</p>`;
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">I'm in</button>`;
     return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h2>${dayWord(s.at)} · ${s.t}</h2></div>
-      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
+      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}
       ${who(s, over)}
       ${overlay.from ? `<button class="btn quiet block" data-act="day" data-date="${overlay.from}">${ic('left')}Back to ${DAYL[s.at.getDay()]}</button>` : '<button class="btn quiet block" data-act="close">Close</button>'}</div>`;
@@ -869,6 +895,7 @@
   O.edit = () => { const c = club(overlay.id); return `<div class="sheet"><h2>Club details</h2>
     <label for="ed-desc">Description</label><textarea id="ed-desc" rows="4" maxlength="300">${esc(c.desc)}</textarea>
     <label for="ed-level">Level or pace</label><input type="text" id="ed-level" maxlength="80" value="${esc(c.level)}">
+    <label for="ed-venue">Indoor or outdoor</label><select id="ed-venue">${VENUES.map((v) => `<option ${c.venue === v ? 'selected' : ''}>${v}</option>`).join('')}</select>
     <label for="ed-cost">Cost</label><input type="text" id="ed-cost" maxlength="40" value="${esc(c.cost)}">
     <label for="ed-bring">What to bring</label><input type="text" id="ed-bring" maxlength="80" value="${esc(c.bring)}">
     <label for="ed-find">How to find us<br><span class="mut sm">One line for first-timers, added to their reminder</span></label><input type="text" id="ed-find" maxlength="80" placeholder="For example: Look for the orange flag by Pier 7" value="${esc(c.find || '')}">
@@ -924,8 +951,8 @@
     home: () => go(S.user ? 'me' : 'home'), me: () => go('me'), back, quiz: () => go('quiz', { step: 0 }),
     quizback: () => { route.step -= 1; render(); },
     q: (d) => { S.quiz[d.k] = d.val; save(); if ((route.step || 0) < 2) { route.step = (route.step || 0) + 1; render(); window.scrollTo(0, 0); } else go('results', {}, true); },
-    browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '', price: '' }; go('browse'); },
-    filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '' }; render(); },
+    browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '', price: '', venue: '' }; go('browse'); },
+    filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '', venue: '' }; render(); },
     person: (d) => { overlay = { t: 'person', name: d.name, sid: d.sid }; render(); },
     editpro: () => { const sid = overlay && overlay.t === 'session' ? overlay.id : null; overlay = { t: 'editpro', d: myPro(), sid }; render(); },
     rmphoto: () => { readPro(); overlay.d.photo = ''; render(); },
@@ -1011,7 +1038,7 @@
     editclub: (d) => { overlay = { t: 'edit', id: d.id }; render(); },
     saveclub: (d) => {
       const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; }; const c = club(d.id);
-      S.edits[d.id] = { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, cost: val('ed-cost') || c.cost, bring: val('ed-bring') || c.bring, find: val('ed-find') };
+      S.edits[d.id] = { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, cost: val('ed-cost') || c.cost, bring: val('ed-bring') || c.bring, find: val('ed-find'), venue: val('ed-venue') || c.venue };
       S.conf[d.id] = now().getTime(); const ck = (S.check[d.id] = S.check[d.id] || {}); ck.d = true; if (val('ed-find')) ck.f = true; save(); applyEdits(); overlay = null; say('Saved. Your public page is updated.'); render();
     },
     confirmclub: (d) => { S.conf[d.id] = now().getTime(); (S.check[d.id] = S.check[d.id] || {}).d = true; save(); say('Thanks. Marked as confirmed today.'); render(); },
@@ -1028,7 +1055,7 @@
     'd-week': needUser(() => { endWeek(); stack = []; go('me', {}, true); }),
     'd-11': needUser(() => { const cid = S.follows[0] || 'mdr'; S.clubWeeks[cid] = Math.max(S.clubWeeks[cid] || 0, 11); S.streak = 11; S.longest = Math.max(S.longest, 11); S.total = Math.max(S.total, 22); S.weekDone = false; ['s1', 'w4'].forEach((b) => { if (!S.badges.includes(b)) S.badges.push(b); }); save(); stack = []; go('me', {}, true); }),
     'd-org': needUser(() => { const ids = Object.keys(S.claims); const list = ids.length ? ids : S.manage.length ? [] : ['mdr']; list.forEach((id) => { if (!S.manage.includes(id)) S.manage.push(id); delete S.claims[id]; }); if (list.length) { S.orgClub = list[0]; say(`You now manage ${club(list[0]).name}.`); } A.toorg({ id: S.orgClub }); }),
-    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { sport: '', area: '', day: '', level: '', price: '' }; go('home', {}, true); }
+    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { sport: '', area: '', day: '', level: '', price: '', venue: '' }; go('home', {}, true); }
   };
 
   // ---------- render ----------
