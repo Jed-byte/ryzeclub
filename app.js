@@ -63,7 +63,7 @@
       desc: 'An hour of yoga on the sand as the sun comes up. Bring a towel if you do not have a mat.', bring: 'Mat or towel, water.',
       sched: [{ d: 6, t: '06:45', type: 'Sunrise flow', note: 'Open level', place: 'Kite Beach, north end by the showers' }, { d: 3, t: '06:30', type: 'Stretch and breathe', note: 'Gentle', place: 'Kite Beach, north end by the showers' }],
       top: [['Aisha N.', 12], ['Mei L.', 11], ['Sana K.', 8]], active: 35 },
-    { id: 'mpp', name: 'Marina Mat Pilates in the Park', sport: 'yoga', area: 'Marina', levels: ['new', 'some'], cost: 'AED 20 towards the instructor', level: 'Beginner friendly', photos: 2, confirmed: 71,
+    { id: 'mpp', name: 'Marina Mat Pilates in the Park', sport: 'yoga', area: 'Marina', levels: ['new', 'some'], cost: 'AED 20 towards the instructor', level: 'Beginner friendly', photos: 2, confirmed: 71, ladies: true,
       desc: 'Mat pilates on the grass with a small speaker and a patient teacher.', bring: 'Mat, water.',
       sched: [{ d: 1, t: '18:30', type: 'Mat pilates', note: 'Beginner friendly', place: 'Marina Promenade lawn' }],
       top: [['Priya V.', 6]], active: 9 },
@@ -130,7 +130,15 @@
     { id: 'kcf', name: 'Khalifa City Five-a-Side', sport: 'futsal', area: 'Khalifa City', levels: ['new', 'some', 'regular'], cost: 'Pitch share, about AED 35', level: '5-a-side, all levels', photos: 2, confirmed: 7, venue: 'Indoor',
       desc: 'Friendly indoor 5-a-side for regulars and newcomers alike. Teams are reshuffled every 10 minutes.', bring: 'Indoor or astro shoes, and water.',
       sched: [{ d: 6, t: '19:00', type: '5-a-side', note: 'All levels', place: 'Khalifa City indoor pitch, pitch 1', cap: 20 }],
-      top: [['Sam W.', 9], ['Yuki O.', 7]], active: 17 }
+      top: [['Sam W.', 9], ['Yuki O.', 7]], active: 17 },
+    { id: 'jlr', name: 'Jumeirah Ladies Run Club', sport: 'running', area: 'Jumeirah', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Walk-run to 6:00 per km', photos: 3, confirmed: 3, venue: 'Outdoor', ladies: true,
+      desc: 'A women-only run club with a walk-run group, so nobody runs alone. Coffee together after every session.', bring: 'Water. Lockers at the beach club for a small fee.',
+      sched: [{ d: 1, t: '06:00', type: '5 km easy', note: 'All paces', place: 'Jumeirah Beach Road, by Sunset Mall' }, { d: 4, t: '18:30', type: 'Sunset 5 km', note: 'All paces', place: 'Jumeirah Beach Road, by Sunset Mall' }],
+      top: [['Sana K.', 12], ['Aisha N.', 10], ['Noor E.', 8]], active: 33 },
+    { id: 'dlp', name: 'Dubai Hills Ladies Padel', sport: 'padel', area: 'Dubai Hills', levels: ['new', 'some'], cost: 'Court share, about AED 50', level: 'Beginner and improver doubles', photos: 2, confirmed: 5, venue: 'Indoor', ladies: true,
+      desc: 'Women-only padel with a coach-led warm-up, then mixed-level doubles. Rackets to borrow for first-timers.', bring: 'Indoor shoes and water. Rackets available.',
+      sched: [{ d: 0, t: '19:00', type: 'Ladies doubles', note: 'Beginner friendly', place: 'Dubai Hills padel courts, courts 1–3', cap: 12 }],
+      top: [['Layla H.', 9], ['Priya V.', 7]], active: 16 }
   ];
   // Indoor or outdoor. Padel venues vary; everything else listed before these sports meets outdoors.
   const VENUE = { jps: 'Indoor', jpm: 'Outdoor', mpb: 'Indoor and outdoor' };
@@ -169,7 +177,7 @@
   let overlay = null;
   let toast = null;
   let toastTimer = null;
-  let filt = { sport: '', area: '', day: '', level: '', price: '', venue: '' };
+  let filt = { sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' };
 
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -330,7 +338,7 @@
     const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
     return `<button class="card" data-act="club" data-id="${c.id}">${head}<span class="body">
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
-      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}</span>`}
+      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}</span>${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}`}
       <span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
       <span class="go">View club ${ic('right')}</span>
     </span></button>`;
@@ -417,8 +425,17 @@
   // ---------- views ----------
   const V = {};
 
+  // Home opens on a real session with faces, so newcomers see people before a list of clubs.
+  function homeHero() {
+    const c = club('mdr'); const n = nextOpen(c); if (!n) return '';
+    return `<button class="hero ph g1"${im('running', 2)} data-act="club" data-id="${c.id}" aria-label="${esc(c.name)}, ${dayWord(n.at)} at ${n.t}">
+      <span class="tag">Beginners welcome</span>
+      <span class="hero-b"><span class="hero-when">${dayWord(n.at)} · ${n.t} · ${esc(n.place.split(',')[0])}</span><b class="hero-name">${esc(c.name)}</b>
+        <span class="row">${avatars(people(n, 4))}<span>${going(n)} going so far</span></span></span></button>`;
+  }
   V.home = () => `<main>
     <div class="stack"><h1>Find your people. Keep showing up.</h1>
+      ${homeHero()}
       <p class="mut">Free community clubs across Dubai and Abu Dhabi for running, padel, yoga and pilates, volleyball, basketball, football and cycling. Answer three questions and see the ones that fit you.</p></div>
     <div class="stack"><button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button>
       <button class="btn ghost block" data-act="browse">${ic('find')}Browse all clubs</button>
@@ -462,6 +479,7 @@
 
   V.browse = () => {
     const list = CLUBS.filter((c) => (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area || (filt.area.startsWith('Anywhere in ') && cityOf(c.area) === filt.area.slice(12))) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
+      && (!filt.who || c.ladies)
       && (!filt.venue || c.venue === filt.venue || c.venue === 'Indoor and outdoor')
       && (!filt.price || (filt.price === 'free' ? isFree(c) : isFree(c) || (aed(c) !== null && aed(c) <= Number(filt.price)))));
     const opt = (v, l, cur) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`;
@@ -472,6 +490,7 @@
         <select id="f-day" data-filt="day" aria-label="Day">${opt('', 'Any day', filt.day)}${[1, 2, 3, 4, 5, 6, 0].map((d) => opt(d, DAYL[d], filt.day)).join('')}</select>
         <select id="f-level" data-filt="level" aria-label="Level">${opt('', 'Any level', filt.level)}${Object.entries(LEVELS).map(([k, l]) => opt(k, l, filt.level)).join('')}</select>
         <select id="f-price" data-filt="price" aria-label="Price">${opt('', 'Any price', filt.price)}${opt('free', 'Free only', filt.price)}${opt('50', 'Up to AED 50', filt.price)}</select>
+        <select id="f-who" data-filt="who" aria-label="Who can join">${opt('', 'Everyone', filt.who)}${opt('ladies', 'Ladies only', filt.who)}</select>
         <select id="f-venue" data-filt="venue" aria-label="Indoor or outdoor">${opt('', 'Indoor or outdoor', filt.venue)}${opt('Indoor', 'Indoor', filt.venue)}${opt('Outdoor', 'Outdoor', filt.venue)}</select>
       </div>
       <p class="mut sm">${list.filter(isFree).length} of ${list.length} free. Paid clubs show what the money covers.</p>
@@ -501,6 +520,7 @@
     const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
     return `<main class="flush pad-bar">${invite}${head}
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
+        ${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
@@ -981,8 +1001,8 @@
     home: () => go(S.user ? 'me' : 'home'), me: () => go('me'), back, quiz: () => go('quiz', { step: 0 }),
     quizback: () => { route.step -= 1; render(); },
     q: (d) => { S.quiz[d.k] = d.val; save(); if ((route.step || 0) < 2) { route.step = (route.step || 0) + 1; render(); window.scrollTo(0, 0); } else go('results', {}, true); },
-    browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '', price: '', venue: '' }; go('browse'); },
-    filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '', venue: '' }; render(); },
+    browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '', price: '', venue: '', who: '' }; go('browse'); },
+    filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; render(); },
     person: (d) => { overlay = { t: 'person', name: d.name, sid: d.sid }; render(); },
     editpro: () => { const sid = overlay && overlay.t === 'session' ? overlay.id : null; overlay = { t: 'editpro', d: myPro(), sid }; render(); },
     rmphoto: () => { readPro(); overlay.d.photo = ''; render(); },
@@ -1085,7 +1105,7 @@
     'd-week': needUser(() => { endWeek(); stack = []; go('me', {}, true); }),
     'd-11': needUser(() => { const cid = S.follows[0] || 'mdr'; S.clubWeeks[cid] = Math.max(S.clubWeeks[cid] || 0, 11); S.streak = 11; S.longest = Math.max(S.longest, 11); S.total = Math.max(S.total, 22); S.weekDone = false; ['s1', 'w4'].forEach((b) => { if (!S.badges.includes(b)) S.badges.push(b); }); save(); stack = []; go('me', {}, true); }),
     'd-org': needUser(() => { const ids = Object.keys(S.claims); const list = ids.length ? ids : S.manage.length ? [] : ['mdr']; list.forEach((id) => { if (!S.manage.includes(id)) S.manage.push(id); delete S.claims[id]; }); if (list.length) { S.orgClub = list[0]; say(`You now manage ${club(list[0]).name}.`); } A.toorg({ id: S.orgClub }); }),
-    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { sport: '', area: '', day: '', level: '', price: '', venue: '' }; go('home', {}, true); }
+    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; go('home', {}, true); }
   };
 
   // ---------- render ----------

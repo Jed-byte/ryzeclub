@@ -382,3 +382,12 @@ body.org #app { background: #F6F9FC; }
   .fx-rise { animation: fxrise .55s cubic-bezier(.22, 1, .36, 1); }
   @keyframes fxrise { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
 }
+
+/* Home hero: a real session with faces, under the title */
+.hero { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; height: 240px; border-radius: 16px; padding: 14px; text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 500; text-align: left; width: 100%; }
+.hero .tag { background: rgba(255, 255, 255, .92); color: var(--ink); }
+.hero-b { display: flex; flex-direction: column; gap: 6px; }
+.hero-when { font-size: 13px; font-weight: 700; opacity: .92; }
+.hero-name { font-family: var(--display); font-size: 22px; line-height: 1.1; }
+.hero .av { border-color: rgba(255, 255, 255, .9); background: var(--acc-soft); color: var(--acc); }
+.tag.ladies { background: #F3E8F6; color: #6B3A7A; align-self: flex-start; }
