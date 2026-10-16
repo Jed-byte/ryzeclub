@@ -26,12 +26,12 @@ parent: prd.md
 | D15 | 2026-10-07 | Product name is Ryze Club | Decision | Founder | Name availability check is a follow-up |
 | D17 | 2026-10-07 | Launch scope: running, community padel, community yoga/pilates; golf and partner-finding later | Decision | Founder | Confirms A2; sport-specific level field keeps golf easy to add |
 | D18 | 2026-10-07 | Founder is the curator for the pilot | Decision | Founder | |
-| D19 | 2026-10-07 | Gamified streaks are in V1: milestones, streak protection, club standings, share card (FR-22 to FR-25) | Decision | Founder | "That's how we hold them" |
+| D19 | 2026-10-07 | Gamified streaks are in V1: milestones, streak rest week, club standings, share card (FR-22 to FR-25) | Decision | Founder | "That's how we hold them" |
 | D20 | 2026-10-07 | Streak rewards (cashback on supplements, diet plans, free 1:1, coaching) are future, not V1; record kept rewards-ready (FR-26) | Decision | Founder | Supplements remain out for now (D3); stronger attendance checks needed before rewards |
 | D21 | 2026-10-07 | PRD status changed to `handoff-ready`; PRD review skipped, moving straight to design | Status | Founder | Explicit approval; no open blockers |
 | D22 | 2026-10-07 | Visual direction: the blend (photo-led club pages, session bar, streak-led member home) | Decision | Founder | See `ux/explorations/explore-001-visual-direction.md` |
 | D23 | 2026-10-07 | No waiting list; follow a club without RSVP; launch areas Marina, JVC, Dubai Hills, Downtown, Jumeirah, Palm, Mirdif | Decision | Founder | |
-| D24 | 2026-10-07 | Standings on by default with opt-out; one streak protection returning after four weeks | Decision | Founder | |
+| D24 | 2026-10-07 | Standings on by default with opt-out; one streak rest week returning after four weeks | Decision | Founder | |
 | D25 | 2026-10-07 | Milestones extended to 26, 52 and 104 weeks and 250 and 500 sessions | Decision | Founder | "Think big"; long-standing members keep a goal |
 | D26 | 2026-10-07 | Organisers see who RSVPed and did not turn up | Decision | Founder | Useful for capacity-limited sessions; other members never see it |
 | D27 | 2026-10-07 | Early-session reminders go at 19:00 the evening before | Decision | Founder | |

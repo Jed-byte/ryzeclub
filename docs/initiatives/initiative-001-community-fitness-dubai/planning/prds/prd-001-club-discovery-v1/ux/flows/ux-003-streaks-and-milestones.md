@@ -28,7 +28,7 @@ Same as UX-001: PRD handoff-ready, PRD review skipped by the founder, no design 
 |---|---|
 | FR-12 Streak and history | Home, Profile |
 | FR-22 Milestones and badges | Milestone moment, Profile |
-| FR-23 Streak protection and at-risk reminder | Home status line, At-risk reminder, Protection used |
+| FR-23 Streak rest week and at-risk reminder | Home status line, At-risk reminder, Rest week used |
 | FR-24 Club streaks and standings | Club page standings |
 | FR-25 Shareable streak card | Share card |
 | FR-26 Rewards-ready record | Rules below; nothing shown to members in V1 |
@@ -43,8 +43,8 @@ Confirming attendance ("I went") is designed in UX-002. This slice starts from t
 - A week also counts when the member had RSVPed to a session that the club then cancelled, and attended nothing else. This keeps the streak and does not add to total sessions. The RSVP must have been made before the cancellation.
 - The **streak** is the number of counted weeks in a row, including the current week once it counts.
 - The current week does not break the streak until it ends on Sunday night.
-- **Protection:** a member holds at most one. If a week ends without a session, the protection is used automatically and the streak continues. It returns after four counted weeks in a row. A new member starts with one. [ASSUMPTION: S1]
-- If a week is missed with no protection, the streak returns to zero. The **longest streak** and **total sessions** are kept for good.
+- **Rest week:** a member holds at most one. If a week ends without a session, the rest week is used automatically and the streak continues. It returns after four counted weeks in a row. A new member starts with one. [ASSUMPTION: S1]
+- If a week is missed with no rest week, the streak returns to zero. The **longest streak** and **total sessions** are kept for good.
 - Attendance confirmed late still counts for the week the session took place, for up to seven days afterwards. [ASSUMPTION: S2]
 - Milestones, once earned, are never removed.
 
@@ -84,7 +84,7 @@ The 52-week milestone is the headline one: its celebration and share card are th
 2. The status line says one of:
    - "This week is safe. One session done."
    - "One session keeps your streak. 3 left this week."
-   - "Your protection will cover this week if you can't make it."
+   - "Can't make it this week? Your rest week keeps your streak safe."
    - "No sessions left this week in your clubs." with a link to find another.
 3. Tapping the streak number opens **Profile**.
 
@@ -109,8 +109,8 @@ The 52-week milestone is the headline one: its celebration and share card are th
 
 ### E. Week ends without a session
 
-- **With protection:** on Monday, Home shows "Your protection covered last week. Streak safe at 6. It returns after 4 weeks in a row." The missed week is marked differently from attended weeks.
-- **Without protection:** on Monday, Home shows "Your streak ended at 6 weeks. That's your longest yet. A new one starts with your next session." The number shows 0 and "Coming up" moves to the top.
+- **With rest week:** on Monday, Home shows "You used your rest week, so your streak is safe at 6. You earn a new rest week after 4 weeks in a row." The missed week is marked differently from attended weeks.
+- **Without rest week:** on Monday, Home shows "Your streak ended at 6 weeks. That's your longest yet. A new one starts with your next session." The number shows 0 and "Coming up" moves to the top.
 
 ### F. Club standings
 
@@ -134,7 +134,7 @@ The 52-week milestone is the headline one: its celebration and share card are th
 1. The curator sets up a season: a name, start and end weeks (four to six weeks), and a goal in attended weeks, for example "Show up every week for six weeks". One season each year runs alongside the Dubai Fitness Challenge.
 2. Organisers join their club with one tap from their weekly summary (UX-005). A club that does not join is unaffected.
 3. A member who follows a joined club sees a **Season card** on Home, under the streak: "Autumn Season · week 3 of 6 · 3 of 3 so far". There is nothing to sign up for; every member of a joined club takes part, and the card can be hidden.
-4. Progress counts the same recorded attendance as the streak, at any joined club. A week covered by streak protection does not count towards a season.
+4. Progress counts the same recorded attendance as the streak, at any joined club. A week covered by streak rest week does not count towards a season.
 5. Completing the goal opens the **Milestone moment** with the season badge, which then sits with the milestones on Profile and can be shared with the same card.
 6. The club page shows one line while the season runs: "18 members on track this season."
 7. A member who falls off track sees "You can still finish 5 of 6" or, once completion is impossible, the card says "Next season starts in March" and stops counting.
@@ -147,7 +147,7 @@ The 52-week milestone is the headline one: its celebration and share card are th
 | RSVPed, not yet confirmed | Home | A card: "Did you go to Thursday's run?" with "I went" and "I missed it" |
 | Week counted | Home | Status line "This week is safe." |
 | At risk | Home, reminder | Status line names how many sessions are left |
-| Protection available / used | Home, Profile | Shown as a small labelled marker, in words |
+| Rest week available / used | Home, Profile | Shown as a small labelled marker, in words |
 | Streak ended | Home | Message in flow E; never the word "lost" or "failed" |
 | No clubs followed | Home | "Follow a club to see your week." with "Find my club" |
 | Fewer than five members with attendance | Club standings | Show those there are; with none, hide the section |
@@ -192,7 +192,7 @@ Destructive confirmation and permission-denied do not apply.
 | Week done | Week 7 done. |
 | Milestone | 12 weeks in a row. That's a habit. |
 | First session milestone | First session done. Welcome to the club. |
-| Protection used | Your protection covered last week. Streak safe at 6. |
+| Rest week used | You used your rest week, so your streak is safe at 6. You earn a new rest week after 4 weeks in a row. |
 | Streak ended | Your streak ended at 6 weeks. A new one starts with your next session. |
 | Reminder subject | One session keeps your 6-week streak |
 | Standings heading | Most consistent |
@@ -224,7 +224,7 @@ Destructive confirmation and permission-denied do not apply.
 
 ## Measurement the product needs to see
 
-Members with a streak of 2, 4 and 12 weeks; at-risk reminders sent and the RSVPs that follow; protections used; streaks ended and whether the member returns within two weeks; milestone moments shown and shared; standings opt-outs; clubs joining each season; members on track each week; seasons completed; return rate in the four weeks after a season ends compared with before it.
+Members with a streak of 2, 4 and 12 weeks; at-risk reminders sent and the RSVPs that follow; rest weeks used; streaks ended and whether the member returns within two weeks; milestone moments shown and shared; standings opt-outs; clubs joining each season; members on track each week; seasons completed; return rate in the four weeks after a season ends compared with before it.
 
 ## Feature-specific visual guidance
 
@@ -242,14 +242,14 @@ Members with a streak of 2, 4 and 12 weeks; at-risk reminders sent and the RSVPs
 - The at-risk reminder must be sent once per member per week at most, and not to members who turned reminders off.
 - The share card is an image the member can save; it must not expose anything they chose to hide.
 - A member's streak is private to them.
-- A season belongs to the curator, has fixed start and end weeks in Dubai time, and counts the same attendance records as the streak; protection does not count towards it.
+- A season belongs to the curator, has fixed start and end weeks in Dubai time, and counts the same attendance records as the streak; rest week does not count towards it.
 - Season badges are kept like milestones and can be earned once per season.
 
 ## Assumptions
 
 | ID | Assumption |
 |---|---|
-| S1 | One protection, returning after four counted weeks, is generous enough to keep people and strict enough to mean something |
+| S1 | One rest week, returning after four counted weeks, is generous enough to keep people and strict enough to mean something |
 | S2 | Seven days is long enough to confirm attendance late |
 | S3 | Thursday 18:00 is the right moment for the at-risk reminder, ahead of the weekend's sessions |
 | S4 | Appearing in standings by default is acceptable when opting out is one switch |
@@ -261,12 +261,12 @@ Members with a streak of 2, 4 and 12 weeks; at-risk reminders sent and the RSVPs
 
 Resolved by the founder on 2026-10-07:
 - Members appear in standings by default, with a one-switch opt-out (S4 confirmed).
-- One protection, returning after four counted weeks (S1 confirmed).
+- One rest week, returning after four counted weeks (S1 confirmed).
 - Longer milestones added: 26, 52 and 104 weeks; 250 and 500 sessions.
 
 ## Recommended PRD changes
 
-Applied to the PRD on 2026-10-07: FR-22 milestone list and FR-23 protection rule.
+Applied to the PRD on 2026-10-07: FR-22 milestone list and FR-23 rest week rule.
 
 ## Self-review
 
@@ -275,6 +275,6 @@ All in-scope PRD IDs are mapped. States, visibility, platforms, accessibility an
 ## Changelog
 
 - 2026-10-07: created.
-- 2026-10-07: standings default, protection rule and longer milestones confirmed by the founder.
+- 2026-10-07: standings default, rest week rule and longer milestones confirmed by the founder.
 - 2026-10-12: seasons added (PRD FR-29).
 - 2026-10-12: day markers made tappable with a Day sheet, after a usability session.

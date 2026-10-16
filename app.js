@@ -212,7 +212,26 @@
     chev: '<path d="m9 5 7 7-7 7"/>', check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>',
     edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>', flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>', plus: '<path d="M12 5v14M5 12h14"/>',
     share: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6.5h14V13"/>',
-    photo: '<rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="9" cy="10.5" r="1.8"/><path d="m21 16-5-5-8 9"/>'
+    photo: '<rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="9" cy="10.5" r="1.8"/><path d="m21 16-5-5-8 9"/>',
+    // filters
+    sliders: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    pin: '<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+    tag: '<path d="M3.5 12.5v-8h8l9 9-8 8z"/><circle cx="8" cy="9" r="1.4"/>',
+    indoor: '<path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>',
+    ladies: '<circle cx="12" cy="8.5" r="4.5"/><path d="M12 13v8M8.5 17.5h7"/>',
+    sprout: '<path d="M12 21v-9"/><path d="M12 12c0-3.6-2.6-6-6.5-6 0 3.8 2.6 6 6.5 6zM12 14.5c0-3.3 2.4-5.5 6.5-5.5 0 3.5-2.6 5.5-6.5 5.5z"/>',
+    day: '<rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+    all: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>',
+    // sports
+    running: '<path d="M3 16.5h15.5a2.5 2.5 0 0 0 2.5-2.5c0-1-.9-1.6-2-1.8l-4.6-1-2.4-4.2H8L6.5 9.5 3 10z"/><path d="M3 19.5h18"/>',
+    padel: '<ellipse cx="10" cy="9" rx="5.5" ry="6"/><path d="m13.6 13.6 5.4 6.4"/><circle cx="18.5" cy="5.5" r="1.6"/>',
+    yoga: '<circle cx="12" cy="5" r="2"/><path d="M12 7.5V13M6 10.5l6 2.5 6-2.5M4.5 18.5c2.2-2 4.8-3 7.5-3s5.3 1 7.5 3"/>',
+    volleyball: '<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5c-1 4 .5 8 4.5 10.5M3.9 9.5c3.6-.5 7.4 1 9.6 4.5M7 19.4c1.3-3.6 4.6-6 8.8-6.3"/>',
+    basketball: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5v17M6.2 5.8c2.6 2.4 2.6 10 0 12.4M17.8 5.8c-2.6 2.4-2.6 10 0 12.4"/>',
+    football: '<circle cx="12" cy="12" r="8.5"/><path d="m12 8.2 3.3 2.4-1.3 3.9h-4l-1.3-3.9zM12 8.2V3.5M15.3 10.6l4.5-1.4M14 14.5l2.7 3.8M10 14.5l-2.7 3.8M8.7 10.6 4.2 9.2"/>',
+    futsal: '<path d="M3 10.5 12 4l9 6.5"/><circle cx="12" cy="15" r="4.6"/><path d="m12 12.6 1.6 1.2-.6 1.9h-2l-.6-1.9z"/>',
+    cycling: '<circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="m6 16 4-7h5l3 7M10 9l2.2 7H6M14 6h2.5"/>'
   };
   const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[n]}</svg>`;
   const plural = (n, w) => (w === 'person' ? (n === 1 ? '1 person' : `${n} people`) : `${n} ${w}${n === 1 ? '' : 's'}`);
@@ -417,7 +436,7 @@
     const n = now(); const nextMon = weekStart(n); nextMon.setDate(nextMon.getDate() + 7); nextMon.setHours(8, 0, 0, 0);
     S.offset += nextMon - n;
     if (S.weekDone) { S.note = ''; }
-    else if (S.streak > 0 && S.prot) { S.prot = false; S.sinceProt = 0; S.note = `Your protection covered last week. Streak safe at ${S.streak}. It returns after 4 weeks in a row.`; }
+    else if (S.streak > 0 && S.prot) { S.prot = false; S.sinceProt = 0; S.note = `You used your rest week, so your streak is safe at ${S.streak}. You earn a new rest week after 4 weeks in a row.`; }
     else if (S.streak > 0) { S.note = `Your streak ended at ${plural(S.streak, 'week')}. A new one starts with your next session.`; S.streak = 0; S.sinceProt = 0; }
     S.weekDone = false; save();
   }
@@ -477,26 +496,40 @@
       <button class="btn ghost block" data-act="browse" data-sport="${q.sport}">See all ${SPORTS[q.sport].toLowerCase()} clubs ${ic('right')}</button></main>`;
   };
 
-  V.browse = () => {
-    const list = CLUBS.filter((c) => (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area || (filt.area.startsWith('Anywhere in ') && cityOf(c.area) === filt.area.slice(12))) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
+  const browseList = () => CLUBS.filter((c) => (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area || (filt.area.startsWith('Anywhere in ') && cityOf(c.area) === filt.area.slice(12))) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
       && (!filt.who || c.ladies)
       && (!filt.venue || c.venue === filt.venue || c.venue === 'Indoor and outdoor')
       && (!filt.price || (filt.price === 'free' ? isFree(c) : isFree(c) || (aed(c) !== null && aed(c) <= Number(filt.price)))));
-    const opt = (v, l, cur) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`;
+  // Filters other than sport: how many are set, for the Filters button badge.
+  const FKEYS = ['area', 'day', 'level', 'price', 'venue', 'who'];
+  const filtCount = () => FKEYS.filter((k) => filt[k] !== '' && filt[k] != null).length;
+  const DAYORDER = [1, 2, 3, 4, 5, 6, 0];
+  V.browse = () => {
+    const list = browseList();
+    const chip = (k, v, label, icon) => `<button class="chip ${filt[k] === v ? 'on' : ''}" data-act="ftog" data-k="${k}" data-val="${v}" aria-pressed="${filt[k] === v}">${ic(icon)}${label}</button>`;
+    const n = filtCount();
     return `<main class="${S.user ? 'pad-nav' : ''}"><h1>All clubs</h1>
-      <div class="wrap">${[['', 'All']].concat(Object.entries(SPORTS)).map(([k, l]) => `<button class="chip ${filt.sport === k ? 'on' : ''}" data-act="filt" data-k="sport" data-val="${k}">${l}</button>`).join('')}</div>
-      <div class="wrap">
-        <select id="f-area" data-filt="area" aria-label="Area">${opt('', 'Any area', filt.area)}${Object.entries(CITIES).map(([city, list]) => `<optgroup label="${city}">${opt(ANY(city), ANY(city), filt.area)}${list.map((a) => opt(a, a, filt.area)).join('')}</optgroup>`).join('')}</select>
-        <select id="f-day" data-filt="day" aria-label="Day">${opt('', 'Any day', filt.day)}${[1, 2, 3, 4, 5, 6, 0].map((d) => opt(d, DAYL[d], filt.day)).join('')}</select>
-        <select id="f-level" data-filt="level" aria-label="Level">${opt('', 'Any level', filt.level)}${Object.entries(LEVELS).map(([k, l]) => opt(k, l, filt.level)).join('')}</select>
-        <select id="f-price" data-filt="price" aria-label="Price">${opt('', 'Any price', filt.price)}${opt('free', 'Free only', filt.price)}${opt('50', 'Up to AED 50', filt.price)}</select>
-        <select id="f-who" data-filt="who" aria-label="Who can join">${opt('', 'Everyone', filt.who)}${opt('ladies', 'Ladies only', filt.who)}</select>
-        <select id="f-venue" data-filt="venue" aria-label="Indoor or outdoor">${opt('', 'Indoor or outdoor', filt.venue)}${opt('Indoor', 'Indoor', filt.venue)}${opt('Outdoor', 'Outdoor', filt.venue)}</select>
-      </div>
-      <p class="mut sm">${list.filter(isFree).length} of ${list.length} free. Paid clubs show what the money covers.</p>
+      <div class="hscroll" role="group" aria-label="Sport">${[['', 'All']].concat(Object.entries(SPORTS)).map(([k, l]) => `<button class="chip ${filt.sport === k ? 'on' : ''}" data-act="filt" data-k="sport" data-val="${k}" aria-pressed="${filt.sport === k}">${ic(k || 'all')}${k === 'futsal' ? '5-a-side' : l}</button>`).join('')}</div>
+      <div class="hscroll" role="group" aria-label="Filters">
+        <button class="chip tool ${n ? 'on' : ''}" data-act="filters">${ic('sliders')}Filters${n ? `<span class="fbadge">${n}</span>` : ''}</button>
+        ${filt.area ? `<button class="chip on" data-act="filters">${ic('pin')}${esc(filt.area)}</button>` : ''}
+        ${chip('price', 'free', 'Free', 'tag')}${chip('level', 'new', 'Beginners', 'sprout')}${chip('venue', 'Indoor', 'Indoor', 'indoor')}${chip('who', 'ladies', 'Ladies only', 'ladies')}</div>
+      <div class="row sp sm"><span class="mut">${plural(list.length, 'club')} · ${list.filter(isFree).length} free</span>${n || filt.sport ? '<button class="link sm" data-act="clearfilt">Clear all</button>' : ''}</div>
       <div class="stack">${list.length ? list.map((c) => clubCard(c)).join('') : `<p class="note">Nothing matches those filters yet.</p><button class="btn ghost" data-act="clearfilt">Clear filters</button>`}</div></main>`;
   };
-
+  function filtersSheet() {
+    const opt = (v, l, cur) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`;
+    const grp = (label, icon, k, opts) => `<div class="fgroup"><span class="flabel">${ic(icon)}${label}</span><div class="wrap">${opts.map(([v, l]) => `<button class="chip ${String(filt[k]) === String(v) ? 'on' : ''}" data-act="fset" data-k="${k}" data-val="${v}" aria-pressed="${String(filt[k]) === String(v)}">${l}</button>`).join('')}</div></div>`;
+    const n = browseList().length;
+    return `<div class="sheet"><h2>Filters</h2>
+      <div class="fgroup"><label class="flabel" for="f-area">${ic('pin')}Area</label><select id="f-area" data-filt="area">${opt('', 'Anywhere', filt.area)}${Object.entries(CITIES).map(([city, list]) => `<optgroup label="${city}">${opt(ANY(city), ANY(city), filt.area)}${list.map((a) => opt(a, a, filt.area)).join('')}</optgroup>`).join('')}</select></div>
+      ${grp('Day', 'day', 'day', [['', 'Any']].concat(DAYORDER.map((d) => [String(d), DAY[d]])))}
+      ${grp('Level', 'sprout', 'level', [['', 'Any']].concat(Object.entries(LEVELS)))}
+      ${grp('Price', 'tag', 'price', [['', 'Any'], ['free', 'Free'], ['50', 'Up to AED 50']])}
+      ${grp('Indoor or outdoor', 'indoor', 'venue', [['', 'Either'], ['Indoor', 'Indoor'], ['Outdoor', 'Outdoor']])}
+      ${grp('Who can join', 'ladies', 'who', [['', 'Everyone'], ['ladies', 'Ladies only']])}
+      <button class="btn block" data-act="close">Show ${plural(n, 'club')}</button>${filtCount() ? '<button class="btn quiet block" data-act="clearfilt">Clear filters</button>' : ''}</div>`;
+  }
   V.club = () => {
     const c = club(route.id); const n = nextOpen(c); const fut = future(c).slice(0, 4); const recaps = past(c).slice(0, 2);
     const following = S.follows.includes(c.id); const mine = S.manage.includes(c.id); const lead = c.photos ? leadPhotos(c) : [];
@@ -559,7 +592,7 @@
     if (S.weekDone) status = `This week is safe. ${went.length === 1 ? 'One session' : went.length + ' sessions'} done.`;
     else if (S.total === 0 && S.streak === 0) status = 'Your streak starts with your first session.';
     else if (left > 0) status = S.streak > 0 ? `One session keeps your streak. ${left} left this week.` : `${plural(left, 'session')} left this week in your clubs.`;
-    else if (S.streak > 0 && S.prot) status = "Your protection will cover this week if you can't make it.";
+    else if (S.streak > 0 && S.prot) status = "Can't make it this week? Your rest week keeps your streak safe.";
     else status = 'No sessions left this week in your clubs.';
     const ask = pend.length ? `<div class="ask"><div><b class="disp" style="font-size:16px">Did you go to ${nounFor(pend[0])}?</b><br><span class="mut sm">${esc(pend[0].club.name)} · ${dateShort(pend[0].at)} ${pend[0].t}${pend.length > 1 ? ` · ${pend.length - 1} more to confirm` : ''}</span></div>
       <div class="row"><button class="btn grow" data-act="went" data-id="${pend[0].id}">I went</button><button class="btn ghost grow" data-act="missed" data-id="${pend[0].id}">I missed it</button></div></div>` : '';
@@ -568,7 +601,7 @@
     return `<main class="pad-nav">${ask}
       ${S.note ? `<p class="note">${S.note}</p>` : ''}
       <div class="stack"><span class="cap">Hi ${esc(u.name)}</span>
-        ${showNum ? `<button class="streak" data-act="profile" style="background:none;border:0;padding:0;text-align:left"><span class="n">${S.streak}</span><span><b class="disp" style="font-size:18px">week streak</b><br><span class="mut sm">${S.prot ? 'Protection available' : 'Protection used'} · ${plural(S.total, 'session')}</span><br><span class="det">Your milestones ${ic('chev')}</span></span></button>` : ''}
+        ${showNum ? `<button class="streak" data-act="profile" style="background:none;border:0;padding:0;text-align:left"><span class="n">${S.streak}</span><span><b class="disp" style="font-size:18px">week streak</b><br><span class="mut sm">${S.prot ? '1 rest week available' : 'Rest week used'} · ${plural(S.total, 'session')}</span><br><span class="det">Your milestones ${ic('chev')}</span></span></button>` : ''}
         <div class="days">${days}</div><p class="xs mut center">Tap a day to see its sessions</p><p><b>${status}</b></p></div>
       ${org}
       ${nextCard(up.find((s) => has(s.id) && !isCancelled(s)))}
@@ -621,7 +654,7 @@
       ${m.hobbies ? `<span class="sm">Into ${esc(m.hobbies)}</span>` : ''}${m.ig ? `<span class="sm">@${esc(m.ig)}</span>` : ''}</div></div>
     <button class="btn ghost block" data-act="editpro">${m.photo || m.work || m.hobbies || m.ig ? 'Edit profile' : 'Set up your profile'}</button>
     <p class="mut sm">${m.share ? 'People going to the same session as you, and those clubs\' organisers, can see your profile.' : 'Your profile is hidden: people at your sessions only see your first name. Turn sharing on in Edit profile.'} Only you can see your streak and history.</p>
-    <dl class="facts"><dt>Current streak</dt><dd>${plural(S.streak, 'week')}</dd><dt>Longest streak</dt><dd>${plural(S.longest, 'week')}</dd><dt>Sessions</dt><dd>${S.total}</dd><dt>Protection</dt><dd>${S.prot ? 'Available' : `Used. Returns after ${plural(Math.max(0, 4 - S.sinceProt), 'more week')} in a row`}</dd></dl>
+    <dl class="facts"><dt>Current streak</dt><dd>${plural(S.streak, 'week')}</dd><dt>Longest streak</dt><dd>${plural(S.longest, 'week')}</dd><dt>Sessions</dt><dd>${S.total}</dd><dt>Rest week</dt><dd>${S.prot ? 'Available. Miss one week and your streak stays safe.' : `Used. You earn a new one after ${plural(Math.max(0, 4 - S.sinceProt), 'more week')} in a row.`}</dd></dl>
     <div class="stack"><span class="cap">Milestones</span><div class="badges">${MS.map((m) => `<span class="badge ${S.badges.includes(m.id) ? 'on' : ''}" title="${m.t}" aria-label="${m.t}${S.badges.includes(m.id) ? ', earned' : ', not yet earned'}">${m.b}</span>`).join('')}</div>
       ${S.streak > 0 ? `<button class="btn ghost" data-act="share">${ic('share')}Share my streak</button>` : ''}</div>
     <div><span class="cap">Settings</span>
@@ -842,6 +875,7 @@
 
   // ---------- overlays ----------
   const O = {};
+  O.filters = filtersSheet;
   O.signin = () => `<div class="sheet"><h2>${overlay.then && (overlay.then.act === 'claim' || overlay.then.act === 'org') ? 'Sign in to manage your club' : overlay.then && overlay.then.act === 'who' ? 'Sign in to see who\'s going' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
     <label for="si-name">First name</label><input type="text" id="si-name" value="${esc(overlay.name || 'Alex')}" maxlength="20" autocomplete="off">
     <label class="switch" for="si-age"><span>I'm 18 or older<br><span class="mut sm">Ryze Club is for adults.</span></span><input type="checkbox" id="si-age"></label>
@@ -1011,7 +1045,10 @@
     quizback: () => { route.step -= 1; render(); },
     q: (d) => { S.quiz[d.k] = d.val; save(); if ((route.step || 0) < 2) { route.step = (route.step || 0) + 1; render(); window.scrollTo(0, 0); } else go('results', {}, true); },
     browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '', price: '', venue: '', who: '' }; go('browse'); },
-    filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; render(); },
+    filt: (d) => { filt[d.k] = d.val; render(); },
+    ftog: (d) => { filt[d.k] = filt[d.k] === d.val ? '' : d.val; haptic('tap'); render(); },
+    fset: (d) => { filt[d.k] = d.val; render(); },
+    filters: () => { overlay = { t: 'filters' }; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; render(); },
     photook: (d) => {
       const then = overlay.then; S.set.photoOk = d.val === '1'; if (!S.set.photoOk) S.set.tagging = false; save(); overlay = null;
       doRsvp(then.id); haptic('success');

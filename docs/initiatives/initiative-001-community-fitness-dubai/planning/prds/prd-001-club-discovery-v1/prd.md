@@ -145,8 +145,8 @@ Measured over a pilot of about 8 weeks:
 - A new milestone is celebrated at the moment it is earned and stays on the member's profile.
 - Milestones are earned only from recorded attendance.
 
-**FR-23 Streak protection.** A member's streak survives one missed week, so travel or illness does not wipe it out. A member holds one protection at a time; it is used automatically and returns after four counted weeks in a row.
-- The member is told when the protection has been used and when it is available again.
+**FR-23 Streak rest week.** A member's streak survives one missed week, so travel or illness does not wipe it out. A member holds one rest week at a time; it is used automatically and returns after four counted weeks in a row.
+- The member is told when the rest week has been used and when it is available again.
 - A member whose streak is at risk this week is reminded before the week ends, with their clubs' remaining sessions.
 
 **FR-24 Club streaks and standings.** Each club page shows its members' collective activity and its most consistent members.
@@ -281,7 +281,7 @@ A member who came to four runs has not been for three weeks. They receive one me
 | A1 | Newcomers find it hard to find a suitable club | Unproven; pilot question |
 | A2 | Launch covers running, community padel and community yoga/pilates, about 30 clubs, Dubai-wide | Confirmed by founder 2026-10-07 |
 | A9 | Self-confirmed attendance is too easy to fake once streaks earn rewards with real value | Assumed; revisit before rewards |
-| A10 | Milestones, streak protection and standings increase return visits | Unproven; pilot question |
+| A10 | Milestones, streak rest week and standings increase return visits | Unproven; pilot question |
 | A3 | Self-confirmed attendance, correctable by the organiser, is accurate enough | Unproven |
 | A4 | Showing first names of attendees to signed-in users is acceptable to members | Unproven |
 | A5 | English only is enough for the pilot | Unproven |

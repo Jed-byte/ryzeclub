@@ -391,3 +391,17 @@ body.org #app { background: #F6F9FC; }
 .hero-name { font-family: var(--display); font-size: 22px; line-height: 1.1; }
 .hero .av { border-color: rgba(255, 255, 255, .9); background: var(--acc-soft); color: var(--acc); }
 .tag.ladies { background: #F3E8F6; color: #6B3A7A; align-self: flex-start; }
+
+/* Browse: one swipeable row of sports, one of quick filters; the rest in a sheet */
+.hscroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px 4px; scroll-padding: 0 16px; }
+.hscroll::-webkit-scrollbar { display: none; }
+.hscroll .chip { flex: none; }
+.hscroll .chip:not(.on) { border-color: var(--line); font-weight: 500; }
+.chip .ic { width: 18px; height: 18px; flex: none; }
+.chip.tool:not(.on) { border-color: var(--ink); font-weight: 700; }
+.fbadge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--acc); color: #FFFFFF; font-size: 12px; font-weight: 700; }
+.fgroup { display: flex; flex-direction: column; gap: 8px; }
+.flabel { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+.flabel .ic { width: 18px; height: 18px; color: var(--acc); }
+.fgroup .chip { min-height: 44px; }
+.fgroup .wrap .chip:not(.on) { border-color: var(--line); font-weight: 500; }
