@@ -2,7 +2,7 @@
 title: Domain research — Organisers' week and where AI helps
 status: draft
 created: 2026-10-14
-updated: 2026-10-14
+updated: 2026-10-16
 parent: ../prfaq.md
 depth: level-2-standard
 lanes: domain, market, technical-feasibility
@@ -97,6 +97,40 @@ Each idea was put through the validate-concept questions (customer, problem, sma
 - Will organisers send "we missed you" notes from their own WhatsApp, or expect Ryze Club to send them?
 - Does any Dubai authority expect small free clubs to hold a permit? (Accepted risk in the PRFAQ; unresolved.)
 - What is the actual no-show rate for free club sessions in Dubai?
+
+## Legal and privacy (UAE), 2026-10-16
+
+**Question:** which UAE laws govern what Ryze Club does with people's data, and what has to change before a real pilot?
+
+**Answer:** the concept works under UAE law with safeguards. Photos are the highest risk, because posting people without consent can be a criminal offence. Confidence: medium (law-firm and press summaries, not official texts). This is research, not legal advice: a UAE lawyer reviews before launch.
+
+### Laws that apply
+
+| Law | What it covers | Source | Confidence |
+|---|---|---|---|
+| Personal Data Protection Law (PDPL), Federal Decree-Law 45 of 2021, in force since 2 January 2022 | Consent as the default basis, data subject rights, breach notification, cross-border transfers (Articles 22 and 23), objection to purely automated decisions | [Al Maazmi Lawyers](https://www.almaazmilawyers.com/insights/pdpl-uae-data-protection-compliance-guide), [Kayrouz](https://www.kayrouzandassociates.com/insights/cross-border-data-transfers-under-uae-law-in-2026) | high |
+| PDPL Executive Regulations and fines | Sources conflict on whether they are published; fines up to AED 5M are reported but unconfirmed | [Recording Law](https://www.recordinglaw.com/world-laws/world-data-privacy-laws/uae-data-privacy-laws/), [Global Law Experts](https://globallawexperts.com/uaes-new-digital-rulebook-2026-data/) | low |
+| Sensitive data under the PDPL | Family, racial origin, political or philosophical opinions, religious beliefs, criminal records, biometric, genetic and health data. Gender is not listed in the summaries found | [Mondaq](https://www.mondaq.com/data-protection/1389892/an-overview-of-the-uae-personal-data-protection-law) | medium |
+| Cybercrime Law, Federal Decree-Law 34 of 2021, Article 44 | Photographing people in public or private places and publishing their images without consent: at least 6 months' prison and/or AED 150,000–500,000 | [Gulf News](https://gulfnews.com/amp/story/living-in-uae%2Fask-us%2Fuae-up-to-dh500000-for-taking-someones-picture-without-permission-1.1604935039441), [BSA Law](https://bsalaw.com/insight/legal-risks-of-photography-and-technology-use-navigating-privacy-laws-under-federal-decree-law-no-34-of-2021/) | high |
+| Child Digital Safety Law, Federal Decree-Law 26 of 2025, in force 1 January 2026 | Verified parental consent for under-13s, no targeted ads to children, risk-based age checks | [Clyde & Co](https://www.clydeco.com/en/insights/2026/01/uae-issues-landmark-child-digital-safety-law), [Latham & Watkins](https://www.lw.com/en/insights/uaes-child-digital-safety-law-what-every-digital-platform-and-isp-should-know) | high |
+| Telemarketing, Cabinet Resolution 56 of 2024 and Decree-Law 57 of 2024 | TDRA approval, consent and opt-out for marketing calls, texts and social-app messages | [Mondaq](https://www.mondaq.com/advertising-marketing-branding/1495836/new-telemarketing-regulations-introduced-in-uae) | medium |
+| DIFC and ADGM data laws | Separate regimes for companies registered in those free zones | [Kayrouz](https://www.kayrouzandassociates.com/insights/cross-border-data-transfers-under-uae-law-in-2026) | high |
+| Women-only facilities | Common in the UAE; no rule against women-only clubs found | [The National](https://www.thenationalnews.com/women-need-more-work-out-facilities-1.334935) | low (absence of evidence) |
+
+### Feature check
+
+| Feature | Risk | Safeguard (built in the prototype on 2026-10-16 unless noted) |
+|---|---|---|
+| Session photos and tagging | High | Photo consent asked before the first RSVP; "no" turns off tagging; the poster confirms everyone pictured agreed; untag, report, organiser hide; photos only after 5 sessions with a club |
+| Profiles shown at sessions | Medium | Explicit "Show my profile to people at my sessions" choice; all fields optional |
+| Reminders and "We missed you" | Medium | Reminders only to opted-in members about booked sessions; win-back notes sent by the organiser from their own account; promotional messages not built |
+| Minimum age | Medium | 18+ confirmed at sign-up |
+| Hosting abroad | Medium | Not built: host in a UAE cloud region or use PDPL-level contracts |
+| Ladies only | Low | Badge and filter only; any gender field must be optional and self-declared (open question) |
+| Instagram, work, interests | Low | Optional, covered by profile consent |
+| Attendance and streaks | Low | Private to the member; deletable |
+
+**Verdict:** proceed after narrowing (the safeguards above), with a UAE legal review before launch.
 
 ## Sources
 

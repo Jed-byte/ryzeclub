@@ -2,7 +2,7 @@
 title: PRD-001 — Community club discovery and return loop (V1)
 status: handoff-ready
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-16
 parent: ../../../discovery/concept-verdict.md
 ---
 
@@ -259,7 +259,11 @@ A member who came to four runs has not been for three weeks. They receive one me
 ## 10. Cross-cutting requirements
 
 - **Privacy and data.** Collect the minimum: name, contact for reminders, area, sport and level. No health or medical data. Explicit consent at sign-up, and a way to delete an account and its posts, in line with the UAE Personal Data Protection Law.
-- **Photo consent.** Untag, report and removal are required at launch. Attendee names are visible to signed-in users only. [ASSUMPTION: A4]
+- **Photo consent.** Before a member's first RSVP they are asked once whether they are happy to appear in session photos; "no" turns off tagging and any photo of them is removed on request. Whoever posts a photo confirms that everyone pictured agreed. Untag, report and removal are required at launch. Attendee names are visible to signed-in users only. Reason: UAE Federal Decree-Law 34 of 2021, Article 44, makes photographing or publishing people without consent an offence (D37). [ASSUMPTION: A4]
+- **Profile sharing.** A member's profile (photo, work, interests, Instagram) is shown to people going to the same session and that club's organisers only when the member turns sharing on; otherwise they see the first name only (D37).
+- **Minimum age.** Members and organisers must be 18 or older, confirmed at sign-up. This keeps V1 outside the parental-consent rules of the Child Digital Safety Law (Federal Decree-Law 26 of 2025) (D37).
+- **Messages.** Reminders go only to members who opted in and only about sessions they booked. Win-back notes are sent by the organiser from their own account. Anything promotional from Ryze Club needs consent, an opt-out, and a check against the telemarketing rules (Cabinet Resolution 56 of 2024).
+- **Data location.** Personal data is hosted in a UAE cloud region, or abroad only under a contract that applies PDPL-level protection, because the UAE Data Office has not published a list of adequate countries.
 - **AI trust.** The match only ranks existing clubs and explains its reasons. It gives no training, medical or nutrition advice. The filtered list is always available as a fallback.
 - **Data freshness.** Every club page shows a "last confirmed" date.
 - **Accounts and roles.** Visitor (no account), member, organiser, curator.
@@ -303,6 +307,12 @@ Resolved 2026-10-07: product name is Ryze Club; reminders go by email and WhatsA
 - Automated WhatsApp reminders need a WhatsApp Business account, approved message templates and opt-in; confirm cost and setup.
 - Are Duplays and 10 still active, and what can be learned from them?
 - Get legal confirmation that listing club sessions falls outside the Dubai Sports Council permit rule.
+- UAE legal review before launch, covering the items below (see `../../../discovery/research/domain-research.md`, Legal and privacy section).
+- Have the PDPL Executive Regulations and penalty schedule been published? Sources conflict as of October 2026.
+- Where will the company be registered: mainland (federal PDPL applies) or DIFC/ADGM (their own data laws apply)?
+- Do Ryze Club's own messages count as telemarketing needing TDRA approval?
+- Ladies-only clubs: should the profile carry an optional, self-declared "woman" field that those clubs require, or do clubs screen members themselves?
+- Abu Dhabi: the prototype includes Abu Dhabi clubs; confirm whether the pilot stays Dubai-only.
 - Should clubs be able to set their page or photos to members-only?
 - Arabic support after the pilot.
 - Timing against the Dubai Fitness Challenge in November.

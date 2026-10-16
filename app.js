@@ -590,7 +590,7 @@
   V.result = () => {
     const s = byId(route.id); const c = s.club; const next = nextOpen(c); const k = hash(s.id);
     const newcomer = (S.clubWeeks[c.id] || 0) <= 3;
-    const tagged = !S.untag[s.id];
+    const tagged = !S.untag[s.id] && S.set.photoOk !== false && S.set.tagging;
     const offer = next ? `<div class="stack"><span class="cap">${newcomer ? 'Same time next week?' : 'Next session'}</span><div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${next.type} · ${going(next)} going</span></span>
       ${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div></div>` : '';
     const photos = `<div class="stack tight"><div class="row sp"><span class="cap">Photos from ${nounFor(s)}</span>${canPost(c) ? `<button class="btn small ghost" data-act="post" data-id="${s.id}">${ic('plus')}Add yours</button>` : ''}</div>${canPost(c) ? '' : postNote(c)}
@@ -620,12 +620,13 @@
       <span class="mut sm">${[m.area, m.level && LEVELS[m.level], m.work].filter(Boolean).map(esc).join(' · ') || 'Add a photo and a few details so people know who to look for.'}</span>
       ${m.hobbies ? `<span class="sm">Into ${esc(m.hobbies)}</span>` : ''}${m.ig ? `<span class="sm">@${esc(m.ig)}</span>` : ''}</div></div>
     <button class="btn ghost block" data-act="editpro">${m.photo || m.work || m.hobbies || m.ig ? 'Edit profile' : 'Set up your profile'}</button>
-    <p class="mut sm">People going to the same session as you can see your profile. Only you can see your streak and history.</p>
+    <p class="mut sm">${m.share ? 'People going to the same session as you, and those clubs\' organisers, can see your profile.' : 'Your profile is hidden: people at your sessions only see your first name. Turn sharing on in Edit profile.'} Only you can see your streak and history.</p>
     <dl class="facts"><dt>Current streak</dt><dd>${plural(S.streak, 'week')}</dd><dt>Longest streak</dt><dd>${plural(S.longest, 'week')}</dd><dt>Sessions</dt><dd>${S.total}</dd><dt>Protection</dt><dd>${S.prot ? 'Available' : `Used. Returns after ${plural(Math.max(0, 4 - S.sinceProt), 'more week')} in a row`}</dd></dl>
     <div class="stack"><span class="cap">Milestones</span><div class="badges">${MS.map((m) => `<span class="badge ${S.badges.includes(m.id) ? 'on' : ''}" title="${m.t}" aria-label="${m.t}${S.badges.includes(m.id) ? ', earned' : ', not yet earned'}">${m.b}</span>`).join('')}</div>
       ${S.streak > 0 ? `<button class="btn ghost" data-act="share">${ic('share')}Share my streak</button>` : ''}</div>
     <div><span class="cap">Settings</span>
       <label class="switch" for="p-st"><span>Show me in club standings</span><input type="checkbox" id="p-st" data-set="standings" ${S.set.standings ? 'checked' : ''}></label>
+      <label class="switch" for="p-po"><span>Happy to appear in session photos</span><input type="checkbox" id="p-po" data-set="photoOk" ${S.set.photoOk !== false ? 'checked' : ''}></label>
       <label class="switch" for="p-tg"><span>Let people tag me in photos</span><input type="checkbox" id="p-tg" data-set="tagging" ${S.set.tagging ? 'checked' : ''}></label>
       <label class="switch" for="p-em"><span>Email reminders</span><input type="checkbox" id="p-em" data-set="email" ${S.set.email ? 'checked' : ''}></label>
       <label class="switch" for="p-wa"><span>WhatsApp reminders</span><input type="checkbox" id="p-wa" data-set="wa" ${S.set.wa ? 'checked' : ''}></label></div>
@@ -842,7 +843,8 @@
   // ---------- overlays ----------
   const O = {};
   O.signin = () => `<div class="sheet"><h2>${overlay.then && (overlay.then.act === 'claim' || overlay.then.act === 'org') ? 'Sign in to manage your club' : overlay.then && overlay.then.act === 'who' ? 'Sign in to see who\'s going' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
-    <label for="si-name">First name</label><input type="text" id="si-name" value="Alex" maxlength="20" autocomplete="off">
+    <label for="si-name">First name</label><input type="text" id="si-name" value="${esc(overlay.name || 'Alex')}" maxlength="20" autocomplete="off">
+    <label class="switch" for="si-age"><span>I'm 18 or older<br><span class="mut sm">Ryze Club is for adults.</span></span><input type="checkbox" id="si-age"></label>
     <button class="btn block" data-act="dosignin">Continue with Google</button><button class="btn quiet block" data-act="close">Not now</button></div>`;
   O.day = () => {
     const key = overlay.date; const [y, mo, da] = key.split('-').map(Number); const d = new Date(y, mo - 1, da);
@@ -887,7 +889,7 @@
     if (!S.user || over || isCancelled(s)) return '';
     if (!canSeeWho(s)) return `<p class="note" id="who-list">Say "I'm in" to see who's going and what they're into, so you know a face when you arrive.</p>`;
     const me = myPro(); const others = people(s, Math.min(going(s) - (has(s.id) ? 1 : 0), 8));
-    const meRow = has(s.id) ? `<button class="person" data-act="editpro"><span>${face(S.user.name, me.photo)}</span><span class="grow"><b>You</b><br><span class="mut sm">${me.photo || me.work || me.hobbies ? 'Edit your profile' : 'Add a photo so people can spot you'}</span></span></button>` : '';
+    const meRow = has(s.id) ? `<button class="person" data-act="editpro"><span>${face(S.user.name, me.photo)}</span><span class="grow"><b>You</b><br><span class="mut sm">${!me.share && (me.photo || me.work || me.hobbies) ? 'Your profile is hidden · edit' : me.photo || me.work || me.hobbies ? 'Edit your profile' : 'Add a photo so people can spot you'}</span></span></button>` : '';
     return `<div class="stack tight" id="who-list"><span class="cap">Who's going · ${going(s)}</span><div>${meRow}${others.map((n) => { const m = memberPro(n); return `<button class="person" data-act="person" data-name="${esc(n)}" data-sid="${s.id}"><span>${face(n)}</span><span class="grow"><b>${esc(n)}</b><br><span class="mut sm">${esc(m.work)} · ${esc(m.area)}</span></span></button>`; }).join('')}</div>
       ${going(s) - (has(s.id) ? 1 : 0) > others.length ? `<p class="mut sm">and ${plural(going(s) - (has(s.id) ? 1 : 0) - others.length, 'other')}</p>` : ''}
       <p class="mut xs">Only people going to this session and the club's organisers can see these profiles.</p></div>`;
@@ -895,6 +897,11 @@
   O.impact = () => { const c = orgClub(); const im = impact(c); const d = sinceOf(c);
     return `<div class="sheet"><div class="sharecard g${1 + (hash(c.id) % 6)}"${im ? '' : ''}><span class="disp" style="font-size:12px;font-weight:700">ryze club · organiser</span><span class="n">${im.newcomers}</span><b style="font-size:18px">newcomers welcomed</b><span>${im.sessions} sessions with ${esc(c.name)} since ${MON[d.getMonth()]} ${d.getFullYear()}</span><span>${esc(S.user.name)}</span></div>
       <button class="btn block" data-act="soon" data-what="This would open your phone's share menu with the image.">${ic('share')}Share</button><button class="btn ghost block" data-act="soon" data-what="This would save the image, for LinkedIn or your CV.">Save image</button><button class="btn quiet block" data-act="close">Close</button></div>`; };
+  // Asked once, before the first RSVP: UAE law makes photographing or posting people without consent an offence.
+  O.photook = () => `<div class="sheet"><h2>Photos at sessions</h2>
+    <p>Members sometimes take photos at sessions. Are you happy to appear in them?</p>
+    <button class="btn block" data-act="photook" data-val="1">Yes, that's fine</button><button class="btn ghost block" data-act="photook" data-val="0">No photos of me</button>
+    <p class="mut sm">You can change this any time in Profile. If you say no, nobody can tag you, and any photo of you is removed when you ask.</p></div>`;
   O.person = () => {
     const m = memberPro(overlay.name);
     return `<div class="sheet"><div class="row">${face(m.name, '', true)}<div class="stack tight"><h2>${esc(m.name)}</h2><span class="mut sm">${esc(m.area)} · ${LEVELS[m.level]}</span></div></div>
@@ -913,11 +920,13 @@
       <label for="ep-ig">Instagram</label><input type="text" id="ep-ig" maxlength="31" placeholder="@yourhandle" value="${d.ig ? '@' + esc(d.ig) : ''}" autocomplete="off" autocapitalize="off">
       <label for="ep-work">Work</label><input type="text" id="ep-work" maxlength="40" placeholder="For example: Nurse, or Works in marketing" value="${esc(d.work)}">
       <label for="ep-hob">Other things you're into</label><input type="text" id="ep-hob" maxlength="80" placeholder="For example: brunch spots, photography" value="${esc(d.hobbies)}">
+      <label class="switch" for="ep-share"><span>Show my profile to people at my sessions<br><span class="mut sm">And to those clubs' organisers. Off means they only see your first name.</span></span><input type="checkbox" id="ep-share" ${d.share ? 'checked' : ''}></label>
       <button class="btn block" data-act="savepro">Save</button><button class="btn quiet block" data-act="${overlay.sid ? 'session' : 'close'}"${overlay.sid ? ` data-id="${overlay.sid}"` : ''}>Cancel</button></div>`;
   };
   // Keep what has been typed when the sheet re-renders (for example after picking a photo).
   const readPro = () => { const v = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; }; const d = overlay.d;
-    [['area', 'ep-area'], ['level', 'ep-level'], ['ig', 'ep-ig'], ['work', 'ep-work'], ['hobbies', 'ep-hob']].forEach(([k, id]) => { const x = v(id); if (x !== undefined) d[k] = k === 'ig' ? x.replace(/^@/, '') : x; }); };
+    [['area', 'ep-area'], ['level', 'ep-level'], ['ig', 'ep-ig'], ['work', 'ep-work'], ['hobbies', 'ep-hob']].forEach(([k, id]) => { const x = v(id); if (x !== undefined) d[k] = k === 'ig' ? x.replace(/^@/, '') : x; });
+    const sh = document.getElementById('ep-share'); if (sh) d.share = sh.checked; };
   O.milestone = () => { const m = MS.find((x) => x.id === overlay.id); return `<div class="sheet full" style="justify-content:center;text-align:center;align-items:center">
     <span class="badge on" style="width:120px;font-size:26px">${m.b}</span><span class="cap">New milestone</span><h1>${m.t}</h1><p>${m.line}</p><p class="mut sm">with ${esc(overlay.club)}</p>
     <div class="stack" style="width:100%"><button class="btn block" data-act="share">Share</button><button class="btn quiet block" data-act="close">Done</button></div></div>`; };
@@ -928,7 +937,7 @@
     <p class="note">On a phone this opens your photo library. Here, pick from these examples (up to 6).</p>
     <div class="pick">${[1, 2, 3, 4, 5, 6].map((g) => `<button class="ph g${g} ${sel.includes(g) ? 'on' : ''}"${im(s.club.sport, g - 1)} data-act="pick" data-g="${g}" aria-pressed="${sel.includes(g)}" aria-label="Example photo ${g}">${sel.includes(g) ? 'chosen' : ''}</button>`).join('')}</div>
     <label for="po-cap">Caption (optional)</label><input type="text" id="po-cap" maxlength="140" value="${esc(overlay.cap || '')}">
-    <p class="mut xs">Photos here are public. Only post people who are happy to be seen.</p>
+    <label class="switch" for="po-ok"><span>Everyone in these photos agreed to be shown<br><span class="mut sm">In the UAE, posting a photo of someone without their consent is against the law.</span></span><input type="checkbox" id="po-ok" data-agree="1" ${overlay.agree ? 'checked' : ''}></label>
     <button class="btn block" data-act="dopost">Post</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   O.photo = () => { const p = overlay; const s = p.sid ? byId(p.sid) : null;
     const acts = p.confirmDel ? `<p><b>Delete this photo? This can't be undone.</b></p><div class="row"><button class="btn quiet grow" data-act="keep">Keep</button><button class="btn danger grow" data-act="delphoto">Delete</button></div>`
@@ -1003,6 +1012,12 @@
     q: (d) => { S.quiz[d.k] = d.val; save(); if ((route.step || 0) < 2) { route.step = (route.step || 0) + 1; render(); window.scrollTo(0, 0); } else go('results', {}, true); },
     browse: (d) => { if (d.sport) filt = { sport: d.sport, area: '', day: '', level: '', price: '', venue: '', who: '' }; go('browse'); },
     filt: (d) => { filt[d.k] = d.val; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; render(); },
+    photook: (d) => {
+      const then = overlay.then; S.set.photoOk = d.val === '1'; if (!S.set.photoOk) S.set.tagging = false; save(); overlay = null;
+      doRsvp(then.id); haptic('success');
+      if (then.confirm) { stack = []; cue('main h1', 'fx-rise'); go('confirm', { id: then.id }); return; }
+      cue(`.bar .btn, [data-act="session"][data-id="${then.id}"] .tag`); say(S.set.photoOk ? "You're going." : "You're going. We'll keep you out of photos."); render();
+    },
     person: (d) => { overlay = { t: 'person', name: d.name, sid: d.sid }; render(); },
     editpro: () => { const sid = overlay && overlay.t === 'session' ? overlay.id : null; overlay = { t: 'editpro', d: myPro(), sid }; render(); },
     rmphoto: () => { readPro(); overlay.d.photo = ''; render(); },
@@ -1022,6 +1037,7 @@
     demo: () => { overlay = { t: 'demo' }; render(); },
     rsvp: (d) => {
       if (!S.user) { overlay = { t: 'signin', then: { act: 'rsvp', id: d.id } }; render(); return; }
+      if (S.set.photoOk == null) { overlay = { t: 'photook', then: { id: d.id } }; render(); return; }
       doRsvp(d.id); overlay = null; haptic('success'); cue(`.bar .btn, [data-act="session"][data-id="${d.id}"] .tag`); say("You're going."); render();
     },
     follow: (d) => {
@@ -1032,7 +1048,9 @@
     },
     dosignin: () => {
       const el = document.getElementById('si-name'); const name = (el && el.value.trim()) || 'Alex'; const then = overlay.then;
+      const age = document.getElementById('si-age'); if (!age || !age.checked) { overlay.name = name; say('Ryze Club is for adults 18 and over. Tick to confirm.'); render(); return; }
       S.user = { name }; save(); overlay = null;
+      if (then && then.act === 'rsvp' && S.set.photoOk == null) { overlay = { t: 'photook', then: { id: then.id, confirm: true } }; render(); return; }
       if (then && then.act === 'rsvp') { haptic('success'); cue('main h1', 'fx-rise'); doRsvp(then.id); stack = []; go('confirm', { id: then.id }); }
       else if (then && then.act === 'follow') { haptic('success'); cue(`[data-act="follow"][data-id="${then.id}"]`); if (!S.follows.includes(then.id)) { S.follows.push(then.id); if (route.invited) { S.joined = S.joined || {}; S.joined[then.id] = (S.joined[then.id] || 0) + 1; } } save(); say(route.invited ? `You've joined ${club(then.id).name}.` : 'Following.'); render(); }
       else if (then && then.act === 'claim') { overlay = { t: 'claim', id: then.id }; render(); }
@@ -1050,6 +1068,7 @@
     pick: (d) => { const g = Number(d.g); const el = document.getElementById('po-cap'); overlay.cap = el ? el.value : ''; overlay.sel = overlay.sel.includes(g) ? overlay.sel.filter((x) => x !== g) : overlay.sel.concat(g); render(); },
     dopost: () => {
       const el = document.getElementById('po-cap'); if (!overlay.sel.length) { say('Choose at least one photo.'); render(); return; }
+      if (!overlay.agree) { say('Tick to confirm everyone pictured agreed to be shown.'); render(); return; }
       const s = byId(overlay.id); (S.posts[s.id] = S.posts[s.id] || []).push({ g: overlay.sel, cap: el ? el.value : '' }); save(); overlay = null; say(`Posted to ${s.club.name}.`); render();
     },
     photo: (d) => { overlay = { t: 'photo', sp: d.sp, i: Number(d.i), g: Number(d.g), by: d.by, sid: d.sid, mine: !!d.mine, tagged: !!d.tagged }; render(); },
@@ -1177,6 +1196,7 @@
     const t = e.target;
     if (t.dataset.filt) { filt[t.dataset.filt] = t.value; render(); }
     else if (t.dataset.set) { S.set[t.dataset.set] = t.checked; save(); if (t.dataset.set === 'wa' && t.checked) { say('In the real product this asks for your phone number.'); render(); } }
+    else if (t.dataset.agree && overlay) { overlay.agree = t.checked; }
     else if (t.dataset.sharename) { overlay.hide = !t.checked; render(); }
     else if (t.dataset.photo && t.files && t.files[0]) {
       readPro(); const img = new Image(); const url = URL.createObjectURL(t.files[0]);

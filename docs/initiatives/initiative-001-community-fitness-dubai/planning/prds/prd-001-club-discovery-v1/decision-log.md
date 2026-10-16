@@ -1,7 +1,7 @@
 ---
 title: Decision log — PRD-001
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-16
 parent: prd.md
 ---
 
@@ -45,3 +45,4 @@ parent: prd.md
 | D34 | 2026-10-12 | The organiser experience is a separate app with its own look and tabs, sharing data with the member app | Decision | Founder | Usability session: the organiser view sat inside the member app and needed to be a completely different view |
 | D35 | 2026-10-12 | Organisers can invite members by link, WhatsApp message and QR code from the first screen; invited members land on a Join panel (FR-36) | Decision | Founder | Organisers asked how members get onboarded; growing the club from existing WhatsApp groups is the organiser's first job |
 | D36 | 2026-10-12 | The one-off page checklist moves off the organiser's first screen into the Club tab | Decision | Founder | It took prime space every visit after it stopped being useful |
+| D37 | 2026-10-16 | Add consent safeguards: photo consent asked before the first RSVP, the poster confirms everyone pictured agreed, profile sharing is an explicit choice, members must be 18 or older, reminders only to opted-in members, data hosted in the UAE or under PDPL-level contracts | Decision | Founder, on recommendation | UAE legal check: Cybercrime Law Article 44 (photos without consent), PDPL (consent, transfers), Child Digital Safety Law (under-13s), telemarketing rules. A UAE lawyer reviews before launch |
