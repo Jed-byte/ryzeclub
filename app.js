@@ -34,111 +34,111 @@
 
   // Example clubs. None of these are real.
   const CLUBS = [
-    { id: 'mdr', name: 'Marina Dawn Runners', sport: 'running', area: 'Marina', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Pace groups from 5:00 to 7:00 per km', photos: 3, confirmed: 4,
+    { id: 'mdr', name: 'Marina Dawn Runners', sport: 'running', area: 'Marina', levels: ['new', 'some', 'regular'], price: 0, level: 'Pace groups from 5:00 to 7:00 per km', photos: 3, confirmed: 4,
       desc: 'Three early runs a week along Marina Walk, with a slow group that nobody gets dropped from. Coffee after on Saturdays.', bring: 'Water. Lights are on along the route.',
       sched: [{ d: 2, t: '05:45', type: 'Intervals', note: 'All paces', place: 'Marina Walk, by Pier 7' }, { d: 4, t: '05:45', type: '5 km easy', note: '6:30–7:00 per km', place: 'Marina Walk, by Pier 7' }, { d: 6, t: '06:30', type: 'Long run', note: '10–16 km', place: 'Marina Walk, by Pier 7' }],
       top: [['Layla H.', 12], ['Omar S.', 11], ['Sana K.', 9], ['Jonas P.', 8], ['Mei L.', 8]], active: 41 },
-    { id: 'pbr', name: 'Palm Boardwalk Run Crew', sport: 'running', area: 'Palm', levels: ['some', 'regular'], cost: 'Free', level: '5:00–6:00 per km', photos: 3, confirmed: 9,
+    { id: 'pbr', name: 'Palm Boardwalk Run Crew', sport: 'running', area: 'Palm', levels: ['some', 'regular'], price: 0, level: '5:00–6:00 per km', photos: 3, confirmed: 9,
       desc: 'Out-and-back runs on the Palm boardwalk at a steady pace. Best if you can already run 5 km without stopping.', bring: 'Water and a head torch for evening runs.',
       sched: [{ d: 1, t: '19:30', type: '8 km steady', note: '5:30 per km', place: 'Boardwalk, west entrance' }, { d: 5, t: '06:15', type: '10 km', note: 'Two pace groups', place: 'Boardwalk, west entrance' }],
       top: [['Tom R.', 12], ['Aisha N.', 10], ['Diego M.', 7]], active: 26 },
-    { id: 'dbr', name: 'Downtown Boulevard Runners', sport: 'running', area: 'Downtown', levels: ['new', 'some'], cost: 'Free', level: 'Walk-run and easy pace', photos: 2, confirmed: 2,
+    { id: 'dbr', name: 'Downtown Boulevard Runners', sport: 'running', area: 'Downtown', levels: ['new', 'some'], price: 0, level: 'Walk-run and easy pace', photos: 2, confirmed: 2,
       desc: 'A friendly loop of the Boulevard. The Wednesday session has a walk-run group for people starting out.', bring: 'Water.',
       sched: [{ d: 3, t: '06:00', type: 'Walk-run', note: 'Beginners', place: 'Boulevard, by the fountain steps' }, { d: 0, t: '06:30', type: '5 km social', note: 'Easy pace', place: 'Boulevard, by the fountain steps' }],
       top: [['Priya V.', 11], ['Farah A.', 9], ['Jonas P.', 6]], active: 33 },
-    { id: 'hpr', name: 'Hills Park Run Social', sport: 'running', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'All paces', photos: 3, confirmed: 6, cancelNext: true,
+    { id: 'hpr', name: 'Hills Park Run Social', sport: 'running', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], price: 0, level: 'All paces', photos: 3, confirmed: 6, cancelNext: true,
       desc: 'Saturday laps of the park loop followed by breakfast. Buggies and dogs welcome.', bring: 'Water.',
       sched: [{ d: 6, t: '06:30', type: 'Park laps', note: 'All paces', place: 'Dubai Hills Park, main gate' }, { d: 2, t: '18:30', type: 'Sunset 5 km', note: 'Easy', place: 'Dubai Hills Park, main gate' }],
       top: [['Mei L.', 12], ['Tom R.', 9]], active: 29 },
-    { id: 'jps', name: 'JVC Padel Social', sport: 'padel', area: 'JVC', levels: ['new', 'some'], cost: 'Court share, about AED 60', level: 'Beginner to lower intermediate', photos: 3, confirmed: 5,
+    { id: 'jps', name: 'JVC Padel Social', sport: 'padel', area: 'JVC', levels: ['new', 'some'], price: 60, priceFor: 'court share', level: 'Beginner to lower intermediate', photos: 3, confirmed: 5,
       desc: 'Rotating doubles so you play with everyone. Come alone; partners are mixed on the night.', bring: 'A racket if you have one. Spares are available.',
       sched: [{ d: 0, t: '19:00', type: 'Social mixer', note: 'Mixed level', place: 'JVC Community Courts, court 3', cap: 16 }, { d: 3, t: '20:00', type: 'Beginner night', note: 'New players', place: 'JVC Community Courts, court 3', cap: 12 }],
       top: [['Diego M.', 11], ['Aisha N.', 10], ['Sana K.', 8]], active: 38 },
-    { id: 'jpm', name: 'Jumeirah Padel Mixers', sport: 'padel', area: 'Jumeirah', levels: ['some', 'regular'], cost: 'Court share, about AED 70', level: 'Intermediate', photos: 2, confirmed: 12, fullNext: true,
+    { id: 'jpm', name: 'Jumeirah Padel Mixers', sport: 'padel', area: 'Jumeirah', levels: ['some', 'regular'], price: 70, priceFor: 'court share', level: 'Intermediate', photos: 2, confirmed: 12, fullNext: true,
       desc: 'Competitive but friendly doubles. Winners move up a court.', bring: 'Your own racket.',
       sched: [{ d: 2, t: '20:00', type: 'King of the court', note: 'Intermediate', place: 'Beach Road Padel, courts 1–3', cap: 12 }, { d: 5, t: '18:00', type: 'Friday ladder', note: 'Intermediate', place: 'Beach Road Padel, courts 1–3', cap: 12 }],
       top: [['Omar S.', 12], ['Layla H.', 9]], active: 22 },
-    { id: 'mpb', name: 'Mirdif Padel Beginners', sport: 'padel', area: 'Mirdif', levels: ['new'], cost: 'Court share, about AED 50', level: 'Never played is fine', photos: 2, confirmed: 8,
+    { id: 'mpb', name: 'Mirdif Padel Beginners', sport: 'padel', area: 'Mirdif', levels: ['new'], price: 50, priceFor: 'court share', level: 'Never played is fine', photos: 2, confirmed: 8,
       desc: 'A patient group for first-timers. The first 20 minutes cover the basics.', bring: 'Trainers. Rackets provided.',
       sched: [{ d: 5, t: '18:00', type: 'Learn and play', note: 'First-timers', place: 'Mirdif Sports Hub, court 2', cap: 12 }],
       top: [['Farah A.', 10], ['Priya V.', 7]], active: 19 },
-    { id: 'kbf', name: 'Kite Beach Sunrise Flow', sport: 'yoga', area: 'Jumeirah', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Open level', photos: 3, confirmed: 3,
+    { id: 'kbf', name: 'Kite Beach Sunrise Flow', sport: 'yoga', area: 'Jumeirah', levels: ['new', 'some', 'regular'], price: 0, level: 'Open level', photos: 3, confirmed: 3,
       desc: 'An hour of yoga on the sand as the sun comes up. Bring a towel if you do not have a mat.', bring: 'Mat or towel, water.',
       sched: [{ d: 6, t: '06:45', type: 'Sunrise flow', note: 'Open level', place: 'Kite Beach, north end by the showers' }, { d: 3, t: '06:30', type: 'Stretch and breathe', note: 'Gentle', place: 'Kite Beach, north end by the showers' }],
       top: [['Aisha N.', 12], ['Mei L.', 11], ['Sana K.', 8]], active: 35 },
-    { id: 'mpp', name: 'Marina Mat Pilates in the Park', sport: 'yoga', area: 'Marina', levels: ['new', 'some'], cost: 'AED 20 towards the instructor', level: 'Beginner friendly', photos: 2, confirmed: 71, ladies: true,
+    { id: 'mpp', name: 'Marina Mat Pilates in the Park', sport: 'yoga', area: 'Marina', levels: ['new', 'some'], price: 20, priceFor: 'towards the instructor', level: 'Beginner friendly', photos: 2, confirmed: 71, ladies: true,
       desc: 'Mat pilates on the grass with a small speaker and a patient teacher.', bring: 'Mat, water.',
       sched: [{ d: 1, t: '18:30', type: 'Mat pilates', note: 'Beginner friendly', place: 'Marina Promenade lawn' }],
       top: [['Priya V.', 6]], active: 9 },
-    { id: 'hsy', name: 'Hills Sunset Yoga', sport: 'yoga', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Open level', photos: 0, confirmed: 1,
+    { id: 'hsy', name: 'Hills Sunset Yoga', sport: 'yoga', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], price: 0, level: 'Open level', photos: 0, confirmed: 1,
       desc: 'A new group that started this month. Slow evening practice on the park lawn.', bring: 'Mat, water.',
       sched: [{ d: 4, t: '18:00', type: 'Sunset practice', note: 'Open level', place: 'Dubai Hills Park, east lawn' }],
       top: [], active: 6 },
-    { id: 'kbv', name: 'Kite Beach Volleyball Social', sport: 'volleyball', area: 'Jumeirah', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Mixed level', photos: 3, confirmed: 5,
+    { id: 'kbv', name: 'Kite Beach Volleyball Social', sport: 'volleyball', area: 'Jumeirah', levels: ['new', 'some', 'regular'], price: 0, level: 'Mixed level', photos: 3, confirmed: 5,
       desc: 'Beach volleyball on the public courts at sunset. Teams are mixed on the night, so come alone or bring friends.', bring: 'Water and sunscreen. Balls provided.',
       sched: [{ d: 3, t: '18:30', type: 'Sunset games', note: 'Mixed level', place: 'Kite Beach, volleyball courts by the skate park', cap: 24 }, { d: 6, t: '08:00', type: 'Morning 4s', note: 'Some experience', place: 'Kite Beach, volleyball courts by the skate park', cap: 16 }],
       top: [['Ravi T.', 11], ['Chloe D.', 9], ['Ben J.', 7]], active: 34 },
-    { id: 'mbv', name: 'Marina Beach Volley Beginners', sport: 'volleyball', area: 'Marina', levels: ['new', 'some'], cost: 'Free', level: 'Never played is fine', photos: 2, confirmed: 3,
+    { id: 'mbv', name: 'Marina Beach Volley Beginners', sport: 'volleyball', area: 'Marina', levels: ['new', 'some'], price: 0, level: 'Never played is fine', photos: 2, confirmed: 3,
       desc: 'A relaxed group for people learning the basics. The first half hour is drills, then easy games.', bring: 'Water. Bare feet on the sand.',
       sched: [{ d: 1, t: '18:00', type: 'Learn and play', note: 'First-timers', place: 'JBR Beach, courts by The Walk', cap: 18 }],
       top: [['Zara I.', 8], ['Luca C.', 6]], active: 21 },
-    { id: 'mbb', name: 'Marina Streetball Social', sport: 'basketball', area: 'Marina', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Pick-up games, all levels', photos: 2, confirmed: 6, venue: 'Outdoor',
+    { id: 'mbb', name: 'Marina Streetball Social', sport: 'basketball', area: 'Marina', levels: ['new', 'some', 'regular'], price: 0, level: 'Pick-up games, all levels', photos: 2, confirmed: 6, venue: 'Outdoor',
       desc: 'Pick-up games on the outdoor courts after sunset. Teams are picked on the night, so come alone or bring friends.', bring: 'Water and basketball shoes. Balls provided.',
       sched: [{ d: 2, t: '19:30', type: 'Sunset pick-up', note: 'All levels', place: 'Marina outdoor courts, by the tram stop', cap: 20 }, { d: 5, t: '18:00', type: 'Weekend runs', note: 'Some experience', place: 'Marina outdoor courts, by the tram stop', cap: 20 }],
       top: [['Sam W.', 10], ['Diego M.', 8], ['Zara I.', 6]], active: 26 },
-    { id: 'dhb', name: 'Dubai Hills Indoor Hoops', sport: 'basketball', area: 'Dubai Hills', levels: ['some', 'regular'], cost: 'Court share, about AED 35', level: 'Played before, full-court 5-on-5', photos: 2, confirmed: 5, venue: 'Indoor',
+    { id: 'dhb', name: 'Dubai Hills Indoor Hoops', sport: 'basketball', area: 'Dubai Hills', levels: ['some', 'regular'], price: 35, priceFor: 'court share', level: 'Played before, full-court 5-on-5', photos: 2, confirmed: 5, venue: 'Indoor',
       desc: 'Air-conditioned full-court games all year round. A short skills warm-up, then rotating 5-on-5.', bring: 'Non-marking shoes, plus a light and a dark shirt.',
       sched: [{ d: 3, t: '20:00', type: 'Full-court 5s', note: 'Some experience', place: 'Dubai Hills sports hall, court 1', cap: 20 }],
       top: [['Khalid Z.', 11], ['Tom R.', 9]], active: 18 },
-    { id: 'dhf', name: 'Dubai Hills Sunday Football', sport: 'football', area: 'Dubai Hills', levels: ['some', 'regular'], cost: 'Pitch share, about AED 40', level: '7-a-side, friendly', photos: 3, confirmed: 4, venue: 'Outdoor',
+    { id: 'dhf', name: 'Dubai Hills Sunday Football', sport: 'football', area: 'Dubai Hills', levels: ['some', 'regular'], price: 40, priceFor: 'pitch share', level: '7-a-side, friendly', photos: 3, confirmed: 4, venue: 'Outdoor',
       desc: '7-a-side on a full-size grass pitch, split into two games. Teams are balanced on the night; bibs and balls provided.', bring: 'Boots or astro shoes, shin pads and water.',
       sched: [{ d: 0, t: '19:00', type: '7-a-side', note: 'Friendly', place: 'Dubai Hills Park, football pitch', cap: 28 }],
       top: [['Omar S.', 12], ['Luca C.', 10], ['Ravi T.', 7]], active: 31 },
-    { id: 'jbf', name: 'Jumeirah Beach Football', sport: 'football', area: 'Jumeirah', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Open, mixed teams', photos: 2, confirmed: 8, venue: 'Outdoor',
+    { id: 'jbf', name: 'Jumeirah Beach Football', sport: 'football', area: 'Jumeirah', levels: ['new', 'some', 'regular'], price: 0, level: 'Open, mixed teams', photos: 2, confirmed: 8, venue: 'Outdoor',
       desc: 'Barefoot games on the sand at sunrise. Mixed teams, short games and plenty of breaks.', bring: 'Water and sunscreen. Bare feet on the sand.',
       sched: [{ d: 6, t: '07:00', type: 'Beach games', note: 'Open level', place: 'Kite Beach, sand pitch by the lifeguard tower' }],
       top: [['Hassan B.', 9], ['Ben J.', 6]], active: 22 },
-    { id: 'jif', name: 'JVC Five-a-Side Social', sport: 'futsal', area: 'JVC', levels: ['new', 'some'], cost: 'Pitch share, about AED 45', level: '5-a-side, never played is fine', photos: 2, confirmed: 3, venue: 'Indoor',
+    { id: 'jif', name: 'JVC Five-a-Side Social', sport: 'futsal', area: 'JVC', levels: ['new', 'some'], price: 45, priceFor: 'pitch share', level: '5-a-side, never played is fine', photos: 2, confirmed: 3, venue: 'Indoor',
       desc: 'Indoor 5-a-side in an air-conditioned hall. Short games and rolling subs, with a mixed beginners\' game first.', bring: 'Indoor or astro shoes, and water.',
       sched: [{ d: 1, t: '20:00', type: '5-a-side', note: 'Beginners first', place: 'JVC indoor sports hall, pitch 2', cap: 20 }, { d: 4, t: '20:30', type: '5-a-side', note: 'Some experience', place: 'JVC indoor sports hall, pitch 2', cap: 20 }],
       top: [['Ivan U.', 11], ['Noor E.', 8]], active: 24 },
-    { id: 'mif', name: 'Mirdif Indoor 5s', sport: 'futsal', area: 'Mirdif', levels: ['some', 'regular'], cost: 'Pitch share, about AED 40', level: '5-a-side, regular players', photos: 2, confirmed: 9, venue: 'Indoor',
+    { id: 'mif', name: 'Mirdif Indoor 5s', sport: 'futsal', area: 'Mirdif', levels: ['some', 'regular'], price: 40, priceFor: 'pitch share', level: '5-a-side, regular players', photos: 2, confirmed: 9, venue: 'Indoor',
       desc: 'Competitive but friendly indoor 5-a-side, with a small weekly league table.', bring: 'Indoor shoes, plus a light and a dark shirt.',
       sched: [{ d: 3, t: '21:00', type: 'League night', note: 'Regular players', place: 'Mirdif indoor arena, pitch A', cap: 25 }],
       top: [['Farah A.', 10], ['Jonas P.', 9]], active: 20 },
-    { id: 'aqr', name: 'Al Qudra Dawn Riders', sport: 'cycling', area: 'JVC', levels: ['some', 'regular'], cost: 'Free', level: 'Steady 28–32 km/h', photos: 3, confirmed: 4,
+    { id: 'aqr', name: 'Al Qudra Dawn Riders', sport: 'cycling', area: 'JVC', levels: ['some', 'regular'], price: 0, level: 'Steady 28–32 km/h', photos: 3, confirmed: 4,
       desc: 'Road rides on the Al Qudra track before the heat. One loop at a steady pace, with a regroup at the halfway shade stop.', bring: 'Road bike, helmet, lights and two bottles of water.',
       sched: [{ d: 6, t: '05:30', type: 'Long loop', note: '50 km, steady', place: 'Al Qudra Cycle Track, Bab Al Shams start' }, { d: 3, t: '05:45', type: 'Midweek spin', note: '30 km, social pace', place: 'Al Qudra Cycle Track, Bab Al Shams start' }],
       top: [['Diego M.', 13], ['Khalid Z.', 10], ['Mei L.', 8]], active: 31 },
-    { id: 'nsr', name: 'Nad Al Sheba Night Riders', sport: 'cycling', area: 'Mirdif', levels: ['new', 'some'], cost: 'Free, bike hire on site', level: 'No-drop, easy pace', photos: 2, confirmed: 3,
+    { id: 'nsr', name: 'Nad Al Sheba Night Riders', sport: 'cycling', area: 'Mirdif', levels: ['new', 'some'], price: 0, priceFor: 'bike hire on site', level: 'No-drop, easy pace', photos: 2, confirmed: 3,
       desc: 'Evening laps on the lit, car-free cycle park. No one gets dropped, and the ride leader waits at every lap.', bring: 'Helmet and water. Hire bikes are available at the park.',
       sched: [{ d: 2, t: '19:30', type: 'Evening laps', note: 'Easy pace', place: 'Nad Al Sheba Cycle Park, main entrance' }],
       top: [['Farah A.', 9], ['Tom R.', 6]], active: 19 },
-    { id: 'acr', name: 'Corniche Sunrise Runners', sport: 'running', area: 'Corniche', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Pace groups from 5:30 to 7:30 per km', photos: 3, confirmed: 5, venue: 'Outdoor',
+    { id: 'acr', name: 'Corniche Sunrise Runners', sport: 'running', area: 'Corniche', levels: ['new', 'some', 'regular'], price: 0, level: 'Pace groups from 5:30 to 7:30 per km', photos: 3, confirmed: 5, venue: 'Outdoor',
       desc: 'Flat runs along the Corniche before the heat, with a walk-run group for beginners. Breakfast after on Fridays.', bring: 'Water. Showers at the beach club for a small fee.',
       sched: [{ d: 2, t: '05:45', type: '6 km easy', note: 'All paces', place: 'Corniche promenade, by the Lake Park entrance' }, { d: 5, t: '06:00', type: 'Long run', note: '10–14 km', place: 'Corniche promenade, by the Lake Park entrance' }],
       top: [['Reem Q.', 13], ['Jonas P.', 10], ['Priya V.', 8]], active: 37 },
-    { id: 'yrc', name: 'Yas Tuesday Riders', sport: 'cycling', area: 'Yas Island', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'No-drop groups by speed', photos: 2, confirmed: 4, venue: 'Outdoor',
+    { id: 'yrc', name: 'Yas Tuesday Riders', sport: 'cycling', area: 'Yas Island', levels: ['new', 'some', 'regular'], price: 0, level: 'No-drop groups by speed', photos: 2, confirmed: 4, venue: 'Outdoor',
       desc: 'Evening laps on the circuit when it opens to cyclists. Three speed groups, and nobody rides alone.', bring: 'Helmet, lights and water. Bike hire on site.',
       sched: [{ d: 2, t: '18:30', type: 'Circuit laps', note: 'Three speed groups', place: 'Yas Marina Circuit, cyclists\' entrance' }],
       top: [['Mei L.', 11], ['Tom R.', 7]], active: 29 },
-    { id: 'sbv', name: 'Saadiyat Beach Volley', sport: 'volleyball', area: 'Saadiyat', levels: ['new', 'some'], cost: 'Free', level: 'Mixed level', photos: 2, confirmed: 6, venue: 'Outdoor',
+    { id: 'sbv', name: 'Saadiyat Beach Volley', sport: 'volleyball', area: 'Saadiyat', levels: ['new', 'some'], price: 0, level: 'Mixed level', photos: 2, confirmed: 6, venue: 'Outdoor',
       desc: 'Relaxed sunset games on the public beach courts. Teams are mixed on the night.', bring: 'Water and sunscreen. Balls provided.',
       sched: [{ d: 4, t: '17:30', type: 'Sunset games', note: 'Mixed level', place: 'Saadiyat public beach, volleyball courts', cap: 18 }],
       top: [['Chloe D.', 9], ['Khalid Z.', 6]], active: 19 },
-    { id: 'rip', name: 'Reem Island Padel Social', sport: 'padel', area: 'Al Reem Island', levels: ['some', 'regular'], cost: 'Court share, about AED 55', level: 'Rotating doubles, intermediate', photos: 2, confirmed: 3, venue: 'Indoor',
+    { id: 'rip', name: 'Reem Island Padel Social', sport: 'padel', area: 'Al Reem Island', levels: ['some', 'regular'], price: 55, priceFor: 'court share', level: 'Rotating doubles, intermediate', photos: 2, confirmed: 3, venue: 'Indoor',
       desc: 'Rotating doubles every Wednesday, so you play with and against new people each round.', bring: 'Racket (spares available) and indoor shoes.',
       sched: [{ d: 3, t: '20:00', type: 'Americano', note: 'Intermediate', place: 'Reem Island padel club, courts 2–4', cap: 16 }],
       top: [['Omar S.', 10], ['Aisha N.', 8]], active: 21 },
-    { id: 'kcf', name: 'Khalifa City Five-a-Side', sport: 'futsal', area: 'Khalifa City', levels: ['new', 'some', 'regular'], cost: 'Pitch share, about AED 35', level: '5-a-side, all levels', photos: 2, confirmed: 7, venue: 'Indoor',
+    { id: 'kcf', name: 'Khalifa City Five-a-Side', sport: 'futsal', area: 'Khalifa City', levels: ['new', 'some', 'regular'], price: 35, priceFor: 'pitch share', level: '5-a-side, all levels', photos: 2, confirmed: 7, venue: 'Indoor',
       desc: 'Friendly indoor 5-a-side for regulars and newcomers alike. Teams are reshuffled every 10 minutes.', bring: 'Indoor or astro shoes, and water.',
       sched: [{ d: 6, t: '19:00', type: '5-a-side', note: 'All levels', place: 'Khalifa City indoor pitch, pitch 1', cap: 20 }],
       top: [['Sam W.', 9], ['Yuki O.', 7]], active: 17 },
-    { id: 'jlr', name: 'Jumeirah Ladies Run Club', sport: 'running', area: 'Jumeirah', levels: ['new', 'some', 'regular'], cost: 'Free', level: 'Walk-run to 6:00 per km', photos: 3, confirmed: 3, venue: 'Outdoor', ladies: true,
+    { id: 'jlr', name: 'Jumeirah Ladies Run Club', sport: 'running', area: 'Jumeirah', levels: ['new', 'some', 'regular'], price: 0, level: 'Walk-run to 6:00 per km', photos: 3, confirmed: 3, venue: 'Outdoor', ladies: true,
       desc: 'A women-only run club with a walk-run group, so nobody runs alone. Coffee together after every session.', bring: 'Water. Lockers at the beach club for a small fee.',
       sched: [{ d: 1, t: '06:00', type: '5 km easy', note: 'All paces', place: 'Jumeirah Beach Road, by Sunset Mall' }, { d: 4, t: '18:30', type: 'Sunset 5 km', note: 'All paces', place: 'Jumeirah Beach Road, by Sunset Mall' }],
       top: [['Sana K.', 12], ['Aisha N.', 10], ['Noor E.', 8]], active: 33 },
-    { id: 'dlp', name: 'Dubai Hills Ladies Padel', sport: 'padel', area: 'Dubai Hills', levels: ['new', 'some'], cost: 'Court share, about AED 50', level: 'Beginner and improver doubles', photos: 2, confirmed: 5, venue: 'Indoor', ladies: true,
+    { id: 'dlp', name: 'Dubai Hills Ladies Padel', sport: 'padel', area: 'Dubai Hills', levels: ['new', 'some'], price: 50, priceFor: 'court share', level: 'Beginner and improver doubles', photos: 2, confirmed: 5, venue: 'Indoor', ladies: true,
       desc: 'Women-only padel with a coach-led warm-up, then mixed-level doubles. Rackets to borrow for first-timers.', bring: 'Indoor shoes and water. Rackets available.',
       sched: [{ d: 0, t: '19:00', type: 'Ladies doubles', note: 'Beginner friendly', place: 'Dubai Hills padel courts, courts 1–3', cap: 12 }],
       top: [['Layla H.', 9], ['Priya V.', 7]], active: 16 }
@@ -189,9 +189,11 @@
   const hash = (s) => { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100003; return h; };
   const club = (id) => CLUBS.find((c) => c.id === id);
   // Price: "Free..." is free; otherwise the first AED amount, if there is one.
-  const isFree = (c) => /^free/i.test(c.cost);
-  const aed = (c) => { const m = c.cost.match(/AED\s*(\d+)/i); return m ? Number(m[1]) : null; };
-  const priceShort = (c) => (isFree(c) ? 'Free' : aed(c) !== null ? `About AED ${aed(c)}` : 'Paid');
+  // Price: a fixed amount per session, set by the organiser (0 = free), with an optional note on what it covers.
+  const isFree = (c) => !c.price;
+  const aed = (c) => (c.price ? c.price : null);
+  const priceShort = (c) => (isFree(c) ? 'Free' : `AED ${c.price}`);
+  const priceLong = (c) => (isFree(c) ? 'Free' : `AED ${c.price} per session`) + (c.priceFor ? ` · ${esc(c.priceFor)}` : '');
   // Photos: members can post once they've been to 5 sessions with a club. Organisers always can.
   const PHOTO_MIN = 5;
   const sessionsAt = (c) => Math.max(Object.keys(S.att).filter((id) => S.att[id] === 'went' && id.split('|')[0] === c.id).length, S.clubWeeks[c.id] || 0);
@@ -555,7 +557,7 @@
     const claim = mine ? '' : S.claims[c.id] ? '<p class="note">Your request to manage this club is with us. We\'ll confirm within 2 days.</p>' : `<div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Is this your club?</b><br><span class="sm mut">Claim it to keep the schedule right and see who's coming.</span></div><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`;
     const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} · ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
     return `<main class="flush pad-bar">${invite}${head}
-      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
+      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceLong(c)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         ${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
         <p class="sm">${esc((n || { place: c.sched[0].place }).place)} · ${mapLink((n || { place: c.sched[0].place }).place, c, 'link sm')}</p>
@@ -685,7 +687,7 @@
       <div class="stack tight"><div class="row sp"><span class="cap">Just finished</span><span class="mut xs">came</span></div><div>${rec.map(row).join('') || '<p class="mut sm">Nothing yet.</p>'}</div></div>
       <div class="note"><b>Is ${esc(c.name)} still meeting ${meetDays(c)}?</b><div class="row" style="margin-top:10px"><button class="btn small" data-act="confirmclub" data-id="${c.id}">Yes, all correct</button><button class="btn small ghost" data-act="sched" data-id="${c.id}">Update</button></div></div>
       <div class="stack tight"><span class="cap">Your club</span><div>
-        <button class="item" data-act="editclub" data-id="${c.id}"><span class="grow"><b>Club details</b><br><span class="mut sm">Description, level, cost, what to bring</span></span>${ic('chev', 'chev')}</button>
+        <button class="item" data-act="editclub" data-id="${c.id}"><span class="grow"><b>Club details</b><br><span class="mut sm">Description, level, price, what to bring</span></span>${ic('chev', 'chev')}</button>
         <button class="item" data-act="sched" data-id="${c.id}"><span class="grow"><b>Schedule</b><br><span class="mut sm">${meetDays(c)} · cancel a session</span></span>${ic('chev', 'chev')}</button>
         <button class="item" data-act="mphotos" data-id="${c.id}"><span class="grow"><b>Photos</b><br><span class="mut sm">Pin the best, hide any you don't want</span></span>${ic('chev', 'chev')}</button>
         <button class="item" data-act="soon" data-what="Inviting co-organisers is not in this prototype yet."><span class="grow"><b>Organisers</b><br><span class="mut sm">Just you</span></span>${ic('chev', 'chev')}</button></div></div>
@@ -840,13 +842,13 @@
     const sec = (act, t, sub, ico) => `<button class="item" data-act="${act}" data-id="${c.id}">${ico ? `<span class="orgcta-ic">${ic(ico)}</span>` : ''}<span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ic('chev', 'chev')}</button>`;
     const ck = ckOf(c); const left = setupLeft(c);
     const checklist = `<section class="stack tight"><div class="row sp"><h2>${left ? 'Check your page' : 'Your page is checked'}</h2><span class="sm mut">${3 - left} of 3</span></div><p class="sm mut">${left ? "We filled it in from your club's Instagram. Confirm each part or fix it." : 'Change anything here at any time.'}</p><div class="ocard">
-      ${[['d', 'Club details', 'Description, level, cost, what to bring', 'editclub'], ['s', 'Weekly sessions', meetDays(c), 'osched'], ['f', '"How to find us" note', c.find ? `“${esc(c.find)}”` : 'Shown to first-timers in their reminder', 'editclub']].map(([k, t, sub, act]) =>
+      ${[['d', 'Club details', 'Description, level, price, what to bring', 'editclub'], ['s', 'Weekly sessions', meetDays(c), 'osched'], ['f', '"How to find us" note', c.find ? `“${esc(c.find)}”` : 'Shown to first-timers in their reminder', 'editclub']].map(([k, t, sub, act]) =>
         `<div class="item"><span class="tick ${ck[k] ? 'on' : ''}" aria-hidden="true">${ck[k] ? '✓' : ''}</span><span class="grow"><b>${t}</b><br><span class="mut sm">${sub}</span></span>${ck[k] ? `<span class="oacts"><button class="btn small ghost" data-act="${act}" data-id="${c.id}">${ic('edit')}Edit</button><button class="btn small quiet" data-act="ounck" data-k="${k}">Undo</button></span>` : `<span class="oacts">${k !== 'f' ? `<button class="btn small" data-act="ock" data-k="${k}">${ic('check')}Looks right</button>` : ''}<button class="btn small ghost" data-act="${act}" data-id="${c.id}">${k === 'f' ? `${ic('plus')}Add a note` : `${ic('edit')}Edit`}</button></span>`}</div>`).join('')}</div></section>`;
     return `<main class="pad-nav"><div class="stack tight"><h1 style="font-size:22px">${esc(c.name)}</h1><p class="mut sm">Last confirmed ${confirmedOn(c)}</p></div>
       ${left ? checklist : ''}
       <button class="whobtn" data-act="ojoin"><span class="orgcta-ic">${ic('share')}</span><span class="grow"><b>Invite members</b><br><span class="mut sm">Link, QR code and WhatsApp message</span></span>${ic('chev', 'chev')}</button>
       <button class="whobtn" data-act="tomember" data-id="${c.id}"><span class="orgcta-ic">${ic('me')}</span><span class="grow"><b>See your public page</b><br><span class="mut sm">Opens it in the member app, as members see it</span></span>${ic('chev', 'chev')}</button>
-      <div>${sec('editclub', 'Club details', 'Description, level, cost, what to bring', 'edit')}
+      <div>${sec('editclub', 'Club details', 'Description, level, price, what to bring', 'edit')}
         ${sec('editclub', 'How to find us', c.find ? `“${esc(c.find)}”` : 'Add a line for first-timers', 'flag')}
         ${sec('osched', 'Schedule', `${meetDays(c)} · change or cancel a session`, 'week')}
         ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}</div>
@@ -993,7 +995,8 @@
     <label for="ed-desc">Description</label><textarea id="ed-desc" rows="4" maxlength="300">${esc(c.desc)}</textarea>
     <label for="ed-level">Level or pace</label><input type="text" id="ed-level" maxlength="80" value="${esc(c.level)}">
     <label for="ed-venue">Indoor or outdoor</label><select id="ed-venue">${VENUES.map((v) => `<option ${c.venue === v ? 'selected' : ''}>${v}</option>`).join('')}</select>
-    <label for="ed-cost">Cost</label><input type="text" id="ed-cost" maxlength="40" value="${esc(c.cost)}">
+    <label for="ed-price">Price per session (AED)<br><span class="mut sm">Members see exactly this. Use 0 for free.</span></label><input type="number" id="ed-price" min="0" max="1000" step="5" inputmode="numeric" value="${c.price || 0}">
+    <label for="ed-pfor">What the price covers (optional)</label><input type="text" id="ed-pfor" maxlength="40" placeholder="For example: court share, or towards the coach" value="${esc(c.priceFor || '')}">
     <label for="ed-bring">What to bring</label><input type="text" id="ed-bring" maxlength="80" value="${esc(c.bring)}">
     <label for="ed-find">How to find us<br><span class="mut sm">One line for first-timers, added to their reminder</span></label><input type="text" id="ed-find" maxlength="80" placeholder="For example: Look for the orange flag by Pier 7" value="${esc(c.find || '')}">
     <p class="mut xs">Changes show on your public page straight away.</p>
@@ -1148,7 +1151,7 @@
     editclub: (d) => { overlay = { t: 'edit', id: d.id }; render(); },
     saveclub: (d) => {
       const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; }; const c = club(d.id);
-      S.edits[d.id] = { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, cost: val('ed-cost') || c.cost, bring: val('ed-bring') || c.bring, find: val('ed-find'), venue: val('ed-venue') || c.venue };
+      S.edits[d.id] = { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, price: /^\d{1,4}$/.test(val('ed-price')) ? Number(val('ed-price')) : c.price, priceFor: val('ed-pfor'), bring: val('ed-bring') || c.bring, find: val('ed-find'), venue: val('ed-venue') || c.venue };
       S.conf[d.id] = now().getTime(); const ck = (S.check[d.id] = S.check[d.id] || {}); ck.d = true; if (val('ed-find')) ck.f = true; save(); applyEdits(); overlay = null; say('Saved. Your public page is updated.'); render();
     },
     confirmclub: (d) => { S.conf[d.id] = now().getTime(); (S.check[d.id] = S.check[d.id] || {}).d = true; save(); say('Thanks. Marked as confirmed today.'); render(); },
