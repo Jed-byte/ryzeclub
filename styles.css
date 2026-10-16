@@ -405,3 +405,13 @@ body.org #app { background: #F6F9FC; }
 .flabel .ic { width: 18px; height: 18px; color: var(--acc); }
 .fgroup .chip { min-height: 44px; }
 .fgroup .wrap .chip:not(.on) { border-color: var(--line); font-weight: 500; }
+
+/* Club card: main area opens the club; footer holds View club and Directions */
+.card-main { display: flex; flex-direction: column; width: 100%; background: none; border: 0; padding: 0; text-align: left; color: inherit; }
+.card-main > * { width: 100%; }
+.card-acts { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 0 14px 12px; }
+.card-acts .go { background: none; border: 0; padding: 0; min-height: 44px; margin: 0; text-decoration: none; }
+.card-acts a.go { color: var(--ink); font-weight: 500; }
+.go .ic, .link .ic { width: 16px; height: 16px; }
+a.link { display: inline-flex; align-items: center; gap: 4px; }
+.card-main .body { padding-bottom: 2px; }

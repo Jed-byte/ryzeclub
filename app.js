@@ -5,6 +5,9 @@
   const AREAS = Object.values(CITIES).flat();
   const cityOf = (area) => Object.keys(CITIES).find((k) => CITIES[k].includes(area));
   const ANY = (city) => `Anywhere in ${city}`;
+  // Directions: Google Maps search for the meeting point; opens the maps app on phones.
+  const mapsUrl = (place, c) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.split(',')[0]}, ${c.area}, ${cityOf(c.area)}, UAE`)}`;
+  const mapLink = (place, c, cls = 'go') => `<a class="${cls}" href="${mapsUrl(place, c)}" target="_blank" rel="noopener">${ic('pin')}Directions</a>`;
   const placeOf = (c) => (cityOf(c.area) === 'Dubai' ? c.area : `${c.area}, ${cityOf(c.area)}`);
   const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', basketball: 'Basketball', football: 'Football', futsal: 'Indoor football (5-a-side)', cycling: 'Cycling' };
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
@@ -355,12 +358,12 @@
   function clubCard(c, why) {
     const n = nextOpen(c); const lead = leadPhotos(c)[0];
     const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
-    return `<button class="card" data-act="club" data-id="${c.id}">${head}<span class="body">
+    return `<div class="card"><button class="card-main" data-act="club" data-id="${c.id}">${head}<span class="body">
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
       ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}</span>${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}`}
-      <span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
-      <span class="go">View club ${ic('right')}</span>
-    </span></button>`;
+      <span class="sm">${n ? `Next: ${dayWord(n.at)} · ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
+    </span></button>
+    <div class="card-acts"><button class="go" data-act="club" data-id="${c.id}">View club ${ic('right')}</button>${mapLink((n || { place: c.sched[0].place }).place, c)}</div></div>`;
   }
   function sessionRow(s, showClub) {
     let tag = '';
@@ -534,7 +537,7 @@
     const c = club(route.id); const n = nextOpen(c); const fut = future(c).slice(0, 4); const recaps = past(c).slice(0, 2);
     const following = S.follows.includes(c.id); const mine = S.manage.includes(c.id); const lead = c.photos ? leadPhotos(c) : [];
     const head = lead.length ? `<div class="mosaic n${lead.length}">${lead.map((p, i) => tile(p, i === 0 && recaps[0] ? dateShort(recaps[0].at) : '')).join('')}</div>`
-      : `<div class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span><span class="disp" style="font-size:18px;font-weight:700">${n ? `${dayWord(n.at)} ${n.t}` : 'No session scheduled'}</span><span class="mut sm">No photos yet. They appear here after the first session.</span></div>`;
+      : `<div class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span><span class="disp" style="font-size:18px;font-weight:700">${n ? `${dayWord(n.at)} · ${n.t}` : 'No session scheduled'}</span><span class="mut sm">No photos yet. They appear here after the first session.</span></div>`;
     // "See who's going" is always a full-width bordered button with faces, so it reads as tappable.
     const whoBtn = (act, title, sub) => `<button class="whobtn" data-act="${act}" data-id="${n.id}">${avatars(people(n, 4))}<span class="grow"><b>${title}</b><br><span class="mut sm">${sub}</span></span>${ic('chev', 'chev')}</button>`;
     const when = n ? (['Today', 'Tomorrow'].includes(dayWord(n.at)) ? dayWord(n.at).toLowerCase() : 'on ' + dayWord(n.at)) : '';
@@ -550,11 +553,12 @@
     else if (isFull(n)) { const after = future(c).find((s) => s.id !== n.id && !isCancelled(s)); bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">Full · ${n.cap} of ${n.cap}</span><span class="det">Session details ${ic('chev')}</span></button>${after ? `<button class="btn ghost" data-act="session" data-id="${after.id}">See next session</button>` : ''}`; }
     else bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn big" data-act="rsvp" data-id="${n.id}">I'm in</button>`;
     const claim = mine ? '' : S.claims[c.id] ? '<p class="note">Your request to manage this club is with us. We\'ll confirm within 2 days.</p>' : `<div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Is this your club?</b><br><span class="sm mut">Claim it to keep the schedule right and see who's coming.</span></div><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`;
-    const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
+    const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} · ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
     return `<main class="flush pad-bar">${invite}${head}
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${esc(c.cost)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         ${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
+        <p class="sm">${esc((n || { place: c.sched[0].place }).place)} · ${mapLink((n || { place: c.sched[0].place }).place, c, 'link sm')}</p>
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
       <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
@@ -624,7 +628,7 @@
     const s = byId(route.id); const c = s.club; const next = nextOpen(c); const k = hash(s.id);
     const newcomer = (S.clubWeeks[c.id] || 0) <= 3;
     const tagged = !S.untag[s.id] && S.set.photoOk !== false && S.set.tagging;
-    const offer = next ? `<div class="stack"><span class="cap">${newcomer ? 'Same time next week?' : 'Next session'}</span><div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${next.type} · ${going(next)} going</span></span>
+    const offer = next ? `<div class="stack"><span class="cap">${newcomer ? 'Same time next week?' : 'Next session'}</span><div class="row sp"><span><b>${dayWord(next.at)} · ${next.t}</b><br><span class="mut sm">${next.type} · ${going(next)} going</span></span>
       ${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div></div>` : '';
     const photos = `<div class="stack tight"><div class="row sp"><span class="cap">Photos from ${nounFor(s)}</span>${canPost(c) ? `<button class="btn small ghost" data-act="post" data-id="${s.id}">${ic('plus')}Add yours</button>` : ''}</div>${canPost(c) ? '' : postNote(c)}
       <div class="strip">${myPhotos(s).map((p) => tile(p, 'yours')).join('')}
@@ -640,13 +644,13 @@
   V.missed = () => {
     const s = byId(route.id); const next = nextOpen(s.club);
     return `<main class="pad-nav"><div class="stack tight"><h1>No problem.</h1><p class="mut">${next ? `${DAYL[next.at.getDay()]}'s the next one.` : 'There is nothing scheduled yet.'}</p></div>
-      ${next ? `<div class="row sp"><span><b>${dayWord(next.at)} ${next.t}</b><br><span class="mut sm">${esc(s.club.name)} · ${next.type}</span></span>${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div>` : ''}
+      ${next ? `<div class="row sp"><span><b>${dayWord(next.at)} · ${next.t}</b><br><span class="mut sm">${esc(s.club.name)} · ${next.type}</span></span>${has(next.id) ? '<span class="tag go">Going</span>' : `<button class="btn" data-act="rsvp" data-id="${next.id}">I'm in</button>`}</div>` : ''}
       <button class="btn ghost block" data-act="me">${ic('left')}Back to my week</button></main>`;
   };
 
   V.clubs = () => `<main class="pad-nav"><h1>My clubs</h1>
     ${S.manage.length ? `<div class="stack tight"><span class="cap">You manage</span>${S.manage.map((id) => `<button class="mrow" data-act="manage" data-id="${id}"><span class="orgcta-ic">${ic('flag')}</span><span class="grow"><b>${esc(club(id).name)}</b><br><span class="sm mut">Headcounts, schedule, photos</span></span><span class="go">Manage ${ic('chev')}</span></button>`).join('')}</div>` : ''}
-    ${S.follows.length ? `<div class="stack">${S.follows.map((id) => { const c = club(id); const n = nextOpen(c); return `<button class="card" data-act="club" data-id="${c.id}"><span class="body"><span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span><span class="sm">${n ? `Next: ${dayWord(n.at)} ${n.t}` : 'No session scheduled'} · you: ${plural(S.clubWeeks[c.id] || 0, 'week')}</span><span class="go">View club ${ic('right')}</span></span></button>`; }).join('')}</div>` : '<p class="mut">You are not following any clubs yet.</p>'}
+    ${S.follows.length ? `<div class="stack">${S.follows.map((id) => { const c = club(id); const n = nextOpen(c); return `<button class="card" data-act="club" data-id="${c.id}"><span class="body"><span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span><span class="sm">${n ? `Next: ${dayWord(n.at)} · ${n.t}` : 'No session scheduled'} · you: ${plural(S.clubWeeks[c.id] || 0, 'week')}</span><span class="go">View club ${ic('right')}</span></span></button>`; }).join('')}</div>` : '<p class="mut">You are not following any clubs yet.</p>'}
     <button class="btn ghost block" data-act="quiz">${ic('find')}Find another club</button></main>`;
 
   V.profile = () => { const m = myPro(); return `<main class="pad-nav"><div class="row">${face(S.user.name, m.photo, true)}<div class="stack tight"><h1>${esc(S.user.name)}</h1>
@@ -824,7 +828,7 @@
     const s = byId(route.id); const t = ticks(s);
     const list = roster(s).sort((a, b) => (b.first - a.first) || a.name.localeCompare(b.name));
     const here = list.filter((p) => t[p.name]).length;
-    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h1 style="font-size:22px">${DAYL[s.at.getDay()]} ${s.t} · ${esc(s.type)}</h1></div>
+    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h1 style="font-size:22px">${DAYL[s.at.getDay()]} · ${s.t} · ${esc(s.type)}</h1></div>
       <div class="cihead"><span><span class="cin">${here}</span> of ${list.length} here</span><button class="btn small" data-act="ciall" data-id="${s.id}">${ic('check')}Everyone came</button></div>
       <div class="cilist">${list.map((p) => `<button class="cirow ${t[p.name] ? 'on' : ''}" data-act="ci" data-id="${s.id}" data-name="${esc(p.name)}" aria-pressed="${!!t[p.name]}"><span class="citick">${t[p.name] ? ic('check') : ''}</span><span class="grow">${esc(p.name)}</span>${p.first ? '<span class="tag ok">First time · say hi</span>' : ''}</button>`).join('')}</div>
       <p class="mut sm">Saved as you tap. People you check in aren't asked "Did you go?" and their streak counts straight away.</p>
@@ -914,7 +918,7 @@
     else if (full) act = `<p class="notice">Full · ${s.cap} of ${s.cap}. There is no waiting list.</p>`;
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">I'm in</button>`;
     return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h2>${dayWord(s.at)} · ${s.t}</h2></div>
-      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}</dd><dt>What</dt><dd>${s.type}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
+      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}
       ${who(s, over)}
       ${overlay.from ? `<button class="btn quiet block" data-act="day" data-date="${overlay.from}">${ic('left')}Back to ${DAYL[s.at.getDay()]}</button>` : '<button class="btn quiet block" data-act="close">Close</button>'}</div>`;
@@ -1000,7 +1004,7 @@
     <button class="btn danger block" data-act="docancel" data-id="${s.id}">Cancel session</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
   O.oshare = () => { const c = orgClub(); const wk = future(c).filter((s) => s.at - now() < 7 * 864e5 && !isCancelled(s));
     return `<div class="sheet"><h2>Share this week</h2><p class="mut sm">Post it in your club's WhatsApp group. People RSVP from the link; chat stays in your group.</p>
-      <div class="msgprev"><b>This week at ${esc(c.name)}</b><br>${wk.map((s) => `${DAY[s.at.getDay()]} ${s.t} · ${esc(s.type)} · ${going(s)} going`).join('<br>')}<br>RSVP: ryzeclub.ae/${c.id}</div>
+      <div class="msgprev"><b>This week at ${esc(c.name)}</b><br>${wk.map((s) => `${DAY[s.at.getDay()]} · ${s.t} · ${esc(s.type)} · ${going(s)} going`).join('<br>')}<br>RSVP: ryzeclub.ae/${c.id}</div>
       <button class="btn block" data-act="soon" data-what="This would open WhatsApp with the message ready to send.">Send to WhatsApp</button>
       <button class="btn ghost block" data-act="soon" data-what="This would open Instagram with a story card.">Share to Instagram</button>
       <button class="btn quiet block" data-act="soon" data-what="Copied.">Copy text</button></div>`; };
@@ -1012,7 +1016,7 @@
     } catch (e) { return `<div class="qrfall">${esc(text)}</div>`; }
   };
   O.ojoin = () => { const c = orgClub(); const url = inviteUrl(c); const n = nextOpen(c);
-    const msg = `Hi all! We're using Ryze Club for ${c.name} now. Join here to see the schedule, RSVP and get a reminder before each session${n ? ` (next one: ${DAYL[n.at.getDay()]} ${n.t})` : ''}: ${url}`;
+    const msg = `Hi all! We're using Ryze Club for ${c.name} now. Join here to see the schedule, RSVP and get a reminder before each session${n ? ` (next one: ${DAYL[n.at.getDay()]} · ${n.t})` : ''}: ${url}`;
     return `<div class="sheet"><div class="stack tight"><h2>Invite members</h2><p class="sm mut">Anyone with the link lands on your club page with a "Join" button. Nothing to download.</p></div>
       ${overlay.qr ? `<div class="qrwrap">${qrSvg(url)}<p class="sm"><b>Show this at the meeting point</b> or print it for your flag. Phones scan it straight from the camera.</p></div>` : ''}
       <div class="linkbox"><span class="grow">${esc(url.replace(/^[a-z]+:\/\//, ''))}</span><button class="btn small" data-act="copylink" data-url="${esc(url)}">Copy</button></div>
