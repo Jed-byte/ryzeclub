@@ -9,13 +9,13 @@
   const mapsUrl = (place, c) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.split(',')[0]}, ${c.area}, ${cityOf(c.area)}, UAE`)}`;
   const mapLink = (place, c, cls = 'go') => `<a class="${cls}" href="${mapsUrl(place, c)}" target="_blank" rel="noopener">${ic('pin')}Directions</a>`;
   const placeOf = (c) => (cityOf(c.area) === 'Dubai' ? c.area : `${c.area}, ${cityOf(c.area)}`);
-  const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', basketball: 'Basketball', football: 'Football', futsal: 'Indoor football (5-a-side)', cycling: 'Cycling' };
+  const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', basketball: 'Basketball', football: 'Football', futsal: 'Indoor football (5-a-side)', boxing: 'Boxing fitness', tennis: 'Tennis', cycling: 'Cycling' };
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
   const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
-  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', cycling: 'ride' };
+  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', boxing: 'class', tennis: 'session', cycling: 'ride' };
 
   // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
   // Volleyball, cycling, basketball, football and indoor football use free Unsplash photos by page ID (~), which
@@ -28,7 +28,9 @@
     cycling: ['~FkFCGm4OcXA', '~1Hc963RqDUc', '~nQYqEwimp5o', '~hluVWYt3sUM'],
     basketball: ['~3MfzD21eVMY', '~Pkyy5J8OKIY', '~OanNTH36NbQ'],
     football: ['~6lS_Lt5XPJU', '~9gaAQAmmoFg', '~N5jZksBBIaM'],
-    futsal: ['~qZWMMkvesc4', '~GAXPpOnyI-c', '~FxXn1qvmBtY']
+    futsal: ['~qZWMMkvesc4', '~GAXPpOnyI-c', '~FxXn1qvmBtY'],
+    boxing: ['~uJzfTOnK6nc'],
+    tennis: ['~mUl5Kmct9Mg', '~J1j3cImjmgE', '~lqKXSNPb8D0']
   };
   const im = (sp, i) => { const a = IMG[sp]; if (!a) return ''; const n = ((Number(i) % a.length) + a.length) % a.length; const u = a[n][0] === '~' ? `https://unsplash.com/photos/${a[n].slice(1)}/download?force=true&w=800` : `https://images.unsplash.com/photo-${a[n]}?w=800&q=70&auto=format&fit=crop`; return ` style="--img:url('${u}')"`; };
 
@@ -141,11 +143,28 @@
     { id: 'dlp', name: 'Dubai Hills Ladies Padel', sport: 'padel', area: 'Dubai Hills', levels: ['new', 'some'], price: 50, priceFor: 'court share', level: 'Beginner and improver doubles', photos: 2, confirmed: 5, venue: 'Indoor', ladies: true,
       desc: 'Women-only padel with a coach-led warm-up, then mixed-level doubles. Rackets to borrow for first-timers.', bring: 'Indoor shoes and water. Rackets available.',
       sched: [{ d: 0, t: '19:00', type: 'Ladies doubles', note: 'Beginner friendly', place: 'Dubai Hills padel courts, courts 1–3', cap: 12 }],
-      top: [['Layla H.', 9], ['Priya V.', 7]], active: 16 }
+      top: [['Layla H.', 9], ['Priya V.', 7]], active: 16 },
+    { id: 'kbb', name: 'Kite Beach Boxing Bootcamp', sport: 'boxing', area: 'Jumeirah', levels: ['new', 'some'], price: 60, priceFor: 'gloves and pads included', photos: 2, confirmed: 4, venue: 'Outdoor', pay: 'ziina',
+      desc: 'Boxing fitness on the sand: pad work in pairs and conditioning rounds. No sparring and no contact.', bring: 'Water and a towel. Gloves and pads provided.',
+      sched: [{ d: 2, t: '06:15', type: 'Sunrise rounds', note: 'All levels', place: 'Kite Beach, by the outdoor gym', cap: 16 }, { d: 6, t: '07:30', type: 'Weekend bootcamp', note: 'All levels', place: 'Kite Beach, by the outdoor gym', cap: 16 }],
+      top: [['Diego M.', 10], ['Noor E.', 8]], active: 24 },
+    { id: 'dbx', name: 'Downtown Box Fit', sport: 'boxing', area: 'Downtown', levels: ['some', 'regular'], price: 90, priceFor: 'studio class', photos: 2, confirmed: 6, venue: 'Indoor', pay: 'stripe',
+      desc: 'Air-conditioned boxing fitness on bags and pads, with technique coaching. No sparring.', bring: 'Hand wraps (sold at the studio) and water.',
+      sched: [{ d: 1, t: '19:30', type: 'Bags and pads', note: 'Some experience', place: 'Downtown boxing studio, Boulevard Plaza', cap: 14 }, { d: 4, t: '19:30', type: 'Technique and rounds', note: 'Some experience', place: 'Downtown boxing studio, Boulevard Plaza', cap: 14 }],
+      top: [['Khalid Z.', 12], ['Zara I.', 9], ['Tom R.', 7]], active: 28 },
+    { id: 'jst', name: 'Jumeirah Social Tennis', sport: 'tennis', area: 'Jumeirah', levels: ['some', 'regular'], price: 80, priceFor: 'court share and new balls', photos: 2, confirmed: 5, venue: 'Outdoor', pay: 'ziina',
+      desc: 'Rotating doubles after sunset, so you play with and against new people every set.', bring: 'Racket, tennis shoes and water. Balls provided.',
+      sched: [{ d: 3, t: '19:00', type: 'Doubles mixer', note: 'Rally comfortably', place: 'Jumeirah community tennis courts', cap: 12 }],
+      top: [['Anna F.', 11], ['Luca C.', 8]], active: 18 },
+    { id: 'dht', name: 'Dubai Hills Tennis Clinic', sport: 'tennis', area: 'Dubai Hills', levels: ['new', 'some'], price: 120, priceFor: 'coach-led group clinic', photos: 2, confirmed: 3, venue: 'Outdoor', pay: 'stripe',
+      desc: 'Small-group clinics with a coach: drills for one hour, then short games. Four to six players per court.', bring: 'Tennis shoes and water. Rackets to borrow.',
+      sched: [{ d: 0, t: '18:30', type: 'Beginner clinic', note: 'Never played is fine', place: 'Dubai Hills Park tennis courts', cap: 6 }, { d: 5, t: '08:00', type: 'Improver clinic', note: 'Some experience', place: 'Dubai Hills Park tennis courts', cap: 6 }],
+      top: [['Priya V.', 9], ['Ben J.', 6]], active: 15 }
   ];
   // Indoor or outdoor. Padel venues vary; everything else listed before these sports meets outdoors.
   const VENUE = { jps: 'Indoor', jpm: 'Outdoor', mpb: 'Indoor and outdoor' };
-  CLUBS.forEach((c) => { c.venue = c.venue || VENUE[c.id] || 'Outdoor'; });
+  const PAY = { jps: 'ziina', jpm: 'ziina', dhb: 'stripe', dhf: 'ziina', jif: 'stripe', mif: 'stripe', rip: 'stripe', kcf: 'ziina', dlp: 'stripe', mpp: 'ziina' };
+  CLUBS.forEach((c) => { c.venue = c.venue || VENUE[c.id] || 'Outdoor'; if (c.price && c.pay === undefined) c.pay = PAY[c.id] || null; });
   const VENUES = ['Indoor', 'Outdoor', 'Indoor and outdoor'];
   const ORIG = JSON.parse(JSON.stringify(CLUBS));
 
@@ -193,6 +212,11 @@
   const isFree = (c) => !c.price;
   const aed = (c) => (c.price ? c.price : null);
   const priceShort = (c) => (isFree(c) ? 'Free' : `AED ${c.price}`);
+  // Payments go from the member to the host through the host's own provider; Ryze Club never holds the money.
+  const PROVIDERS = { ziina: 'Ziina', stripe: 'Stripe' };
+  const payOf = (c) => (S.payset && S.payset[c.id] !== undefined ? S.payset[c.id] : c.pay);
+  const needsPay = (id) => { const c = club(id.split('|')[0]); return !!(c && c.price && payOf(c) && !(S.paid || {})[id]); };
+  const payLine = (c) => (!c.price ? '' : payOf(c) ? ' · Pay in the app' : ' · Pay at the session');
   const priceLong = (c) => (isFree(c) ? 'Free' : `AED ${c.price} per session`) + (c.priceFor ? ` · ${esc(c.priceFor)}` : '');
   // Photos: members can post once they've been to 5 sessions with a club. Organisers always can.
   const PHOTO_MIN = 5;
@@ -236,6 +260,8 @@
     basketball: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5v17M6.2 5.8c2.6 2.4 2.6 10 0 12.4M17.8 5.8c-2.6 2.4-2.6 10 0 12.4"/>',
     football: '<circle cx="12" cy="12" r="8.5"/><path d="m12 8.2 3.3 2.4-1.3 3.9h-4l-1.3-3.9zM12 8.2V3.5M15.3 10.6l4.5-1.4M14 14.5l2.7 3.8M10 14.5l-2.7 3.8M8.7 10.6 4.2 9.2"/>',
     futsal: '<path d="M3 10.5 12 4l9 6.5"/><circle cx="12" cy="15" r="4.6"/><path d="m12 12.6 1.6 1.2-.6 1.9h-2l-.6-1.9z"/>',
+    boxing: '<path d="M7 12V8.5A4.5 4.5 0 0 1 11.5 4h2A4.5 4.5 0 0 1 18 8.5V12a5 5 0 0 1-5 5h-2.5L7 15z"/><path d="M7 15v5h8v-3M11 4.5V9h4"/>',
+    tennis: '<ellipse cx="9.5" cy="9.5" rx="5.5" ry="5.5"/><path d="m13.4 13.4 6.1 6.1M6 7.5l7 4M7.5 5l3 9"/><circle cx="18.5" cy="5.5" r="2"/>',
     cycling: '<circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="m6 16 4-7h5l3 7M10 9l2.2 7H6M14 6h2.5"/>'
   };
   const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[n]}</svg>`;
@@ -307,6 +333,8 @@
     volleyball: ['Sand everywhere. Worth it.', 'Mixed teams, no egos.', 'Sunset game went to 25–23.', 'Ten new faces this week.'],
     basketball: ['Next-up rotation ran all night.', 'Three first-timers hit their first threes.', 'Courts were packed. Come early.', 'Good runs, no egos.'],
     football: ['Two games, nobody injured, everyone muddy.', 'Last-minute winner on the far pitch.', 'Teams were perfectly even tonight.', 'Sunrise and sand everywhere.'],
+    boxing: ['Pads, sweat, no sparring. Perfect.', 'Six first-timers survived the burpees.', 'Sunrise rounds on the sand.', 'Coach had us laughing through the last round.'],
+    tennis: ['Mixed doubles went to a tie-break.', 'Three new faces, all came back for coffee.', 'Clinic focused on serves today.', 'Courts were cool after sunset.'],
     futsal: ['Rolling subs, nonstop games.', 'Beginners\' game was the best one.', 'Cold hall, warm games.', 'League table is tight this month.'],
     cycling: ['50 km before the heat.', 'Nobody dropped, as promised.', 'Spotted gazelles at Al Qudra.', 'Fastest regroup yet.']
   };
@@ -460,7 +488,7 @@
   V.home = () => `<main>
     <div class="stack"><h1>Find your people. Keep showing up.</h1>
       ${homeHero()}
-      <p class="mut">Free community clubs across Dubai and Abu Dhabi for running, padel, yoga and pilates, volleyball, basketball, football and cycling. Answer three questions and see the ones that fit you.</p></div>
+      <p class="mut">Free community clubs across Dubai and Abu Dhabi for running, padel, tennis, yoga and pilates, boxing fitness, volleyball, basketball, football and cycling. Answer three questions and see the ones that fit you.</p></div>
     <div class="stack"><button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button>
       <button class="btn ghost block" data-act="browse">${ic('find')}Browse all clubs</button>
       <p class="mut sm center">Three questions. No account needed.</p></div>
@@ -480,6 +508,8 @@
       <button class="quiz-opt g5"${im('basketball', 0)} data-act="q" data-k="sport" data-val="basketball">Basketball${ic('right')}</button>
       <button class="quiz-opt g2"${im('football', 0)} data-act="q" data-k="sport" data-val="football">Football${ic('right')}</button>
       <button class="quiz-opt g1"${im('futsal', 0)} data-act="q" data-k="sport" data-val="futsal">Indoor football (5-a-side)${ic('right')}</button>
+      <button class="quiz-opt g3"${im('boxing', 0)} data-act="q" data-k="sport" data-val="boxing">Boxing fitness${ic('right')}</button>
+      <button class="quiz-opt g4"${im('tennis', 0)} data-act="q" data-k="sport" data-val="tennis">Tennis${ic('right')}</button>
       <button class="quiz-opt g6"${im('cycling', 0)} data-act="q" data-k="sport" data-val="cycling">Cycling${ic('right')}</button></div>
       <p class="mut sm center">No account needed.</p></main>`;
     if (step === 1) return `<main>${head}<h1>Where are you based?</h1><div class="quiz-opts">
@@ -553,11 +583,11 @@
     if (!n) bar = `<div class="info"><b>No session scheduled</b><br><span class="mut sm">Follow to hear when one is added</span></div><button class="btn" data-act="follow" data-id="${c.id}">${following ? 'Following' : 'Follow'}</button>`;
     else if (has(n.id)) bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn quiet" data-act="session" data-id="${n.id}">${ic('check')}You're going</button>`;
     else if (isFull(n)) { const after = future(c).find((s) => s.id !== n.id && !isCancelled(s)); bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">Full · ${n.cap} of ${n.cap}</span><span class="det">Session details ${ic('chev')}</span></button>${after ? `<button class="btn ghost" data-act="session" data-id="${after.id}">See next session</button>` : ''}`; }
-    else bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn big" data-act="rsvp" data-id="${n.id}">I'm in</button>`;
+    else bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn big" data-act="rsvp" data-id="${n.id}">${c.price && payOf(c) ? `Pay AED ${c.price}` : "I'm in"}</button>`;
     const claim = mine ? '' : S.claims[c.id] ? '<p class="note">Your request to manage this club is with us. We\'ll confirm within 2 days.</p>' : `<div class="orgcta"><span class="orgcta-ic">${ic('flag')}</span><div class="grow"><b>Is this your club?</b><br><span class="sm mut">Claim it to keep the schedule right and see who's coming.</span></div><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`;
     const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} · ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
     return `<main class="flush pad-bar">${invite}${head}
-      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceLong(c)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
+      <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceLong(c)}${payLine(c)}${c.levels.includes('new') ? ' · Beginners welcome' : ''}</p>
         ${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
         <p class="sm">${esc((n || { place: c.sched[0].place }).place)} · ${mapLink((n || { place: c.sched[0].place }).place, c, 'link sm')}</p>
@@ -808,6 +838,7 @@
     const driftLine = driftN ? `<button class="osetup-line" data-act="omembers"><span class="grow"><b>${plural(driftN, 'regular')} haven't been back</b> · send a "We missed you"</span><span class="det">Members ${ic('chev')}</span></button>` : '';
     return `<main class="pad-nav">${hero}${driftLine}${grow}
       <section class="stack tight"><div class="row sp"><h2>This week</h2><span class="sm mut">${live.reduce((n, s) => n + going(s), 0)} RSVPs · last week ${cameLast} came</span></div>
+        ${c.price && payOf(c) ? `<p class="okline">${ic('tag')}<span class="grow"><b>AED ${(live.reduce((n, s) => n + going(s), 0) * c.price).toLocaleString('en')} booked</b> · you receive AED ${Math.round(live.reduce((n, s) => n + going(s), 0) * c.price * 0.9).toLocaleString('en')} after Ryze Club's 10%</span></p>` : c.price ? `<button class="osetup-line" data-act="opay"><span class="grow"><b>Get paid when members book</b> · connect Ziina or Stripe</span><span class="det">Set up ${ic('chev')}</span></button>` : ''}
         <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
         <div class="wrap"><button class="btn small ghost" data-act="oshare">${ic('share')}Post the week to WhatsApp</button><button class="btn small quiet" data-act="osched">Change or cancel</button></div></section>
       ${confirmed ? `<p class="okline">${ic('check')}<span class="grow">Schedule confirmed ${confirmedOn(c)}</span><button class="link sm" data-act="ounconf">Undo</button></p>`
@@ -851,7 +882,8 @@
       <div>${sec('editclub', 'Club details', 'Description, level, price, what to bring', 'edit')}
         ${sec('editclub', 'How to find us', c.find ? `“${esc(c.find)}”` : 'Add a line for first-timers', 'flag')}
         ${sec('osched', 'Schedule', `${meetDays(c)} · change or cancel a session`, 'week')}
-        ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}</div>
+        ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}
+        ${sec('opay', 'Get paid', payOf(c) ? `Connected to ${PROVIDERS[payOf(c)]} · members pay when they book` : 'Connect Ziina or Stripe to take payments', 'tag')}</div>
       ${left ? '' : checklist}
       <button class="btn quiet block" data-act="soon" data-what="Pausing the club (for summer or Ramadan timings) is not in this prototype yet.">Pause the club</button></main>`;
   };
@@ -916,9 +948,9 @@
     let act;
     if (over) act = S.att[s.id] ? `<p class="note">You said you ${S.att[s.id] === 'went' ? 'went' : 'missed it'}.</p>` : '<p class="note">This session has finished.</p>';
     else if (cancelled) act = '<p class="notice">This session is cancelled.</p>';
-    else if (mine) act = `<p class="note">You're going. Reminder ${s.at.getHours() < 10 ? 'at 19:00 the evening before' : 'three hours before'}.</p><button class="btn ghost block" data-act="unrsvp" data-id="${s.id}">Can't make it</button><button class="btn quiet block" data-act="soon" data-what="This would add the session to your phone's calendar.">Add to calendar</button>`;
+    else if (mine) act = `${(S.paid || {})[s.id] ? `<p class="okline">${ic('check')}<span class="grow">Paid AED ${S.paid[s.id]} to ${esc(founderOf(s.club))}</span></p>` : ''}<p class="note">You're going. Reminder ${s.at.getHours() < 10 ? 'at 19:00 the evening before' : 'three hours before'}.</p><button class="btn ghost block" data-act="unrsvp" data-id="${s.id}">Can't make it</button><button class="btn quiet block" data-act="soon" data-what="This would add the session to your phone's calendar.">Add to calendar</button>`;
     else if (full) act = `<p class="notice">Full · ${s.cap} of ${s.cap}. There is no waiting list.</p>`;
-    else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">I'm in</button>`;
+    else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">${s.club.price && payOf(s.club) ? `Pay AED ${s.club.price} and book` : "I'm in"}</button>`;
     return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h2>${dayWord(s.at)} · ${s.t}</h2></div>
       <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}
@@ -942,6 +974,25 @@
     <p>Members sometimes take photos at sessions. Are you happy to appear in them?</p>
     <button class="btn block" data-act="photook" data-val="1">Yes, that's fine</button><button class="btn ghost block" data-act="photook" data-val="0">No photos of me</button>
     <p class="mut sm">You can change this any time in Profile. If you say no, nobody can tag you, and any photo of you is removed when you ask.</p></div>`;
+  O.pay = () => {
+    const s = byId(overlay.id); const c = s.club; const prov = PROVIDERS[payOf(c)];
+    return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h2>Pay and book</h2><p class="mut sm">${dayWord(s.at)} · ${s.t} · ${esc(s.type)}</p></div>
+      <div class="payamt"><span class="big-n">AED ${c.price}</span><span class="mut sm">${c.priceFor ? esc(c.priceFor) : 'per session'}</span></div>
+      <button class="btn block" data-act="dopay">Pay with Apple Pay</button><button class="btn ghost block" data-act="dopay">Pay by card</button>
+      <p class="mut sm">Your payment goes to ${esc(founderOf(c))} through ${prov}. Ryze Club never holds your money. Cancel up to 12 hours before for a refund.</p>
+      <p class="note">Prototype: nothing is charged. In the real product this opens ${prov}'s secure checkout.</p>
+      <button class="btn quiet block" data-act="close">Not now</button></div>`;
+  };
+  O.opay = () => {
+    const c = orgClub(); const cur = payOf(c);
+    const opt = (v, name, who, needs) => `<div class="payopt ${cur === v ? 'on' : ''}"><div class="grow"><b>${name}</b><br><span class="sm">${who}</span><br><span class="mut sm">${needs}</span></div>${cur === v ? `<span class="tag ok">${ic('check')}Connected</span>` : `<button class="btn small" data-act="opayset" data-val="${v}">Connect</button>`}</div>`;
+    return `<div class="sheet"><h2>Get paid</h2><p class="mut sm">Members pay when they book, straight to you. Ryze Club never holds the money.</p>
+      ${opt('ziina', 'Ziina', 'For individuals and freelance coaches', 'Sign up with your Emirates ID. Fee about 2.6% + AED 1 per payment.')}
+      ${opt('stripe', 'Stripe', 'For clubs and venues with a trade licence', 'Needs a trade licence, a UAE bank account and ID.')}
+      <p class="sm">Ryze Club's fee: <b>10% per booking</b>, and 0% for your first 3 months.</p>
+      <p class="note">Prototype: connecting is simulated. Provider fees are from their published rates and need confirming.</p>
+      ${cur ? '<button class="btn quiet block" data-act="opayset" data-val="">Disconnect: members pay at the session</button>' : ''}<button class="btn quiet block" data-act="close">Close</button></div>`;
+  };
   O.person = () => {
     const m = memberPro(overlay.name);
     return `<div class="sheet"><div class="row">${face(m.name, '', true)}<div class="stack tight"><h2>${esc(m.name)}</h2><span class="mut sm">${esc(m.area)} · ${LEVELS[m.level]}</span></div></div>
@@ -1058,10 +1109,19 @@
     filters: () => { overlay = { t: 'filters' }; render(); }, clearfilt: () => { filt = { sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; render(); },
     photook: (d) => {
       const then = overlay.then; S.set.photoOk = d.val === '1'; if (!S.set.photoOk) S.set.tagging = false; save(); overlay = null;
+      if (needsPay(then.id)) { overlay = { t: 'pay', id: then.id, confirm: then.confirm }; render(); return; }
       doRsvp(then.id); haptic('success');
       if (then.confirm) { stack = []; cue('main h1', 'fx-rise'); go('confirm', { id: then.id }); return; }
       cue(`.bar .btn, [data-act="session"][data-id="${then.id}"] .tag`); say(S.set.photoOk ? "You're going." : "You're going. We'll keep you out of photos."); render();
     },
+    dopay: () => {
+      const id = overlay.id; const confirm = overlay.confirm; const c = club(id.split('|')[0]);
+      (S.paid = S.paid || {})[id] = c.price; doRsvp(id); overlay = null; haptic('success');
+      if (confirm) { stack = []; cue('main h1', 'fx-rise'); go('confirm', { id }); return; }
+      cue(`.bar .btn, [data-act="session"][data-id="${id}"] .tag`); say(`Paid AED ${c.price}. You're in.`); render();
+    },
+    opay: () => { overlay = { t: 'opay' }; render(); },
+    opayset: (d) => { const c = orgClub(); (S.payset = S.payset || {})[c.id] = d.val || null; save(); overlay = null; say(d.val ? `Connected to ${PROVIDERS[d.val]}. Members can now pay when they book.` : 'Disconnected. Members pay at the session.'); render(); },
     person: (d) => { overlay = { t: 'person', name: d.name, sid: d.sid }; render(); },
     editpro: () => { const sid = overlay && overlay.t === 'session' ? overlay.id : null; overlay = { t: 'editpro', d: myPro(), sid }; render(); },
     rmphoto: () => { readPro(); overlay.d.photo = ''; render(); },
@@ -1082,6 +1142,7 @@
     rsvp: (d) => {
       if (!S.user) { overlay = { t: 'signin', then: { act: 'rsvp', id: d.id } }; render(); return; }
       if (S.set.photoOk == null) { overlay = { t: 'photook', then: { id: d.id } }; render(); return; }
+      if (needsPay(d.id)) { overlay = { t: 'pay', id: d.id }; render(); return; }
       doRsvp(d.id); overlay = null; haptic('success'); cue(`.bar .btn, [data-act="session"][data-id="${d.id}"] .tag`); say("You're going."); render();
     },
     follow: (d) => {
@@ -1095,6 +1156,7 @@
       const age = document.getElementById('si-age'); if (!age || !age.checked) { overlay.name = name; say('Ryze Club is for adults 18 and over. Tick to confirm.'); render(); return; }
       S.user = { name }; save(); overlay = null;
       if (then && then.act === 'rsvp' && S.set.photoOk == null) { overlay = { t: 'photook', then: { id: then.id, confirm: true } }; render(); return; }
+      if (then && then.act === 'rsvp' && needsPay(then.id)) { overlay = { t: 'pay', id: then.id, confirm: true }; render(); return; }
       if (then && then.act === 'rsvp') { haptic('success'); cue('main h1', 'fx-rise'); doRsvp(then.id); stack = []; go('confirm', { id: then.id }); }
       else if (then && then.act === 'follow') { haptic('success'); cue(`[data-act="follow"][data-id="${then.id}"]`); if (!S.follows.includes(then.id)) { S.follows.push(then.id); if (route.invited) { S.joined = S.joined || {}; S.joined[then.id] = (S.joined[then.id] || 0) + 1; } } save(); say(route.invited ? `You've joined ${club(then.id).name}.` : 'Following.'); render(); }
       else if (then && then.act === 'claim') { overlay = { t: 'claim', id: then.id }; render(); }
@@ -1104,7 +1166,7 @@
     },
     signin: (d) => { overlay = { t: 'signin', then: d && d.then ? { act: d.then } : null }; render(); },
     signout: () => { S.user = null; save(); stack = []; go(S.mode === 'org' ? 'o-week' : 'home', {}, true); },
-    unrsvp: (d) => { S.rsvps = S.rsvps.filter((x) => x !== d.id); save(); overlay = null; say('Removed. The club has been told.', () => { doRsvp(d.id); toast = null; render(); }); render(); },
+    unrsvp: (d) => { const wasPaid = (S.paid || {})[d.id]; if (wasPaid) delete S.paid[d.id]; S.rsvps = S.rsvps.filter((x) => x !== d.id); save(); overlay = null; say(wasPaid ? `Cancelled. Your AED ${wasPaid} refund request went to the host.` : 'Removed. The club has been told.', () => { if (wasPaid) S.paid[d.id] = wasPaid; doRsvp(d.id); toast = null; render(); }); render(); },
     went: (d) => { haptic('celebrate'); cue('main h1, .streak .n', 'fx-rise'); confirmWent(d.id); },
     missed: (d) => { S.att[d.id] = 'missed'; save(); go('missed', { id: d.id }, true); },
     share: () => { overlay = { t: 'share' }; render(); },

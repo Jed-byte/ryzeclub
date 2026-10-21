@@ -415,3 +415,9 @@ body.org #app { background: #F6F9FC; }
 .go .ic, .link .ic { width: 16px; height: 16px; }
 a.link { display: inline-flex; align-items: center; gap: 4px; }
 .card-main .body { padding-bottom: 2px; }
+
+/* Payments */
+.payamt { display: flex; align-items: baseline; gap: 10px; }
+.payamt .big-n { font-size: 30px; }
+.payopt { display: flex; gap: 12px; align-items: center; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.payopt.on { border-color: var(--ok); }
