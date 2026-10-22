@@ -144,19 +144,19 @@
       desc: 'Women-only padel with a coach-led warm-up, then mixed-level doubles. Rackets to borrow for first-timers.', bring: 'Indoor shoes and water. Rackets available.',
       sched: [{ d: 0, t: '19:00', type: 'Ladies doubles', note: 'Beginner friendly', place: 'Dubai Hills padel courts, courts 1–3', cap: 12 }],
       top: [['Layla H.', 9], ['Priya V.', 7]], active: 16 },
-    { id: 'kbb', name: 'Kite Beach Boxing Bootcamp', sport: 'boxing', area: 'Jumeirah', levels: ['new', 'some'], price: 60, priceFor: 'gloves and pads included', photos: 2, confirmed: 4, venue: 'Outdoor', pay: 'ziina',
+    { id: 'kbb', name: 'Kite Beach Boxing Bootcamp', sport: 'boxing', area: 'Jumeirah', levels: ['new', 'some'], price: 60, priceFor: 'gloves and pads included', level: 'All levels, first-timers welcome', photos: 2, confirmed: 4, venue: 'Outdoor', pay: 'ziina',
       desc: 'Boxing fitness on the sand: pad work in pairs and conditioning rounds. No sparring and no contact.', bring: 'Water and a towel. Gloves and pads provided.',
       sched: [{ d: 2, t: '06:15', type: 'Sunrise rounds', note: 'All levels', place: 'Kite Beach, by the outdoor gym', cap: 16 }, { d: 6, t: '07:30', type: 'Weekend bootcamp', note: 'All levels', place: 'Kite Beach, by the outdoor gym', cap: 16 }],
       top: [['Diego M.', 10], ['Noor E.', 8]], active: 24 },
-    { id: 'dbx', name: 'Downtown Box Fit', sport: 'boxing', area: 'Downtown', levels: ['some', 'regular'], price: 90, priceFor: 'studio class', photos: 2, confirmed: 6, venue: 'Indoor', pay: 'stripe',
+    { id: 'dbx', name: 'Downtown Box Fit', sport: 'boxing', area: 'Downtown', levels: ['some', 'regular'], price: 90, priceFor: 'studio class', level: 'Some boxing experience helps', photos: 2, confirmed: 6, venue: 'Indoor', pay: 'stripe',
       desc: 'Air-conditioned boxing fitness on bags and pads, with technique coaching. No sparring.', bring: 'Hand wraps (sold at the studio) and water.',
       sched: [{ d: 1, t: '19:30', type: 'Bags and pads', note: 'Some experience', place: 'Downtown boxing studio, Boulevard Plaza', cap: 14 }, { d: 4, t: '19:30', type: 'Technique and rounds', note: 'Some experience', place: 'Downtown boxing studio, Boulevard Plaza', cap: 14 }],
       top: [['Khalid Z.', 12], ['Zara I.', 9], ['Tom R.', 7]], active: 28 },
-    { id: 'jst', name: 'Jumeirah Social Tennis', sport: 'tennis', area: 'Jumeirah', levels: ['some', 'regular'], price: 80, priceFor: 'court share and new balls', photos: 2, confirmed: 5, venue: 'Outdoor', pay: 'ziina',
+    { id: 'jst', name: 'Jumeirah Social Tennis', sport: 'tennis', area: 'Jumeirah', levels: ['some', 'regular'], price: 80, priceFor: 'court share and new balls', level: 'Can rally; NTRP 2.5 to 4.0', photos: 2, confirmed: 5, venue: 'Outdoor', pay: 'ziina',
       desc: 'Rotating doubles after sunset, so you play with and against new people every set.', bring: 'Racket, tennis shoes and water. Balls provided.',
       sched: [{ d: 3, t: '19:00', type: 'Doubles mixer', note: 'Rally comfortably', place: 'Jumeirah community tennis courts', cap: 12 }],
       top: [['Anna F.', 11], ['Luca C.', 8]], active: 18 },
-    { id: 'dht', name: 'Dubai Hills Tennis Clinic', sport: 'tennis', area: 'Dubai Hills', levels: ['new', 'some'], price: 120, priceFor: 'coach-led group clinic', photos: 2, confirmed: 3, venue: 'Outdoor', pay: 'stripe',
+    { id: 'dht', name: 'Dubai Hills Tennis Clinic', sport: 'tennis', area: 'Dubai Hills', levels: ['new', 'some'], price: 120, priceFor: 'coach-led group clinic', level: 'Beginners and improvers, coach-led', photos: 2, confirmed: 3, venue: 'Outdoor', pay: 'stripe',
       desc: 'Small-group clinics with a coach: drills for one hour, then short games. Four to six players per court.', bring: 'Tennis shoes and water. Rackets to borrow.',
       sched: [{ d: 0, t: '18:30', type: 'Beginner clinic', note: 'Never played is fine', place: 'Dubai Hills Park tennis courts', cap: 6 }, { d: 5, t: '08:00', type: 'Improver clinic', note: 'Some experience', place: 'Dubai Hills Park tennis courts', cap: 6 }],
       top: [['Priya V.', 9], ['Ben J.', 6]], active: 15 }
@@ -1066,7 +1066,7 @@
     if (typeof window.qrcode !== 'function') return `<div class="qrfall">The QR code needs an internet connection to draw.<br>${esc(text)}</div>`;
     try { const q = window.qrcode(0, 'M'); q.addData(text); q.make(); const n = q.getModuleCount(); let d = '';
       for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) d += `M${k + 4} ${r + 4}h1v1h-1z`;
-      return `<svg class="qr" viewBox="0 0 ${n + 8} ${n + 8}" role="img" aria-label="QR code for ${esc(text)}"><rect width="100%" height="100%" fill="#FFFFFF"/><path d="${d}" fill="#1C2B3A"/></svg>`;
+      return `<svg class="qr" viewBox="0 0 ${n + 8} ${n + 8}" role="img" aria-label="QR code for ${esc(text)}"><rect width="100%" height="100%" fill="#FFFFFF"/><path d="${d}" fill="#13214A"/></svg>`;
     } catch (e) { return `<div class="qrfall">${esc(text)}</div>`; }
   };
   O.ojoin = () => { const c = orgClub(); const url = inviteUrl(c); const n = nextOpen(c);
