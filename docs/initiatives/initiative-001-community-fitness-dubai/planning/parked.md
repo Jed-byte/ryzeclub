@@ -56,3 +56,11 @@ Status is what the prototype does as of 10 November 2026, after this round of ch
 | Privacy policy page, terms page | Drafts done, linked from sign-in and Profile. Need a UAE lawyer's review, a contact email and the data hosting location before launch. |
 | Delete account button | Done in the prototype (clears everything on the phone). The real version must also delete server data. |
 | Onboarding flow | Done for members (three-question quiz). Organiser onboarding to review. |
+
+## 3. One-off events with friends (V2)
+
+Added 10 November 2026 (decision D40). Any member creates a one-off event such as a brunch or a yacht day, tags it Mind, Body or Soul, and sends a private link. Friends say I'm in and pay their share through Ziina into the host's account. Everyone is refunded if the minimum headcount isn't reached by the pay-by date.
+
+- Scope: invite-only events among friends. No public listing or ticket sales to strangers (can need an event permit in Dubai; confirm with the lawyer).
+- To test: whether 10% suits friends' money or a smaller or flat fee works better; whether a fourth tag, Social, fits brunches better than Mind, Body or Soul.
+- Data model: an event is a session with no club, plus a host, private link, pay-by date and minimum headcount. Bookings, payments and refunds are reused from V1.
