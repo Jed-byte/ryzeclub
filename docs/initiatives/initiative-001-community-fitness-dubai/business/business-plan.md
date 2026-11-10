@@ -32,11 +32,13 @@ One-off **workshops and culture events** sit across all three pillars. Every qua
 | Value paid through Ryze (GMV) | 3.53M | 10.02M | 18.09M |
 | Net revenue | 275k | 1.05M | 2.02M |
 | Gross margin | 65% | 80% | 85% |
-| Operating profit (EBITDA) | (826k) | (971k) | (706k) |
+| Operating profit (EBITDA) | (1.14M) | (1.18M) | (913k) |
 
-- Monthly losses shrink from about 75k to 85k in late 2027 to 24k in December 2029. Monthly break-even comes in **early 2030** in the base case (extending the trend beyond the 36 months modelled) and **June 2029** in the high case.
-- **Funding needed: about AED 2.5M (USD 680k)** in the base case, or AED 1.5M (USD 400k) in the high case.
-- Three levers each bring break-even forward to December 2029: a shorter fee-free period, a 12% fee, or lower community churn (section 8). Together they bring it to **June 2029** and cut the funding need to AED 1.6M.
+The base case has the founder full time from January 2027 on AED 30,000 a month.
+
+- Monthly losses shrink from about 100k in late 2027 to 41k in December 2029. Monthly break-even comes around **mid-2030** in the base case (extending the trend beyond the 36 months modelled) and **September 2029** in the high case.
+- **Funding needed: about AED 3.2M (USD 880k), or AED 4.0M (USD 1.1M) with a 25% buffer.** Section 9 splits this into a pre-seed and a seed round, and compares an Accelerate plan.
+- No single lever brings break-even inside 2029, but together a 12% fee, lower community churn and more Ryze Pro take-up bring it to **September 2029** and cut the funding need to AED 2.3M (section 8).
 
 ## 2. What changed since the concept verdict
 
@@ -110,7 +112,7 @@ Growth comes mostly from organisers. Each organiser brings an existing WhatsApp 
 
 | Role | From | Monthly AED |
 |---|---|---:|
-| Founder (curator, sales, product) | Jul 2027 (unpaid before) | 15,000 |
+| Founder (curator, sales, product), full time | Jan 2027 | 30,000 |
 | Full-stack engineer, contract (backend, payments, login) | Jan 2027, 6 months | 22,000 |
 | Full-stack engineer, full time | Jul 2027 | 25,000 |
 | Community and partnerships lead (Body) | Mar 2027 | 14,000 |
@@ -119,11 +121,11 @@ Growth comes mostly from organisers. Each organiser brings an existing WhatsApp 
 | Second engineer | Jul 2028 | 25,000 |
 | Community curator, part time | Jan 2029 | 7,000 |
 
-Add 15% for visas, medical insurance and gratuity. The team is the biggest cost: 62% of operating costs in 2029.
+Add 15% for visas, medical insurance and gratuity. The team is the biggest cost: 65% of operating costs in 2029. The Accelerate plan (section 9) hires earlier and adds a growth marketer.
 
 | Operating costs | 2027 | 2028 | 2029 |
 |---|---:|---:|---:|
-| Team | 672k | 1.24M | 1.50M |
+| Team | 982k | 1.44M | 1.71M |
 | Marketing and onboarding (AED 600 per new community) | 178k | 326k | 535k |
 | Hosting and tools | 48k | 96k | 168k |
 | Licence, insurance, legal, accounting, coworking | 108k | 156k | 216k |
@@ -148,8 +150,8 @@ Add 15% for visas, medical insurance and gratuity. The team is the biggest cost:
 | **Net revenue** | **274,684** | **1,049,121** | **2,018,908** |
 | Direct costs | (95,312) | (207,059) | (301,999) |
 | **Gross profit** | **179,372** | **842,062** | **1,716,909** |
-| Operating costs | (1,005,200) | (1,813,500) | (2,423,400) |
-| **EBITDA** | **(825,828)** | **(971,438)** | **(706,491)** |
+| Operating costs | (1,315,700) | (2,020,500) | (2,630,400) |
+| **EBITDA** | **(1,136,328)** | **(1,178,438)** | **(913,491)** |
 
 Net revenue is 7.8% of GMV in 2027, because most communities are in their fee-free months. It is 11.2% in 2029.
 
@@ -162,9 +164,9 @@ The low and high cases scale new communities (×0.6 / ×1.4), attendance (×0.8 
 | Communities, end 2029 | 168 | 276 | 385 |
 | GMV 2029 | 9.09M | 18.09M | 28.54M |
 | Net revenue 2029 | 1.27M | 2.02M | 2.88M |
-| EBITDA 2029 | (1.36M) | (706k) | 61k |
-| First profitable month | After 2029 | Early 2030 | Jun 2029 |
-| Funding needed | 3.53M | 2.50M | 1.48M |
+| EBITDA 2029 | (1.57M) | (913k) | (146k) |
+| First profitable month | After 2029 | Mid-2030 | Sep 2029 |
+| Funding needed | 4.25M | 3.23M | 2.11M |
 
 In the low case, cut hiring: hold the second engineer and the events producer until the pilot signals in section 11 are met.
 
@@ -174,16 +176,18 @@ Each line changes one input from the base case.
 
 | Change | Funding needed | EBITDA, Dec 2029 | First profitable month |
 |---|---:|---:|---|
-| Base | 2.50M | (24k) | Early 2030 |
-| No fee-free months (0% start removed) | 1.84M | 3k | Dec 2029 |
-| Fee of 12% on community bookings | 2.08M | 2k | Dec 2029 |
-| Community churn 2% a month, not 3–4% | 2.11M | 7k | Dec 2029 |
-| Two more paid attendees per Body session | 2.29M | (12k) | Early 2030 |
-| Soul price AED 220, not 180 | 2.36M | (15k) | Early 2030 |
-| Ryze Pro adoption 25% / 40%, not 15% / 25% | 2.42M | (18k) | Early 2030 |
-| 12% fee + 2% churn + higher Pro adoption | 1.61M | 47k | Jun 2029 |
+| Base | 3.23M | (41k) | Mid-2030 |
+| No fee-free months (0% start removed) | 2.56M | (14k) | Early 2030 |
+| Fee of 12% on community bookings | 2.80M | (15k) | Early 2030 |
+| Community churn 2% a month, not 3–4% | 2.83M | (10k) | Early 2030 |
+| Two more paid attendees per Body session | 3.02M | (29k) | 2030 |
+| Soul price AED 220, not 180 | 3.08M | (33k) | 2030 |
+| Ryze Pro adoption 25% / 40%, not 15% / 25% | 3.14M | (35k) | 2030 |
+| 12% fee + 2% churn + higher Pro adoption | 2.26M | 30k | Sep 2029 |
 
-**The fee-free start is the most expensive single decision.** Because the network is growing, a large share of communities is always in its first 3 months. Over three years the 0% period costs about AED 670k. A cheaper way to win organisers: 0% on their first AED 2,000 of bookings, or for the first month only.
+Where break-even falls after December 2029, the funding figure is a minimum: losses continue for a few more months.
+
+**The fee-free start is the most expensive single decision.** Because the network is growing, a large share of communities is always in its first 3 months. Over three years the 0% period costs about AED 670k of funding. A cheaper way to win organisers: 0% on their first AED 2,000 of bookings, or for the first month only.
 
 **Retention of communities matters more than retention of members.** A community that stops takes its members with it. The curator's job (D18) and the organiser's five-minute week (D30) protect revenue directly.
 
@@ -195,16 +199,35 @@ Each line changes one input from the base case.
 
 ## 9. Funding
 
-Base case: **AED 2.5M (USD 680k)** to reach break-even, with the cash low point in December 2029. The model's opening cash is a placeholder of AED 750k.
+The founder leaves their job at launch and draws AED 30,000 a month, which covers personal spending. With visa and medical costs, that adds about AED 720k over three years compared with an unpaid start, and it is the main reason the funding need rose from AED 2.5M to 3.2M.
 
-Two rounds:
+Two ways to run the business:
 
-1. **Pre-seed, now: AED 750k to 1M (USD 200k to 270k).** Pays for the backend and payments build, the paid pilot and the first community lead. Lasts to about Q4 2027.
-2. **Seed, Q4 2027: AED 1.8M to 2.2M (USD 500k to 600k)**, raised on proof:
-   - 80+ paid communities across all three pillars
-   - AED 350k+ GMV a month, growing (base case: about 380k to 450k in Q4 2027)
-   - 35% of first-time bookers book again within 14 days
-   - Organiser churn under 4% a month
+- **Steady:** the hiring plan in section 7.
+- **Accelerate:** hire the Body community lead in January and the Mind and Soul lead in March, add a growth and social media marketer in April, bring the events producer, second engineer and curator forward, and spend AED 25k, 40k and 50k a month on marketing. The bet is that this brings **40% more new communities and workshops** each month.
+
+| AED | Steady | Accelerate | Accelerate, growth doesn't come |
+|---|---:|---:|---:|
+| Paid communities, end 2029 | 276 | 385 | 276 |
+| Net revenue 2029 | 2.02M | 2.61M | 2.02M |
+| Highest monthly loss | 114k | 165k | 176k |
+| Losses in Dec 2029 (per month) | 41k | 20k | 71k |
+| **Funding needed** | **3.23M** | **4.00M** | **4.75M** |
+| **Raise, with 25% buffer** | **4.0M (USD 1.1M)** | **5.0M (USD 1.36M)** | **5.9M (USD 1.6M)** |
+| Pre-seed: enough to reach a seed round in March 2028, with buffer | 1.8M (USD 490k) | 2.6M (USD 700k) | 2.7M (USD 720k) |
+
+Accelerate makes Ryze about 40% bigger by 2029 and reaches break-even sooner, but it needs about AED 1M more. If the extra growth doesn't come, it is the most expensive path.
+
+**Recommended: accelerate and fix the economics at the same time.** With Accelerate plus a 12% fee, community churn of 2% a month and stronger Ryze Pro take-up, monthly profit comes in **June 2029**. The funding need is **AED 2.9M, or AED 3.6M (USD 980k) with buffer**, and the pre-seed is AED 2.4M (USD 660k).
+
+Proof points for the seed round:
+
+- 80+ paid communities across all three pillars
+- AED 350k+ GMV a month, growing (base case: about 380k to 450k in Q4 2027)
+- 35% of first-time bookers book again within 14 days
+- Organiser churn under 4% a month
+
+**Before you quit.** The first six months (the build and the paid pilot) lose about AED 550k in the base case: you at AED 30k, the contract engineer, the Body community lead from March, marketing and running costs, against little revenue while the fee is 0%. That is the minimum to have committed on the day you leave. Below it, keep your job until the pre-seed closes, or cut the community lead and marketing until then.
 
 ## 10. Risks
 
@@ -250,4 +273,5 @@ Marked yellow in the forecast. Check them in this order, because they move the r
 | 2 | Should Ryze organise its own events? | Yes, quarterly, once permits are in place. It changes D4 for these events only |
 | 3 | How should Mind be priced? | Test a monthly pass rather than per-meeting fees |
 | 4 | 12% fee for workshops? | Yes, test it. Ryze brings the audience for one-off events |
-| 5 | How much to raise now | AED 750k to 1M pre-seed, then seed on the section 9 proof points |
+| 5 | How much to raise now | Founder full time: AED 1.8M (Steady) to 2.6M (Accelerate) pre-seed, then seed on the section 9 proof points. Total AED 4M to 5M with buffer |
+| 6 | Steady or Accelerate? | Accelerate only together with the fee and churn fixes, and only once the pilot shows organisers will pay (section 11) |
