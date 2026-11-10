@@ -273,6 +273,34 @@ The founder raises a small first round, proves the paid pilot, then raises the s
 | Personal data (PDPL) | Fines; loss of trust | D37 safeguards: consent, 18+, UAE or PDPL-level hosting. Privacy policy, terms and delete-account before taking real payments (`parked.md`) |
 | Summer | Lower Body GMV for three or four months | Push indoor, Mind and Soul sessions in summer |
 
+### If it fails by the end of 2027
+
+Plan the stop before you need it. Three checkpoints, each with a clear call:
+
+| Checkpoint | Stop or change course if | Cash left | What happens |
+|---|---|---:|---|
+| **End of March 2027** (paid pilot ends) | Fewer than 10 paid communities, or under half of bookings paid in the app | About AED 250k of round 1 | Change the model (for example, organiser subscriptions instead of booking fees) or stop. Don't pitch round 2 on weak numbers |
+| **End of June 2027** (round 1 spent) | No round 2 term sheet | Close to zero | Ask round 1 investors for a small bridge, or wind down. The founder goes back to employment |
+| **December 2027** (after round 2) | Below the low case: under 60 paid communities, fees not covering the founder's pay, community churn above 6% a month | About AED 1.6M of round 2 (2.2M minus 588k of losses from July to December) | Wind down and return what is left to investors, or pivot with their agreement |
+
+**What a wind-down costs (estimates, to confirm with a free zone adviser):**
+
+- Staff notice: one month's pay for the three employees, about AED 60k. No end-of-service gratuity is due for anyone employed less than a year.
+- Licence cancellation, liquidator and final accounts: about AED 20k to 40k.
+- Visa cancellations for staff and the founder.
+- Deleting member data or handing it back, as PDPL requires.
+
+That is about **AED 100k**. Members' payments go straight to organisers' own Ziina or Stripe accounts, so Ryze never holds their money and has no refunds to fund.
+
+**What the founder loses:**
+
+- **Money:** nothing, as long as none of your own savings goes in. You will have been paid AED 30k a month throughout.
+- **Debts:** none, as long as you never personally guarantee a lease, loan or company card. The company is a limited liability free zone company, so its debts are not yours.
+- **Visa:** a company visa is cancelled with the company. There is a grace period after cancellation; check its length for your visa type. Line up a job or a new visa before you close.
+- **Time:** about a year, in exchange for experience running a payments marketplace and a network of organisers.
+
+**What investors get:** whatever cash is left after the wind-down costs. A standard SAFE puts investors ahead of the founder's shares on a dissolution, up to the amount they invested. In the December 2027 case that is roughly AED 1.5M back on 2.65M invested. Telling investors early, while cash remains, protects your reputation for the next company.
+
 ## 11. What the paid pilot must prove (Jan to Mar 2027)
 
 | Question | Signal |
