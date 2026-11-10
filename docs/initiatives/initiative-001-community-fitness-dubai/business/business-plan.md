@@ -246,6 +246,20 @@ Proof points for the seed round:
 - By June 2027 the base case has 57 paid communities, about AED 300k a month of bookings, and the pilot signals in section 11. Those growth numbers assume the full hiring plan. On your own, aim for 40+ communities and strong pilot signals.
 - The full plan's first six months cost about AED 550k. The lean version saves about AED 100k by holding the community lead and the first Mind Body Soul day until after the raise.
 
+### Recommended route: two rounds
+
+The founder raises a small first round, proves the paid pilot, then raises the second round quickly on that evidence. The buffer in round 2 protects the founder's pay. The figures are on the **6-month budget** tab.
+
+| | When | AED | USD | Pays for |
+|---|---|---:|---:|---|
+| **Round 1** | Now, before leaving the job | **~450k** | 122k | Lean January to June 2027: founder, contract engineer, licence, visa, legal (above) |
+| **Round 2** | Closes July 2027; pitch from April | **~2.2M** | 600k | July 2027 to December 2028 on the full hiring plan: AED 1.77M of losses plus a 25% buffer |
+
+- Round 2's buffer is about AED 440k, which is nearly 15 months of founder pay. If growth is slower than planned, the founder is still covered.
+- Booking fees alone cover the founder's AED 30k a month from **December 2027**. That is a strong line for the round 2 pitch.
+- At the end of 2028 the base case still loses about 90k to 110k a month. Either raise a third round in late 2028 on two years of numbers, or make round 2 about **AED 3.35M (USD 910k)** to reach the end of 2029 without a third raise.
+- If round 2 is late, round 1 runs out in June 2027. The fallback is to end the engineer's contract once the build is done and keep only the founder's pay and running costs, about AED 40k a month before fees.
+
 ## 10. Risks
 
 | Risk | Impact | Mitigation |
@@ -290,5 +304,5 @@ Marked yellow in the forecast. Check them in this order, because they move the r
 | 2 | Should Ryze organise its own events? | Yes, quarterly, once permits are in place. It changes D4 for these events only |
 | 3 | How should Mind be priced? | Test a monthly pass rather than per-meeting fees |
 | 4 | 12% fee for workshops? | Yes, test it. Ryze brings the audience for one-off events |
-| 5 | How much to raise now | Founder full time: AED 1.8M (Steady) to 2.6M (Accelerate) pre-seed, then seed on the section 9 proof points. Total AED 4M to 5M with buffer |
+| 5 | How much to raise now | Round 1 of about AED 450k for a lean six months, then round 2 of about AED 2.2M in July 2027 on the pilot results (section 9, two rounds) |
 | 6 | Steady or Accelerate? | Accelerate only together with the fee and churn fixes, and only once the pilot shows organisers will pay (section 11) |
