@@ -260,6 +260,21 @@ The founder raises a small first round, proves the paid pilot, then raises the s
 - At the end of 2028 the base case still loses about 90k to 110k a month. Either raise a third round in late 2028 on two years of numbers, or make round 2 about **AED 3.35M (USD 910k)** to reach the end of 2029 without a third raise.
 - If round 2 is late, round 1 runs out in June 2027. The fallback is to end the engineer's contract once the build is done and keep only the founder's pay and running costs, about AED 40k a month before fees.
 
+### What Ryze could be worth at the end of 2027
+
+These are ranges, not a price, and they are on the forecast's **Valuation** tab. At the end of 2027 the base case has 91 paid communities, about AED 5.4M a year of GMV (December × 12), AED 375k a year of fee income, and AED 1.05M of net revenue forecast for 2028.
+
+| | Method | AED | USD |
+|---|---|---:|---:|
+| **To raise money** | 8x to 15x next year's net revenue | 8.4M to 15.7M | 2.3M to 4.3M |
+| Floor if investors doubt the growth | 0.5x to 1x GMV run rate | 2.7M to 5.4M | 0.7M to 1.5M |
+| **To sell the company** | 2x to 4x fee income, or 0.25x to 0.5x GMV for a buyer who wants the network | 0.75M to 2.7M | 0.2M to 0.74M |
+
+- **Raising is worth far more than selling at this stage.** A buyer pays for today's small revenue. Investors pay for the growth. Selling in 2027 makes sense only if it is failing, for example to a booking or events platform that wants the organiser network.
+- **Round 2 in July 2027 at USD 3.5M pre-money** (AED 12.9M) is in line with UAE and MENA seed deals. Hitting the base case by December supports about the same value again, not a big increase. A strong increase for a third round needs the high case: more communities and lower churn.
+- **Ownership after both rounds:** founder about 71%, round 2 investors 15%, round 1 investors 4% (USD 2.5M SAFE cap), employee share pool 10%. At the round 2 price, the founder's stake is worth about USD 2.9M on paper.
+- Sources for the ranges: Clear.world (UAE seed pre-money median about USD 5M, MENA about USD 3M, 2023 data); JADA VC Valuation Report (February 2026: seed valuations largely unchanged since 2023); 2026 deals such as Infobrim (pre-seed, USD 3.5M) and Skipr (seed, USD 10M); Flippa (small marketplace sales at 2x to 4x revenue). The revenue multiples are assumptions to check against stage-matched deals.
+
 ## 10. Risks
 
 | Risk | Impact | Mitigation |
