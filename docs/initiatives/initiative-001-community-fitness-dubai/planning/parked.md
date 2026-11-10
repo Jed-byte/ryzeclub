@@ -27,7 +27,7 @@ Built on 10 November 2026 (pay sheet and organiser Get paid):
 - Sell the treehouse: outcome wording on both sheets.
 - Three screens: organiser Get paid is now three steps (the problem, how it works, connect).
 
-Still parked, because they need a product that doesn't exist yet (club passes or a paid organiser plan): make annual the green button, trial only on annual, a price tag on every line. Member reviews above the button also wait for real reviews.
+Not in the MVP (decision D39, 10 November 2026): no annual or monthly plans, so make annual the green button, trial only on annual and a price tag on every line are dropped for now. Members pay each community per session. Member reviews above the button wait for real reviews.
 
 ## 2. What makes an app real
 
