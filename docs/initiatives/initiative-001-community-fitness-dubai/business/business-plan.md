@@ -95,6 +95,37 @@ Free communities stay free. Many run clubs never charge. They stay listed becaus
 
 **VAT.** Ryze registers once its own taxable income passes AED 375,000 in 12 months, which happens in 2028. From then on it adds 5% VAT to its fee. Organisers handle VAT on their own sales.
 
+### Fee options: a larger share for Ryze
+
+Today Ryze takes 10% of community bookings and 12% of workshop tickets, with 0% for an organiser's first 3 months. The organiser also pays the card fee (about 2.6% + AED 1 on Ziina). The forecast now has a **member booking fee**: a flat amount the member pays at checkout on top of the organiser's price, as ticketing sites do. It is earned from day one, even in an organiser's fee-free months.
+
+Each option uses the base case and the same costs:
+
+| Option | Ryze takes | Fee-free start | Funding needed | Net revenue 2029 | First profitable month |
+|---|---|---|---:|---:|---|
+| A. Today | 10% / 12% | 3 months | 3.23M | 2.02M | Mid-2030 |
+| B. Higher commission | 15% / 15% | 3 months | 2.14M | 2.70M | Sep 2029 |
+| C. Much higher commission | 20% / 20% | 3 months | 1.42M | 3.39M | Mar 2029 |
+| C2. As C, but more organisers leave (5–6% a month) | 20% / 20% | 3 months | 1.90M | 2.76M | Sep 2029 |
+| D. Today plus member fee | 10% / 12% + AED 3 | 3 months | 2.19M | 2.62M | Sep 2029 |
+| E. Moderate mix | 12% / 15% + AED 3 | 1 month | 1.45M | 3.16M | Mar 2029 |
+| **F. Recommended mix** | **15% / 15% + AED 3** | **1 month** | **1.08M** | **3.61M** | **Dec 2028** |
+| F2. As F, but more organisers leave (5–6% a month) | 15% / 15% + AED 3 | 1 month | 1.42M | 3.02M | Mar 2029 |
+
+What a Body organiser with 104 paid bookings a month at AED 65 keeps (GMV AED 6,760, before the card fee):
+
+| Ryze commission | Organiser keeps | Change against today |
+|---|---:|---:|
+| 10% | 6,084 | — |
+| 15% | 5,746 | −338 a month |
+| 20% | 5,408 | −676 a month |
+
+- **Split the increase between organiser and member.** A 15% commission plus an AED 3 member fee earns almost as much as 20% commission alone (net revenue 3.61M against 3.39M in 2029) and costs organisers half as much.
+- **Keep the member fee small on cheap sessions.** AED 3 on a AED 20 Pilates class is 15%. Use AED 2 under AED 40 and AED 3 above, or a percentage with a cap.
+- **Cutting the fee-free start to one month** is part of what makes E and F work. Organisers still get a free first month to try it.
+- **The risk is organisers taking payments back to bank transfers.** Even if more organisers leave (F2), option F is still far better than today. Watch churn monthly in the pilot. A Ryze Pro plan with a lower commission (for example 10%) gives larger clubs a reason to stay.
+- **For comparison (approximate, check current rates):** Airbnb Experiences takes about 20% from hosts. ClassPass keeps much more of the price. Eventbrite charges buyers a service fee per ticket. Luma takes 5% on its free plan.
+
 ## 6. Go-to-market
 
 Supply first. A member who finds three Pilates groups and no book club leaves.
@@ -343,7 +374,7 @@ Marked yellow in the forecast. Check them in this order, because they move the r
 
 | # | Decision | Recommendation |
 |---|---|---|
-| 1 | Keep 0% for 3 months? | Change to 0% on the first AED 2,000 of bookings. It saves about AED 670k over three years in the base case |
+| 1 | Fees and the fee-free start | Option F: 15% commission, AED 3 member booking fee (AED 2 under AED 40), one month free. Funding need falls from 3.23M to 1.08M (section 5) |
 | 2 | Should Ryze organise its own events? | Yes, quarterly, once permits are in place. It changes D4 for these events only |
 | 3 | How should Mind be priced? | Test a monthly pass rather than per-meeting fees |
 | 4 | 12% fee for workshops? | Yes, test it. Ryze brings the audience for one-off events |
