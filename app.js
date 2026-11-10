@@ -199,6 +199,8 @@
   let overlay = null;
   let toast = null;
   let toastTimer = null;
+  let proDraft = null; // what was typed in Edit profile when the sheet was dismissed without saving
+  let offline = typeof navigator !== 'undefined' && navigator.onLine === false;
   let filt = { sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' };
 
   // ---------- helpers ----------
@@ -382,6 +384,8 @@
 
   function say(msg, undo) { toast = { msg, undo }; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast = null; const el = document.querySelector('.toast'); if (el) el.remove(); }, 4500); }
   function go(v, p = {}, replace = false) { if (!replace) stack.push(route); route = Object.assign({ v }, p); overlay = null; render(); window.scrollTo(0, 0); }
+  // Closing a sheet any way other than Cancel keeps what was typed in Edit profile.
+  function dismiss() { if (overlay && overlay.t === 'editpro') { readPro(); proDraft = overlay.d; } overlay = null; render(); }
   function back() { route = stack.pop() || { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' }; overlay = null; render(); }
 
   // ---------- pieces ----------
@@ -699,7 +703,8 @@
       <label class="switch" for="p-tg"><span>Let people tag me in photos</span><input type="checkbox" id="p-tg" data-set="tagging" ${S.set.tagging ? 'checked' : ''}></label>
       <label class="switch" for="p-em"><span>Email reminders</span><input type="checkbox" id="p-em" data-set="email" ${S.set.email ? 'checked' : ''}></label>
       <label class="switch" for="p-wa"><span>WhatsApp reminders</span><input type="checkbox" id="p-wa" data-set="wa" ${S.set.wa ? 'checked' : ''}></label></div>
-    <button class="btn quiet block" data-act="signout">Sign out</button></main>`; };
+    <button class="btn quiet block" data-act="signout">Sign out</button>
+    <div class="wrap sm legal"><a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a href="terms.html" target="_blank" rel="noopener">Terms</a><button class="link danger-link" data-act="delacct">Delete my account</button></div></main>`; };
 
   // ---------- organiser views ----------
   V.manage = () => {
@@ -915,9 +920,11 @@
   const O = {};
   O.filters = filtersSheet;
   O.signin = () => `<div class="sheet"><h2>${overlay.then && (overlay.then.act === 'claim' || overlay.then.act === 'org') ? 'Sign in to manage your club' : overlay.then && overlay.then.act === 'who' ? 'Sign in to see who\'s going' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
-    <label for="si-name">First name</label><input type="text" id="si-name" value="${esc(overlay.name || 'Alex')}" maxlength="20" autocomplete="off">
-    <label class="switch" for="si-age"><span>I'm 18 or older<br><span class="mut sm">Ryze Club is for adults.</span></span><input type="checkbox" id="si-age"></label>
-    <button class="btn block" data-act="dosignin">Continue with Google</button><button class="btn quiet block" data-act="close">Not now</button></div>`;
+    <label for="si-name">First name</label><input type="text" id="si-name" value="${esc(overlay.name == null ? 'Alex' : overlay.name)}" maxlength="20" autocomplete="given-name"${overlay.err === 'name' ? ' aria-invalid="true" aria-describedby="si-err"' : ''}>
+    ${overlay.err === 'name' ? '<p class="err" id="si-err" role="alert">Type your first name so people know who you are.</p>' : ''}
+    <label class="switch" for="si-age"><span>I'm 18 or older<br><span class="mut sm">Ryze Club is for adults.</span></span><input type="checkbox" id="si-age"${overlay.age ? ' checked' : ''}${overlay.err === 'age' ? ' aria-invalid="true" aria-describedby="si-err"' : ''}></label>
+    ${overlay.err === 'age' ? '<p class="err" id="si-err" role="alert">Ryze Club is for adults 18 and over. Tick the box to confirm.</p>' : ''}
+    <button class="btn block" data-act="dosignin">Continue with Google</button><p class="mut xs">By continuing you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>.</p><button class="btn quiet block" data-act="close">Not now</button></div>`;
   O.day = () => {
     const key = overlay.date; const [y, mo, da] = key.split('-').map(Number); const d = new Date(y, mo - 1, da);
     const list = dayList(key); const went = list.filter((s) => S.att[s.id] === 'went');
@@ -974,25 +981,41 @@
     <p>Members sometimes take photos at sessions. Are you happy to appear in them?</p>
     <button class="btn block" data-act="photook" data-val="1">Yes, that's fine</button><button class="btn ghost block" data-act="photook" data-val="0">No photos of me</button>
     <p class="mut sm">You can change this any time in Profile. If you say no, nobody can tag you, and any photo of you is removed when you ask.</p></div>`;
+  // Lead with who's going, then what booking gets you; the price sits next to the button.
   O.pay = () => {
-    const s = byId(overlay.id); const c = s.club; const prov = PROVIDERS[payOf(c)];
-    return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h2>Pay and book</h2><p class="mut sm">${dayWord(s.at)} · ${s.t} · ${esc(s.type)}</p></div>
-      <div class="payamt"><span class="big-n">AED ${c.price}</span><span class="mut sm">${c.priceFor ? esc(c.priceFor) : 'per session'}</span></div>
-      <button class="btn block" data-act="dopay">Pay with Apple Pay</button><button class="btn ghost block" data-act="dopay">Pay by card</button>
-      <p class="mut sm">Your payment goes to ${esc(founderOf(c))} through ${prov}. Ryze Club never holds your money. Cancel up to 12 hours before for a refund.</p>
-      <p class="note">Prototype: nothing is charged. In the real product this opens ${prov}'s secure checkout.</p>
+    const s = byId(overlay.id); const c = s.club; const prov = PROVIDERS[payOf(c)]; const n = going(s); const ppl = people(s, 4);
+    const names = ppl.slice(0, 2).map((x) => x.split(' ')[0]).join(' and ');
+    return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h2>${n ? `${plural(n, 'person')} going. Join them.` : 'Be the first one in.'}</h2><p class="mut sm">${dayWord(s.at)} · ${s.t} · ${esc(s.type)} · ${esc(s.place)}</p></div>
+      ${n ? `<div class="payfaces">${avatars(ppl)}<span class="sm">${esc(names)}${n > 2 ? ` and ${plural(n - 2, 'other')}` : ''} are in</span></div>` : ''}
+      <ul class="payget"><li>${ic('check')}Your spot is held</li><li>${ic('check')}See who's going and say hi before you arrive</li><li>${ic('check')}Cancel up to 12 hours before for a full refund</li></ul>
+      <div class="paybot"><div class="payamt"><span class="big-n">AED ${c.price}</span><span class="mut sm">${c.priceFor ? esc(c.priceFor) : 'per session'}</span></div>
+      <button class="btn block big" data-act="dopay" data-id="${s.id}"${overlay.busy ? ' disabled aria-busy="true"' : ''}>${overlay.busy ? `<span class="spin" aria-hidden="true"></span>Opening ${prov}…` : `Pay AED ${c.price}`}</button>
+      <p class="mut sm">Apple Pay, Google Pay or card, on ${prov}'s secure page. Your payment goes to ${esc(founderOf(c).replace(/\.$/, ''))}.</p></div>
+      <p class="note">Prototype: nothing is charged.</p>
       <button class="btn quiet block" data-act="close">Not now</button></div>`;
   };
+  // Three short steps: the problem they know, what changes, then connect.
   O.opay = () => {
-    const c = orgClub(); const cur = payOf(c);
-    const opt = (v, name, who, needs) => `<div class="payopt ${cur === v ? 'on' : ''}"><div class="grow"><b>${name}</b><br><span class="sm">${who}</span><br><span class="mut sm">${needs}</span></div>${cur === v ? `<span class="tag ok">${ic('check')}Connected</span>` : `<button class="btn small" data-act="opayset" data-val="${v}">Connect</button>`}</div>`;
-    return `<div class="sheet"><h2>Get paid</h2><p class="mut sm">Members pay when they book, straight to you. Ryze Club never holds the money.</p>
-      ${opt('ziina', 'Ziina', 'For individuals and freelance coaches', 'Sign up with your Emirates ID. Fee about 2.6% + AED 1 per payment.')}
-      ${opt('stripe', 'Stripe', 'For clubs and venues with a trade licence', 'Needs a trade licence, a UAE bank account and ID.')}
+    const c = orgClub(); const cur = payOf(c); const step = cur ? 2 : overlay.step || 0;
+    const dots = cur ? '' : `<span class="cap">Step ${step + 1} of 3</span>`;
+    if (step === 0) return `<div class="sheet"><div class="stack tight">${dots}<h2>Stop chasing payments</h2></div>
+      <p>Collecting ${c.price ? `AED ${c.price} from everyone` : 'session fees'} over WhatsApp means reminders, screenshots of transfers and people who said yes but never paid.</p>
+      <button class="btn block" data-act="opaystep" data-val="1">How Ryze Club fixes it ${ic('right')}</button><button class="btn quiet block" data-act="close">Not now</button></div>`;
+    if (step === 1) return `<div class="sheet"><div class="stack tight">${dots}<h2>Members pay when they book</h2></div>
+      <ul class="payget"><li>${ic('check')}They pay by Apple Pay, Google Pay or card, in the app</li><li>${ic('check')}The money goes to your own account</li><li>${ic('check')}This week shows who has paid and what you'll receive</li></ul>
       <p class="sm">Ryze Club's fee: <b>10% per booking</b>, and 0% for your first 3 months.</p>
-      <p class="note">Prototype: connecting is simulated. Provider fees are from their published rates and need confirming.</p>
-      ${cur ? '<button class="btn quiet block" data-act="opayset" data-val="">Disconnect: members pay at the session</button>' : ''}<button class="btn quiet block" data-act="close">Close</button></div>`;
+      <button class="btn block" data-act="opaystep" data-val="2">Choose how to get paid ${ic('right')}</button><button class="btn quiet block" data-act="opaystep" data-val="0">Back</button></div>`;
+    const opt = (v, name, who, needs, label) => `<div class="payopt ${cur === v ? 'on' : ''}"><div class="grow"><b>${name}</b><br><span class="sm">${who}</span><br><span class="mut sm">${needs}</span></div>${cur === v ? `<span class="tag ok">${ic('check')}Connected</span>` : `<button class="btn small" data-act="opayset" data-val="${v}">${label}</button>`}</div>`;
+    return `<div class="sheet"><div class="stack tight">${dots}<h2>Get paid</h2></div><p class="mut sm">Members pay when they book, straight to you.</p>
+      ${opt('ziina', 'Ziina', 'For individuals and freelance coaches', 'Sign up with your Emirates ID. Fee 2.6% + AED 1 per payment, plus 1.5% on international cards.', 'Sign in with Ziina')}
+      ${opt('stripe', 'Stripe', 'For clubs and venues with a trade licence', 'Needs a trade licence, a UAE bank account and ID.', 'Connect')}
+      <p class="note">Prototype: connecting is simulated. Provider fees are from their published rates.</p>
+      ${cur ? '<button class="btn quiet block" data-act="opayset" data-val="">Disconnect: members pay at the session</button>' : '<button class="btn quiet block" data-act="opaystep" data-val="1">Back</button>'}<button class="btn quiet block" data-act="close">Close</button></div>`;
   };
+  O.delacct = () => `<div class="sheet"><h2>Delete your account?</h2>
+    <p>This deletes your profile, photo, bookings, streak and settings. Organisers will no longer see you. It can't be undone.</p>
+    <p class="mut sm">Paid bookings stay on record with the payment provider, as the law requires.</p>
+    <button class="btn danger block" data-act="dodelacct">Delete my account</button><button class="btn quiet block" data-act="close">Keep my account</button></div>`;
   O.person = () => {
     const m = memberPro(overlay.name);
     return `<div class="sheet"><div class="row">${face(m.name, '', true)}<div class="stack tight"><h2>${esc(m.name)}</h2><span class="mut sm">${esc(m.area)} · ${LEVELS[m.level]}</span></div></div>
@@ -1003,7 +1026,7 @@
   };
   O.editpro = () => {
     const d = overlay.d;
-    return `<div class="sheet"><h2>Your profile</h2><p class="mut sm">Only people going to the same session as you, and that club's organisers, can see this. Everything except your name is optional.</p>
+    return `<div class="sheet"><h2>Your profile</h2>${overlay.kept ? '<p class="note">We kept what you typed last time.</p>' : ''}<p class="mut sm">Only people going to the same session as you, and that club's organisers, can see this. Everything except your name is optional.</p>
       <div class="row">${face(S.user.name, d.photo, true)}<div class="stack tight"><label class="btn small ghost" for="ep-photo">${d.photo ? 'Change photo' : 'Add a photo'}</label><input type="file" id="ep-photo" accept="image/*" data-photo="1" hidden>
         ${d.photo ? '<button class="link sm" data-act="rmphoto">Remove photo</button>' : '<span class="mut xs">A clear face helps people find you at the meeting point.</span>'}</div></div>
       <label for="ep-area">Area</label><select id="ep-area"><option value="">Choose</option>${AREAS.map((a) => `<option ${d.area === a ? 'selected' : ''}>${a}</option>`).join('')}</select>
@@ -1012,7 +1035,7 @@
       <label for="ep-work">Work</label><input type="text" id="ep-work" maxlength="40" placeholder="For example: Nurse, or Works in marketing" value="${esc(d.work)}">
       <label for="ep-hob">Other things you're into</label><input type="text" id="ep-hob" maxlength="80" placeholder="For example: brunch spots, photography" value="${esc(d.hobbies)}">
       <label class="switch" for="ep-share"><span>Show my profile to people at my sessions<br><span class="mut sm">And to those clubs' organisers. Off means they only see your first name.</span></span><input type="checkbox" id="ep-share" ${d.share ? 'checked' : ''}></label>
-      <button class="btn block" data-act="savepro">Save</button><button class="btn quiet block" data-act="${overlay.sid ? 'session' : 'close'}"${overlay.sid ? ` data-id="${overlay.sid}"` : ''}>Cancel</button></div>`;
+      <button class="btn block" data-act="savepro">Save</button><button class="btn quiet block" data-act="procancel">Cancel</button></div>`;
   };
   // Keep what has been typed when the sheet re-renders (for example after picking a photo).
   const readPro = () => { const v = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; }; const d = overlay.d;
@@ -1115,18 +1138,26 @@
       cue(`.bar .btn, [data-act="session"][data-id="${then.id}"] .tag`); say(S.set.photoOk ? "You're going." : "You're going. We'll keep you out of photos."); render();
     },
     dopay: () => {
+      if (overlay.busy) return;
+      if (!navigator.onLine) { say("You're offline. Connect to the internet to pay."); render(); return; }
+      // The real product opens the provider's checkout here and books once the payment is confirmed.
+      const ov = overlay; ov.busy = true; render();
+      setTimeout(() => { if (overlay !== ov) return; ov.busy = false; A.paid(); }, 900);
+    },
+    paid: () => {
       const id = overlay.id; const confirm = overlay.confirm; const c = club(id.split('|')[0]);
       (S.paid = S.paid || {})[id] = c.price; doRsvp(id); overlay = null; haptic('success');
       if (confirm) { stack = []; cue('main h1', 'fx-rise'); go('confirm', { id }); return; }
       cue(`.bar .btn, [data-act="session"][data-id="${id}"] .tag`); say(`Paid AED ${c.price}. You're in.`); render();
     },
-    opay: () => { overlay = { t: 'opay' }; render(); },
+    opay: () => { overlay = { t: 'opay', step: 0 }; render(); },
+    opaystep: (d) => { overlay.step = +d.val; render(); },
     opayset: (d) => { const c = orgClub(); (S.payset = S.payset || {})[c.id] = d.val || null; save(); overlay = null; say(d.val ? `Connected to ${PROVIDERS[d.val]}. Members can now pay when they book.` : 'Disconnected. Members pay at the session.'); render(); },
     person: (d) => { overlay = { t: 'person', name: d.name, sid: d.sid }; render(); },
-    editpro: () => { const sid = overlay && overlay.t === 'session' ? overlay.id : null; overlay = { t: 'editpro', d: myPro(), sid }; render(); },
+    editpro: () => { const sid = overlay && overlay.t === 'session' ? overlay.id : null; overlay = { t: 'editpro', d: proDraft || myPro(), sid, kept: !!proDraft }; render(); },
     rmphoto: () => { readPro(); overlay.d.photo = ''; render(); },
     savepro: () => {
-      readPro(); const d = overlay.d;
+      readPro(); proDraft = null; const d = overlay.d;
       if (d.ig && !/^[A-Za-z0-9._]{1,30}$/.test(d.ig)) { say('Instagram handles use letters, numbers, dots and underscores only.'); render(); return; }
       S.user.pro = d; save(); const sid = overlay.sid; overlay = sid ? { t: 'session', id: sid } : null; say('Profile saved.'); render();
     },
@@ -1136,7 +1167,12 @@
     // Open the session and bring the attendee list into view.
     who: (d) => { if (!S.user) { overlay = { t: 'signin', then: { act: 'who', id: d.id } }; render(); return; }
       overlay = { t: 'session', id: d.id, from: null }; render(); const el = document.getElementById('who-list'); if (el) el.scrollIntoView({ block: 'start' }); },
-    close: () => { overlay = null; render(); },
+    close: () => dismiss(),
+    procancel: () => { proDraft = null; if (overlay.sid) A.session({ id: overlay.sid }); else { overlay = null; render(); } },
+    delacct: () => { overlay = { t: 'delacct' }; render(); },
+    dodelacct: () => { try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ } S = fresh(); proDraft = null; stack = []; overlay = null; go('home', {}, true); say('Your account and data are deleted.'); render(); },
+    reload: () => location.reload(),
+    restart: () => { overlay = null; stack = []; route = { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' }; render(); },
     soon: (d) => { say(d.what); render(); },
     demo: () => { overlay = { t: 'demo' }; render(); },
     rsvp: (d) => {
@@ -1152,8 +1188,10 @@
       save(); render();
     },
     dosignin: () => {
-      const el = document.getElementById('si-name'); const name = (el && el.value.trim()) || 'Alex'; const then = overlay.then;
-      const age = document.getElementById('si-age'); if (!age || !age.checked) { overlay.name = name; say('Ryze Club is for adults 18 and over. Tick to confirm.'); render(); return; }
+      const el = document.getElementById('si-name'); const name = el ? el.value.trim() : ''; const then = overlay.then;
+      const age = document.getElementById('si-age'); overlay.name = name; overlay.age = !!(age && age.checked);
+      if (!name) { overlay.err = 'name'; render(); const f = document.getElementById('si-name'); if (f) f.focus(); return; }
+      if (!overlay.age) { overlay.err = 'age'; render(); return; }
       S.user = { name }; save(); overlay = null;
       if (then && then.act === 'rsvp' && S.set.photoOk == null) { overlay = { t: 'photook', then: { id: then.id, confirm: true } }; render(); return; }
       if (then && then.act === 'rsvp' && needsPay(then.id)) { overlay = { t: 'pay', id: then.id, confirm: true }; render(); return; }
@@ -1249,12 +1287,16 @@
   }
 
   function render() {
+    try { draw(); } catch (err) { report(err); const app = document.getElementById('app'); if (app) app.innerHTML = `<main class="oops"><h1>Something went wrong</h1><p class="mut">This screen didn't load. Your bookings and streak are safe.</p><button class="btn block" data-act="restart">Go to the start</button><button class="btn ghost block" data-act="reload">Reload</button></main>`; }
+    syncHistory();
+  }
+  function draw() {
     const app = document.getElementById('app'); if (!app) return;
     document.body.classList.toggle('org', S.mode === 'org');
     if (S.mode === 'org') {
       const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace(/^(<div class="sheet[^>]*>)/, '$1<button class="sheet-x" data-act="close" aria-label="Close">' + ic('x') + '</button>').replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
       const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
-      app.innerHTML = renderOrg(app) + ov + ts; a11yOverlay(app); runFx(); return;
+      app.innerHTML = offBar() + renderOrg(app) + ov + ts; a11yOverlay(app); runFx(); return;
     }
     if (route.v.startsWith('o-')) route = { v: S.user ? 'me' : 'home' };
     if (!S.user && ['me', 'clubs', 'profile', 'result', 'missed', 'confirm', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v)) route = { v: 'home' };
@@ -1269,14 +1311,33 @@
     const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('me', 'My week', 'week', ['me', 'result', 'missed', 'confirm'].includes(route.v))}${tab('browse', 'Find', 'find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', 'clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', 'me', route.v === 'profile')}</nav>` : '';
     const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace(/^(<div class="sheet[^>]*>)/, '$1<button class="sheet-x" data-act="close" aria-label="Close">' + ic('x') + '</button>').replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
     const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
-    app.innerHTML = top + (V[route.v] || V.home)() + nav + ov + ts;
+    app.innerHTML = offBar() + top + (V[route.v] || V.home)() + nav + ov + ts;
     a11yOverlay(app);
     runFx();
   }
 
+  const offBar = () => (offline ? `<div class="offbar" role="status">You're offline. You can still see your week; booking and paying need a connection.</div>` : '');
+  // One place errors go. Connect an error tracker here once one is chosen.
+  function report(err) { try { console.error('[ryze]', err); } catch (e) { /* ignore */ } }
+
+  // The phone's Back gesture closes the open sheet or goes back one screen, instead of leaving the app.
+  let guarded = false; let skipPop = false;
+  function syncHistory() {
+    try {
+      const need = !!(overlay || stack.length);
+      if (need && !guarded) { history.pushState({ ryze: 1 }, '', location.href); guarded = true; }
+      else if (!need && guarded) { guarded = false; skipPop = true; history.back(); }
+    } catch (e) { /* history unavailable */ }
+  }
+  window.addEventListener('popstate', () => {
+    if (skipPop) { skipPop = false; return; }
+    guarded = false;
+    if (overlay) dismiss(); else if (stack.length) back();
+  });
+
   // Sheets behave as modal dialogs: focus moves in when one opens, the page behind can't be reached,
   // and focus returns to the control that opened it when it closes.
-  let shownOverlay = null; let opener = null; let lastClick = null;
+  let shownOverlay = null; let opener = null; let lastClick = null; let lastTap = { key: '', t: 0 };
   function a11yOverlay(app) {
     const sheet = app.querySelector('.sheet');
     [...app.children].forEach((el) => { if (!el.classList.contains('veil') && !el.classList.contains('toast')) el.inert = !!sheet; });
@@ -1292,11 +1353,14 @@
   document.addEventListener('click', (e) => {
     const veil = e.target.closest('[data-veil]');
     const el = e.target.closest('[data-act]');
-    if (!el) { if (veil && e.target === veil) { overlay = null; render(); } return; }
+    if (!el) { if (veil && e.target === veil) dismiss(); return; }
     if (el.disabled) return;
     const act = el.dataset.act; lastClick = { act, id: el.dataset.id };
+    // A second tap on the same control within a moment is a double tap, not a new request.
+    const key = `${act}|${el.dataset.id || ''}|${el.dataset.val || ''}`; const now = Date.now();
+    if (key === lastTap.key && now - lastTap.t < 700) return; lastTap = { key, t: now };
     if (act === 'undo') { if (toast && toast.undo) toast.undo(); return; }
-    if (A[act]) A[act](el.dataset);
+    if (A[act]) { try { A[act](el.dataset); } catch (err) { report(err); say('Something went wrong. Please try again.'); render(); } }
   });
   document.addEventListener('change', (e) => {
     const t = e.target;
@@ -1314,7 +1378,16 @@
     }
   });
   document.addEventListener('input', (e) => { if (overlay && overlay.t === 'editpro' && e.target.id && e.target.id.startsWith('ep-')) readPro(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay) { overlay = null; render(); } });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay) dismiss(); });
+  // Keep the field being typed in above the on-screen keyboard.
+  document.addEventListener('focusin', (e) => { const t = e.target; if (t.matches && t.matches('.sheet input:not([type=checkbox]), .sheet select, .sheet textarea')) setTimeout(() => t.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300); });
+  if (window.visualViewport) { const fit = () => document.documentElement.style.setProperty('--vvh', `${window.visualViewport.height}px`); window.visualViewport.addEventListener('resize', fit); fit(); }
+  window.addEventListener('online', () => { offline = false; render(); });
+  window.addEventListener('offline', () => { offline = true; render(); });
+  window.addEventListener('error', (e) => report(e.error || e.message));
+  window.addEventListener('unhandledrejection', (e) => report(e.reason));
+  // Offline support: keep the last version of the app on the phone (only when served over the web).
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(report);
 
   // An invite link (#join/<club>) opens that club in the member app with a welcome and a Join button.
   const readJoin = () => { const m = location.hash.match(/^#join\/([a-z]+)$/); return m && club(m[1]) ? m[1] : null; };

@@ -1,0 +1,22 @@
+/* Offline support for Ryze Club. Pages and files come from the network when there is one,
+   and from the last saved copy when there isn't. Nothing here touches bookings or payments. */
+const CACHE = 'ryze-v31';
+const SHELL = ['./', 'index.html', 'styles.css?v=31', 'app.js?v=31', 'glass.js?v=1', 'privacy.html', 'terms.html', '404.html'];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+});
+
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  e.respondWith(
+    fetch(req)
+      .then((res) => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return res; })
+      .catch(() => caches.match(req).then((hit) => hit || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())))
+  );
+});
