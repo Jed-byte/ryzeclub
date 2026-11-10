@@ -227,7 +227,24 @@ Proof points for the seed round:
 - 35% of first-time bookers book again within 14 days
 - Organiser churn under 4% a month
 
-**Before you quit.** The first six months (the build and the paid pilot) lose about AED 550k in the base case: you at AED 30k, the contract engineer, the Body community lead from March, marketing and running costs, against little revenue while the fee is 0%. That is the minimum to have committed on the day you leave. Below it, keep your job until the pre-seed closes, or cut the community lead and marketing until then.
+**Before you quit: a lean first six months.** The forecast's **6-month budget** tab covers January to June 2027 with the founder full time and doing community, curation and sales. The only paid hire is the contract engineer who builds the backend and payments.
+
+| AED | 6 months |
+|---|---:|
+| Founder pay (30k a month) and health insurance | 184,800 |
+| Contract engineer | 132,000 |
+| Marketing, onboarding, hosting, reminders, bookkeeping | 76,672 |
+| One-off: licence, visa, legal, insurance | 46,000 |
+| **Money out** | **439,472** |
+| Ryze fees earned (low: 0% for new communities' first 3 months) | (50,299) |
+| **Cash needed** | **389,173** |
+| **With 15% contingency** | **~450,000 (USD 122k)** |
+| Nine months instead (three more months to close the next round) | ~615,000 (USD 168k) |
+
+- Six months is tight: raising usually takes 3 to 6 months. With the six-month amount, start the next raise in month 3, as the paid pilot ends.
+- Leaving a job ends an employer-sponsored visa. Budget for a visa through the Ryze company and your own health insurance (estimates, to confirm with the free zone).
+- By June 2027 the base case has 57 paid communities, about AED 300k a month of bookings, and the pilot signals in section 11. Those growth numbers assume the full hiring plan. On your own, aim for 40+ communities and strong pilot signals.
+- The full plan's first six months cost about AED 550k. The lean version saves about AED 100k by holding the community lead and the first Mind Body Soul day until after the raise.
 
 ## 10. Risks
 
