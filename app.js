@@ -1162,6 +1162,8 @@
     <span class="cap">As an organiser</span>
     <button class="btn ghost block" data-act="d-org">${pend ? 'Approve my club request' : S.manage.length ? 'Open the organiser app' : 'Make me organiser of Marina Dawn Runners'}</button>
     ${S.mode === 'org' ? '<button class="btn ghost block" data-act="tomember">Switch to the member app</button>' : ''}
+    <span class="cap">Colour theme</span>
+    <div class="seg" role="group" aria-label="Colour theme">${[['', 'Lemon'], ['scarlet', 'Scarlet'], ['watermelon', 'Watermelon']].map(([k, l]) => `<button class="${(document.documentElement.dataset.theme || '') === k ? 'on' : ''}" data-act="theme" data-val="${k}" aria-pressed="${(document.documentElement.dataset.theme || '') === k}">${l}</button>`).join('')}</div>
     <span class="cap">Start again</span>
     <button class="btn ghost block" data-act="d-reset">Reset the prototype</button>
     <p class="mut xs">"Skip" needs an RSVP first. After an 11-week streak, your next "I went" earns the 12-week milestone, and you can post photos to your first club (members need 5 sessions with a club).</p>
@@ -1317,6 +1319,8 @@
     'd-week': needUser(() => { endWeek(); stack = []; go('me', {}, true); }),
     'd-11': needUser(() => { const cid = S.follows[0] || 'mdr'; S.clubWeeks[cid] = Math.max(S.clubWeeks[cid] || 0, 11); S.streak = 11; S.longest = Math.max(S.longest, 11); S.total = Math.max(S.total, 22); S.weekDone = false; ['s1', 'w4'].forEach((b) => { if (!S.badges.includes(b)) S.badges.push(b); }); save(); stack = []; go('me', {}, true); }),
     'd-org': needUser(() => { const ids = Object.keys(S.claims); const list = ids.length ? ids : S.manage.length ? [] : ['mdr']; list.forEach((id) => { if (!S.manage.includes(id)) S.manage.push(id); delete S.claims[id]; }); if (list.length) { S.orgClub = list[0]; say(`You now manage ${club(list[0]).name}.`); } A.toorg({ id: S.orgClub }); }),
+    // Try the colour themes; the choice is kept on this device.
+    theme: (d) => { if (d.val) document.documentElement.dataset.theme = d.val; else delete document.documentElement.dataset.theme; try { localStorage.setItem('ryze-theme', d.val || 'lemon'); } catch (e) { /* ignore */ } haptic('tap'); render(); },
     'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { pillar: '', sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; go('home', {}, true); }
   };
 
