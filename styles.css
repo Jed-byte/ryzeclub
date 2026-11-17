@@ -493,3 +493,48 @@ input[aria-invalid="true"] { border-color: var(--danger); }
 .seg button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; }
 .seg button .ic { width: 18px; height: 18px; }
 .seg button.on { background: var(--acc); color: var(--acc-ink); }
+
+/* Desktop browsers: a wide page with the tabs in the header, clubs in a grid and sheets as centred dialogs.
+   Phones and narrow windows keep the single-column app above. */
+@media (min-width: 960px) {
+  #app { max-width: 1200px; }
+  .top { min-height: 72px; padding: 12px 40px; }
+  main { padding: 32px 40px 56px; gap: 24px; }
+  main.pad-nav, .glass main.pad-nav { padding-bottom: 56px; }
+  main.pad-bar { padding-bottom: 120px; }
+  main h1 { font-size: 34px; }
+  main p { max-width: 72ch; }
+  main .btn.block { max-width: 440px; }
+
+  /* tabs move from the bottom bar into the header */
+  .nav, .glass .nav { top: env(safe-area-inset-top, 0px); bottom: auto; width: auto; height: 72px; display: flex; gap: 4px; align-items: center; padding: 0; border: 0; border-radius: 0; background: transparent; background-image: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; overflow: visible; filter: none; }
+  .nav button, .glass .nav button { flex-direction: row; gap: 8px; height: 48px; padding: 0 14px 0 6px; font-size: 14px; border-radius: 999px; }
+  .nav .ni { width: 36px; height: 32px; }
+  .onav { background: transparent; }
+
+  /* lists of clubs become a grid */
+  .stack:has(> .card) { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; align-items: stretch; }
+  .stack:has(> .card) > :not(.card) { grid-column: 1 / -1; }
+  .card .ph, .card .fallback { height: 180px; }
+  .hscroll { flex-wrap: wrap; overflow: visible; margin: 0; padding: 2px 0 4px; }
+  .seg { max-width: 560px; }
+  .pillars { gap: 16px; }
+  .pillar { min-height: 150px; padding: 18px 16px; }
+  .pillar b { font-size: 20px; }
+  .hero { height: 340px; padding: 20px; }
+  .hero-name { font-size: 30px; }
+  .quiz-opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); align-content: start; }
+  .quiz-opts > .cap { grid-column: 1 / -1; margin-top: 8px; }
+
+  /* the booking bar floats at the bottom centre; toasts sit above it */
+  .bar, .glass .bar { width: min(640px, calc(100% - 40px)); }
+  .toast { bottom: 24px; }
+
+  /* sheets open as dialogs in the middle of the screen */
+  .veil { align-items: center; padding: 24px; }
+  .sheet { width: min(520px, 100%); max-height: calc(var(--vvh, 100vh) * .86); border-radius: 22px; padding-bottom: 24px; }
+  .sheet::before { display: none; }
+  .days, .days + p { max-width: 640px; }
+  main .stack > .btn:not(.block), main > .btn:not(.block) { align-self: flex-start; }
+  main .stack > .btn.block, main > .btn.block { width: 100%; }
+}
