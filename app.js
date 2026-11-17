@@ -6,7 +6,11 @@
   const cityOf = (area) => Object.keys(CITIES).find((k) => CITIES[k].includes(area));
   const ANY = (city) => `Anywhere in ${city}`;
   // Directions: Google Maps search for the meeting point; opens the maps app on phones.
-  const mapsUrl = (place, c) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.split(',')[0]}, ${c.area}, ${cityOf(c.area)}, UAE`)}`;
+  const mapQuery = (place, c) => `${place.split(',')[0]}, ${c.area}, ${cityOf(c.area)}, UAE`;
+  const mapsUrl = (place, c) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery(place, c))}`;
+  // Small map of the meeting point on the club page (Google Maps embed, no key needed). Tapping "Open in Maps" gives directions.
+  const mapEmbed = (place, c) => `<iframe class="minimap" title="Map of ${esc(place)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=${encodeURIComponent(mapQuery(place, c))}&z=15&output=embed"></iframe>`;
+  const fullPlace = (c) => `${c.area}, ${cityOf(c.area)}`;
   const mapLink = (place, c, cls = 'go') => `<a class="${cls}" href="${mapsUrl(place, c)}" target="_blank" rel="noopener">${ic('pin')}Directions</a>`;
   const placeOf = (c) => (cityOf(c.area) === 'Dubai' ? c.area : `${c.area}, ${cityOf(c.area)}`);
   const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', basketball: 'Basketball', football: 'Football', futsal: 'Indoor football (5-a-side)', boxing: 'Boxing fitness', tennis: 'Tennis', cycling: 'Cycling',
@@ -26,7 +30,7 @@
   const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', boxing: 'class', tennis: 'session', cycling: 'ride', chess: 'games night', books: 'book night', meditation: 'sit', painting: 'studio', pottery: 'class' };
 
   // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
-  // Volleyball, cycling, basketball, football and indoor football use free Unsplash photos by page ID (~), which
+  // Most sports, and the social and creative clubs, use free Unsplash photos by page ID (~), which
   // load through Unsplash's download link. If one can't load, the tile falls back to its colour gradient.
   const IMG = {
     running: ['1590333748338-d629e4564ad9', '1552674605-db6ffd4facb5', '1613936360976-8f35cf0e5461', '1540539234-c14a20fb7c7b', '1602263515015-dd72f8e9f301', '1551927336-09d50efd69cd', '1667781838690-5f32ea0ccea6', '1739368732843-800f36a9b7d0', '1716573094354-e4c3226ba887', '1759674861540-afed9f86f94a'],
@@ -37,8 +41,13 @@
     basketball: ['~3MfzD21eVMY', '~Pkyy5J8OKIY', '~OanNTH36NbQ'],
     football: ['~6lS_Lt5XPJU', '~9gaAQAmmoFg', '~N5jZksBBIaM'],
     futsal: ['~qZWMMkvesc4', '~GAXPpOnyI-c', '~FxXn1qvmBtY'],
-    boxing: ['~uJzfTOnK6nc'],
-    tennis: ['~mUl5Kmct9Mg', '~J1j3cImjmgE', '~lqKXSNPb8D0']
+    boxing: ['~uJzfTOnK6nc', '~crTsAncPE6Y'],
+    tennis: ['~mUl5Kmct9Mg', '~J1j3cImjmgE', '~lqKXSNPb8D0'],
+    chess: ['~OBz5ga6Lz7o', '~7dvnANH_Gjo', '~IaaI7UIv-_E'],
+    books: ['~UCsRZO7LJOk', '~ZgfxMiwaePM'],
+    meditation: ['~AAA4bS4ZWRE', '~C1WHDLVxzfI', '~vpVE1Xk1eR4'],
+    painting: ['~B0LMNsQSXvE', '~IIisONUL2d8', '~blKU4JXultQ', '~0Ip-dmYYIcI'],
+    pottery: ['~OyRYQfjTk9o', '~BFBikYWtA9c', '~MsKMSCxNWB0']
   };
   const im = (sp, i) => { const a = IMG[sp]; if (!a) return ''; const n = ((Number(i) % a.length) + a.length) % a.length; const u = a[n][0] === '~' ? `https://unsplash.com/photos/${a[n].slice(1)}/download?force=true&w=800` : `https://images.unsplash.com/photo-${a[n]}?w=800&q=70&auto=format&fit=crop`; return ` style="--img:url('${u}')"`; };
 
@@ -80,7 +89,7 @@
       desc: 'Mat pilates on the grass with a small speaker and a patient teacher.', bring: 'Mat, water.',
       sched: [{ d: 1, t: '18:30', type: 'Mat pilates', note: 'Beginner friendly', place: 'Marina Promenade lawn' }],
       top: [['Priya V.', 6]], active: 9 },
-    { id: 'hsy', name: 'Hills Sunset Yoga', sport: 'yoga', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], price: 0, level: 'Open level', photos: 0, confirmed: 1,
+    { id: 'hsy', name: 'Hills Sunset Yoga', sport: 'yoga', area: 'Dubai Hills', levels: ['new', 'some', 'regular'], price: 0, level: 'Open level', photos: 2, confirmed: 1,
       desc: 'A new group that started this month. Slow evening practice on the park lawn.', bring: 'Mat, water.',
       sched: [{ d: 4, t: '18:00', type: 'Sunset practice', note: 'Open level', place: 'Dubai Hills Park, east lawn' }],
       top: [], active: 6 },
@@ -446,7 +455,7 @@
   function clubCard(c, why) {
     const n = nextOpen(c); const lead = leadPhotos(c)[0];
     const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
-    return `<div class="card"><button class="card-main" data-act="club" data-id="${c.id}">${head}<span class="body">
+    return `<div class="card"><button class="card-main" data-act="club" data-id="${c.id}"><span class="card-head">${head}<span class="loc-chip">${ic('pin')}${esc(fullPlace(c))}</span></span><span class="body">
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
       ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}</span>${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}`}
       <span class="sm">${n ? `Next: ${dayWord(n.at)} · ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
@@ -646,7 +655,7 @@
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${priceLong(c)}</p>
         ${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
-        <p class="sm">${esc((n || { place: c.sched[0].place }).place)} · ${mapLink((n || { place: c.sched[0].place }).place, c, 'link sm')}</p>
+        ${(() => { const w = (n || { place: c.sched[0].place }).place; return `<a class="locline" href="${mapsUrl(w, c)}" target="_blank" rel="noopener">${ic('pin')}<span class="grow"><b>${esc(w)}</b><br><span class="mut sm">${esc(fullPlace(c))} · Open in Maps</span></span>${ic('chev', 'chev')}</a>${mapEmbed(w, c)}`; })()}
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
       <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
