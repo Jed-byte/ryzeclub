@@ -479,7 +479,7 @@
       const anyCity = Object.keys(CITIES).find((k) => q.area === ANY(k)); const a = !q.area || c.area === q.area || (anyCity && cityOf(c.area) === anyCity); const l = c.levels.includes(q.level);
       const bits = [];
       bits.push(a ? (q.area && !anyCity ? `In ${c.area}` : placeOf(c)) : cityOf(c.area) === (anyCity || cityOf(q.area)) ? `${c.area}, a drive away` : `In ${cityOf(c.area)}`);
-      bits.push(l ? (q.level === 'new' ? 'Beginners welcome' : q.level === 'some' ? 'Suits some experience' : 'Regulars train here') : (c.levels.includes('new') ? 'Mostly beginners' : 'More experienced group'));
+      bits.push(l ? (q.level === 'new' ? 'Beginners welcome' : q.level === 'some' ? 'Suits some experience' : 'Suits regulars') : (c.levels.includes('new') ? 'Mostly beginners' : 'More experienced group'));
       return { c, a, l, score: (a ? 2 : 0) + (l ? 2 : 0), why: bits.join(' · ') };
     }).sort((x, y) => y.score - x.score);
     return { exact: scored.filter((x) => x.a && x.l), all: scored };
@@ -573,13 +573,19 @@
     const top = m.exact.slice(0, 3);
     const near = m.all.filter((x) => !top.includes(x)).slice(0, 3 - top.length);
     const title = top.length ? `${top.length} ${top.length === 1 ? 'club fits' : 'clubs fit'} you` : 'No clubs match all three yet';
-    return `<main>
+    // Other categories in the same pillar and city, so a thin result still gives people somewhere to go.
+    const pk = pillarOf(q.sport); const anyCity = Object.keys(CITIES).find((k) => q.area === ANY(k)); const city = anyCity || cityOf(q.area);
+    const more = CLUBS.filter((c) => pillarOf(c.sport) === pk && c.sport !== q.sport && cityOf(c.area) === city).sort((a, b) => (b.area === q.area) - (a.area === q.area)).slice(0, 3);
+    return `<main class="${S.user ? 'pad-nav' : ''}">
       <div class="stack tight"><h1>${title}</h1><div class="row sp"><p class="mut">${SPORTS[q.sport]} · ${q.area} · ${LEVELS[q.level]}</p><button class="chip" data-act="quiz">${ic('edit')}Change</button></div>
       ${m.exact.length ? '' : '<p class="note">These are the nearest. Each one says how it differs from what you asked for.</p>'}</div>
       ${top.length ? `<div class="stack">${top.map((x) => clubCard(x.c, x.why)).join('')}</div>` : ''}
       ${near.length ? `<div class="stack">${top.length ? '<span class="cap">Close, but not an exact fit</span>' : ''}${near.map((x) => clubCard(x.c, x.why)).join('')}</div>` : ''}
-      <button class="btn ghost block" data-act="browse" data-sport="${q.sport}">See all ${SPORTS[q.sport].toLowerCase()} clubs ${ic('right')}</button></main>`;
+      ${more.length ? `<div class="stack"><span class="cap">More ${PILLARS[pk].name} clubs in ${city}</span>${more.map((c) => clubCard(c, `${SPORTS[c.sport]} · ${c.area === q.area ? `In ${c.area}` : placeOf(c)}`)).join('')}</div>` : ''}
+      <button class="btn ghost block" data-act="browse" data-sport="${q.sport}">See all ${seeAll(q.sport)} ${ic('right')}</button></main>`;
   };
+  // "Book club" becomes "book clubs", "Running" becomes "running clubs".
+  const seeAll = (sp) => { const l = SPORTS[sp].toLowerCase(); return / club$/.test(l) ? `${l}s` : `${l} clubs`; };
 
   const browseList = () => CLUBS.filter((c) => (!filt.pillar || pillarOf(c.sport) === filt.pillar) && (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area || (filt.area.startsWith('Anywhere in ') && cityOf(c.area) === filt.area.slice(12))) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
       && (!filt.who || c.ladies)
