@@ -28,6 +28,8 @@
 html { color-scheme: light; }
 body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.45; }
 button, input, select, textarea { font: inherit; color: inherit; }
+/* 16px in form fields stops iPhone Safari zooming in when one is tapped. */
+input, select, textarea { font-size: 16px; }
 button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 h1, h2, h3, p { margin: 0; }
@@ -199,9 +201,9 @@ button.item { min-height: 56px; }
 .bar .info { background: none; border: 0; padding: 0; text-align: left; flex: 1; min-width: 0; color: var(--ink); }
 .bar .info .det { display: flex; margin-top: 2px; }
 /* Bottom navigation: icon plus label; the current tab gets a filled pill and the accent colour. */
-.nav { bottom: 0; background: var(--bg); border-top: 1.5px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -6px 18px rgba(28, 43, 58, .06); }
+.nav { bottom: 0; background: var(--bg); border-top: 1.5px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -6px 18px rgba(28, 43, 58, .06); }
 .nav button { background: none; border: 0; height: var(--nav-h); font-size: 12.5px; font-weight: 700; color: var(--mut); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
-.nav .ni { display: grid; place-items: center; width: 56px; height: 30px; border-radius: 999px; transition: background-color .15s ease; }
+.nav .ni { display: grid; place-items: center; width: 52px; height: 30px; border-radius: 999px; transition: background-color .15s ease; }
 .nav .ni .ic { width: 22px; height: 22px; }
 .nav button.on { color: var(--acc); }
 .nav button.on .ni { background: var(--acc-soft); }

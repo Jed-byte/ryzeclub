@@ -271,6 +271,7 @@
   const initials = (n) => n.split(' ').map((p) => p[0]).join('').slice(0, 2);
   // Inline icons: signifiers for navigation and actions. Decorative; the text label always carries the meaning.
   const ICONS = {
+    home: '<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h4.5v-6h4v6h4.5V9.5"/>',
     week: '<rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
     find: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
     clubs: '<circle cx="9" cy="8" r="3.2"/><path d="M3 19.5c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14.3c2.4.2 4 1.8 4.5 4.7"/>',
@@ -539,9 +540,10 @@
       <span class="hero-b"><span class="hero-when">${dayWord(n.at)} · ${n.t} · ${esc(n.place.split(',')[0])}</span><b class="hero-name">${esc(c.name)}</b>
         <span class="row">${avatars(people(n, 4))}<span>${going(n)} going so far</span></span></span></button>`;
   }
-  V.home = () => `<main>
+  const pillarNav = () => `<nav class="pillars" aria-label="Mind, Body, Soul">${Object.entries(PILLARS).map(([k, p]) => `<button class="pillar p-${k}" data-act="browse" data-pillar="${k}"><span class="pi">${ic(k)}</span><b>${p.name}</b><span class="sm">${p.line}</span><span class="xs">${plural(CLUBS.filter((c) => p.sports.includes(c.sport)).length, 'club')}</span></button>`).join('')}</nav>`;
+  V.home = () => `<main class="${S.user ? 'pad-nav' : ''}">
     <div class="stack"><h1>Find your people. Keep showing up.</h1>
-      <nav class="pillars" aria-label="Mind, Body, Soul">${Object.entries(PILLARS).map(([k, p]) => `<button class="pillar p-${k}" data-act="browse" data-pillar="${k}"><span class="pi">${ic(k)}</span><b>${p.name}</b><span class="sm">${p.line}</span><span class="xs">${plural(CLUBS.filter((c) => p.sports.includes(c.sport)).length, 'club')}</span></button>`).join('')}</nav>
+      ${pillarNav()}
       ${homeHero()}
       <p class="mut">Community clubs across Dubai and Abu Dhabi. Mind: chess, book clubs, meditation. Body: running, padel, tennis, football and more. Soul: painting, sketching, pottery. Answer three questions and see the ones that fit you.</p></div>
     <div class="stack"><button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button>
@@ -555,8 +557,10 @@
   V.quiz = () => {
     const step = route.step || 0;
     const head = `<div class="progress" role="progressbar" aria-label="Question ${step + 1} of 3" aria-valuemin="1" aria-valuemax="3" aria-valuenow="${step + 1}">${[0, 1, 2].map((i) => `<span class="${i <= step ? 'on' : ''}"></span>`).join('')}</div><span class="cap">Question ${step + 1} of 3</span>`;
-    if (step === 0) return `<main>${head}<h1>What do you want to do?</h1><div class="quiz-opts">
-      ${Object.entries(PILLARS).map(([pk, p]) => `<span class="cap">${p.name} · ${p.line}</span>${p.sports.map((sp, i) => `<button class="quiz-opt g${1 + ((i + pk.length) % 6)}"${im(sp, 0)} data-act="q" data-k="sport" data-val="${sp}">${esc(SPORTS[sp])}${ic('right')}</button>`).join('')}`).join('')}</div>
+    if (step === 0) return `<main>${head}<h1>What do you want to do?</h1>
+      <div class="seg" role="group" aria-label="Mind, Body or Soul">${[['', 'All']].concat(Object.entries(PILLARS).map(([k, p]) => [k, p.name])).map(([k, l]) => `<button class="${(route.qp || '') === k ? 'on' : ''}" data-act="qpillar" data-val="${k}" aria-pressed="${(route.qp || '') === k}">${k ? ic(k) : ''}${l}</button>`).join('')}</div>
+      <div class="quiz-opts">
+      ${Object.entries(PILLARS).filter(([pk]) => !route.qp || pk === route.qp).map(([pk, p]) => `<span class="cap">${p.name} · ${p.line}</span>${p.sports.map((sp, i) => `<button class="quiz-opt g${1 + ((i + pk.length) % 6)}"${im(sp, 0)} data-act="q" data-k="sport" data-val="${sp}">${esc(SPORTS[sp])}${ic('right')}</button>`).join('')}`).join('')}</div>
       <p class="mut sm center">No account needed.</p></main>`;
     if (step === 1) return `<main>${head}<h1>Where are you based?</h1><div class="quiz-opts">
       ${Object.entries(CITIES).map(([city, list]) => `<span class="cap">${city}</span>${list.concat([ANY(city)]).map((a) => `<button class="quiz-opt plain" data-act="q" data-k="area" data-val="${a}">${a}${ic('chev')}</button>`).join('')}`).join('')}</div></main>`;
@@ -690,7 +694,7 @@
       ${org}
       ${nextCard(up.find((s) => has(s.id) && !isCancelled(s)))}
       <div class="stack tight"><span class="cap">Coming up</span>
-        ${up.length ? `<div>${up.map((s) => sessionRow(s, true)).join('')}</div>` : (S.follows.length ? '<p class="mut">Nothing booked this week.</p>' : `<p class="mut">Follow a club to see your week.</p><button class="btn" data-act="quiz">Find my club ${ic('right')}</button>`)}</div>
+        ${up.length ? `<div>${up.map((s) => sessionRow(s, true)).join('')}</div>` : (S.follows.length ? '<p class="mut">Nothing booked this week.</p>' : `<p class="mut">Nothing yet. Pick Mind, Body or Soul, or try one of these.</p>${pillarNav()}<span class="cap">Popular this week</span><div class="stack">${['mdr', 'mcc', 'dos'].map((id) => clubCard(club(id))).join('')}</div><button class="btn" data-act="quiz">Find my club ${ic('right')}</button>`)}</div>
       ${S.follows.length ? `<div class="stack tight"><span class="cap">From your clubs</span><div class="strip">${S.follows.slice(0, 3).map((id) => { const c = club(id); const p = leadPhotos(c)[0] || { g: 1, sp: c.sport, i: 0 }; return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="club" data-id="${id}">${esc(c.name.split(' ')[0])}</button>`; }).join('')}</div></div>` : ''}
     </main>`;
   };
@@ -1166,7 +1170,8 @@
   // ---------- actions ----------
   const needUser = (fn) => (d) => { if (!S.user) { overlay = null; say('Sign in first: tap "Sign in" at the top.'); render(); return; } fn(d); };
   const A = {
-    home: () => go(S.user ? 'me' : 'home'), me: () => go('me'), back, quiz: () => go('quiz', { step: 0 }),
+    home: () => go('home'), tohome: () => go('home'), me: () => go('me'), back, quiz: () => go('quiz', { step: 0 }),
+    qpillar: (d) => { route.qp = d.val; haptic('tap'); render(); },
     quizback: () => { route.step -= 1; render(); },
     q: (d) => { S.quiz[d.k] = d.val; save(); if ((route.step || 0) < 2) { route.step = (route.step || 0) + 1; render(); window.scrollTo(0, 0); } else go('results', {}, true); },
     browse: (d) => { if (d.sport) filt = { pillar: pillarOf(d.sport), sport: d.sport, area: '', day: '', level: '', price: '', venue: '', who: '' }; else if (d.pillar !== undefined) filt = { pillar: d.pillar, sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; go('browse'); },
@@ -1352,7 +1357,7 @@
       <div class="r"><button class="pill" data-act="demo">Demo</button>${S.user ? '' : '<button class="btn small" data-act="signin">Sign in</button>'}</div></header>`;
     const showNav = S.user && route.v !== 'club' && route.v !== 'quiz';
     const tab = (v, l, i, on) => `<button data-act="${v}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
-    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('me', 'My week', 'week', ['me', 'result', 'missed', 'confirm'].includes(route.v))}${tab('browse', 'Find', 'find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', 'clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', 'me', route.v === 'profile')}</nav>` : '';
+    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('tohome', 'Home', 'home', route.v === 'home')}${tab('me', 'My week', 'week', ['me', 'result', 'missed', 'confirm'].includes(route.v))}${tab('browse', 'Find', 'find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', 'clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', 'me', route.v === 'profile')}</nav>` : '';
     const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace(/^(<div class="sheet[^>]*>)/, '$1<button class="sheet-x" data-act="close" aria-label="Close">' + ic('x') + '</button>').replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
     const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
     app.innerHTML = offBar() + top + (V[route.v] || V.home)() + nav + ov + ts;
