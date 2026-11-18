@@ -24,8 +24,9 @@
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
   const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   // Colour themes for Demo: [key, label, swatches: brand, background, button]. Button colours are kept for actions only.
-  const THEMES = [['', 'Lemon', ['#0E2C7C', '#FEF7D6', '#0E2C7C']], ['scarlet', 'Scarlet', ['#03203D', '#EAF2F9', '#D1262B']], ['watermelon', 'Watermelon', ['#474329', '#F0E5DB', '#FC75B4']],
-    ['court', 'Court', ['#0D56CA', '#F4EEF5', '#FD8270']], ['kinetic', 'Kinetic', ['#7E100D', '#FEFEFE', '#FEF650']], ['seal', 'Seal', ['#072D59', '#DBF2FC', '#FD6E88']]];
+  // Seal is the default; the others stay here to compare.
+  const THEMES = [['seal', 'Seal', ['#072D59', '#DBF2FC', '#FD6E88']], ['', 'Lemon', ['#0E2C7C', '#FEF7D6', '#0E2C7C']], ['scarlet', 'Scarlet', ['#03203D', '#EAF2F9', '#D1262B']],
+    ['watermelon', 'Watermelon', ['#474329', '#F0E5DB', '#FC75B4']], ['court', 'Court', ['#0D56CA', '#F4EEF5', '#FD8270']], ['kinetic', 'Kinetic', ['#7E100D', '#FEFEFE', '#FEF650']]];
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
@@ -1452,7 +1453,7 @@
     'd-org': needUser(() => { const ids = Object.keys(S.claims); const list = ids.length ? ids : S.manage.length ? [] : ['mdr']; list.forEach((id) => { if (!S.manage.includes(id)) S.manage.push(id); delete S.claims[id]; }); if (list.length) { S.orgClub = list[0]; say(`You now manage ${club(list[0]).name}.`); } A.toorg({ id: S.orgClub }); }),
     // Try the colour themes; the choice is kept on this device.
     dlater: (d) => { S.later = !!d.val; save(); haptic('tap'); render(); },
-    theme: (d) => { if (d.val) document.documentElement.dataset.theme = d.val; else delete document.documentElement.dataset.theme; try { localStorage.setItem('ryze-theme', d.val || 'lemon'); } catch (e) { /* ignore */ } haptic('tap'); render(); },
+    theme: (d) => { if (d.val) document.documentElement.dataset.theme = d.val; else delete document.documentElement.dataset.theme; try { localStorage.setItem('ryze-theme-v2', d.val || 'lemon'); } catch (e) { /* ignore */ } haptic('tap'); render(); },
     'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { pillar: '', sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; go('home', {}, true); }
   };
 
