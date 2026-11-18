@@ -1,7 +1,7 @@
 /* Offline support for Ryze Club. Pages and files come from the network when there is one,
    and from the last saved copy when there isn't. Nothing here touches bookings or payments. */
-const CACHE = 'ryze-v41';
-const SHELL = ['./', 'index.html', 'styles.css?v=41', 'app.js?v=41', 'glass.js?v=1', 'privacy.html', 'terms.html', '404.html'];
+const CACHE = 'ryze-v42';
+const SHELL = ['./', 'index.html', 'styles.css?v=42', 'app.js?v=42', 'glass.js?v=1', 'privacy.html', 'terms.html', '404.html'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

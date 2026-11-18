@@ -550,13 +550,26 @@
   const V = {};
 
   // Home opens on a real session with faces, so newcomers see people before a list of clubs.
+  // Home's "This week": one club per pillar. Each is the club with the soonest session that still has
+  // spots, near your area when we know it; ties rotate daily so no single club is always on top.
+  // Demo can pin a club to the top, to see how each colour theme looks with different photos.
+  function featured() {
+    const area = (S.user && S.user.pro && S.user.pro.area) || (S.quiz && S.quiz.area) || '';
+    const day = ymd(now()); const city = (area && (area.startsWith('Anywhere in ') ? area.slice(12) : cityOf(area))) || 'Dubai';
+    const pick = Object.keys(PILLARS).map((pk) => CLUBS.filter((c) => pillarOf(c.sport) === pk).map((c) => {
+      const n = nextOpen(c); const soon = n ? (n.at - now()) / 864e5 : 99;
+      return { c, score: (n && !isFull(n) ? 0 : 50) + Math.min(soon, 14) - (area && c.area === area ? 3 : 0) + (cityOf(c.area) === city ? 0 : 20) + (hash(c.id + day) % 100) / 100 };
+    }).sort((a, b) => a.score - b.score)[0]).filter(Boolean).map((x) => x.c);
+    const top = S.feat && club(S.feat);
+    return top ? [top].concat(pick.filter((c) => c.id !== top.id)).slice(0, 3) : pick;
+  }
   const pillarNav = () => `<nav class="pillars" aria-label="Mind, Body, Soul">${Object.entries(PILLARS).map(([k, p]) => `<button class="pillar p-${k}" data-act="browse" data-pillar="${k}"><span class="pi">${ic(k)}</span><b>${p.name}</b><span class="sm">${p.line}</span><span class="pgo">${plural(CLUBS.filter((c) => p.sports.includes(c.sport)).length, 'club')} ${ic('right')}</span></button>`).join('')}</nav>`;
   V.home = () => `<main class="home ${S.user ? 'pad-nav' : ''}">
     <div class="stack"><div class="stack tight"><h1>Find your people. Keep showing up.</h1><p class="mut">Community clubs in Dubai. Pick what you're into.</p></div>
       ${pillarNav()}
       <button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button>
       <button class="link center-link" data-act="browse">Or browse all ${CLUBS.length} clubs</button></div>
-    <div class="stack"><h2>This week</h2>${['mdr', 'mcc', 'dos'].map((id) => clubCard(club(id))).join('')}</div>
+    <div class="stack"><h2>This week</h2>${featured().map((c) => clubCard(c)).join('')}</div>
     ${S.user ? '' : '<button class="link sm center-link" data-act="browse">Run a club? Find its page and claim it</button>'}
   </main>`;
 
@@ -991,6 +1004,7 @@
       <button class="whobtn" data-act="tomember" data-id="${c.id}"><span class="orgcta-ic">${ic('me')}</span><span class="grow"><b>See your public page</b><br><span class="mut sm">Opens it in the member app, as members see it</span></span>${ic('chev', 'chev')}</button>
       <div>${left ? '' : `${sec('editclub', 'Club details', 'Description, level, price, what to bring', 'edit')}
         ${sec('editclub', 'How to find us', c.find ? `“${esc(c.find)}”` : 'Add a line for first-timers', 'flag')}`}
+        ${sec('ocover', 'Cover photo', S.pin[c.id] ? 'Chosen by you · shown on your card and page' : 'Choose the photo members see first', 'photo')}
         ${sec('osched', 'Schedule', `${meetDays(c)} · change or cancel a session`, 'week')}
         ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}
         ${sec('opay', 'Get paid', payOf(c) ? `Connected to ${PROVIDERS[payOf(c)]} · members pay when they book` : 'Connect Ziina or Stripe to take payments', 'tag')}</div>
@@ -1205,6 +1219,10 @@
   };
   const readSess = () => { const v = overlay.v; const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; };
     [['d', 'ss-day'], ['date', 'ss-date'], ['t', 'ss-time'], ['type', 'ss-type'], ['note', 'ss-note'], ['place', 'ss-place'], ['cap', 'ss-cap']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; }); };
+  O.cover = () => { const c = orgClub(); const list = leadPhotos(c, true).concat(past(c).slice(0, 2).flatMap((x, i) => exPhotos(c, x, i, true))).slice(0, 9); const cur = (S.pin[c.id] || leadPhotos(c)[0] || {}).key;
+    return `<div class="sheet"><h2>Cover photo</h2><p class="mut sm">The first photo members see on your card in Find and at the top of your page. Only use photos of people who agreed to be in them.</p>
+      <div class="covers">${list.map((ph) => `<button class="ph g${ph.g}${ph.key === cur ? ' on' : ''}"${im(ph.sp, ph.i)} data-act="setcover" data-key="${ph.key}" data-i="${ph.i}" data-g="${ph.g}" data-by="${esc(ph.by)}" aria-pressed="${ph.key === cur}" aria-label="Photo by ${esc(ph.by)}${ph.key === cur ? ', current cover' : ''}">${ph.key === cur ? `<span class="tag ok">${ic('check')}Cover</span>` : ''}</button>`).join('')}</div>
+      <button class="btn ghost block" data-act="soon" data-what="This would open your phone's photos to upload a new cover.">${ic('plus')}Upload a photo</button></div>`; };
   O.cancel = () => { const s = byId(overlay.id); return `<div class="sheet"><div class="stack tight"><h2>Cancel ${nounFor(s)}?</h2><p class="mut sm">${dateShort(s.at)} · ${s.t} · ${s.type}</p></div>
     <p class="notice"><b>${plural(going(s), 'person')} will be told.</b> Their streak still counts this week.</p>
     <label for="cn-why">Reason (optional)</label><input type="text" id="cn-why" maxlength="80" placeholder="Weather, venue closed…">
@@ -1247,6 +1265,8 @@
     <span class="cap">As an organiser</span>
     <button class="btn ghost block" data-act="d-org">${pend ? 'Approve my club request' : S.manage.length ? 'Open the organiser app' : 'Make me organiser of Marina Dawn Runners'}</button>
     ${S.mode === 'org' ? '<button class="btn ghost block" data-act="tomember">Switch to the member app</button>' : ''}
+    <label class="cap" for="d-feat">Top club on Home</label>
+    <select id="d-feat" data-feat="1"><option value="">Automatic (soonest with spots)</option>${Object.entries(PILLARS).map(([k, p]) => `<optgroup label="${p.name}">${CLUBS.filter((c) => pillarOf(c.sport) === k).map((c) => `<option value="${c.id}" ${S.feat === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</optgroup>`).join('')}</select>
     <span class="cap">Colour theme</span>
     <div class="seg themes" role="group" aria-label="Colour theme">${THEMES.map(([k, l, sw]) => `<button class="${(document.documentElement.dataset.theme || '') === k ? 'on' : ''}" data-act="theme" data-val="${k}" aria-pressed="${(document.documentElement.dataset.theme || '') === k}"><span class="sw" aria-hidden="true">${sw.map((c) => `<i style="background:${c}"></i>`).join('')}</span>${l}</button>`).join('')}</div>
     <span class="cap">Start again</span>
@@ -1414,6 +1434,8 @@
     delsess: () => { readSess(); overlay.del = true; render(); },
     keepsess: () => { overlay.del = false; render(); },
     dodelsess: () => { const c = club(overlay.cid); const list = c.sched.filter((x, i) => i !== overlay.idx); (S.edits[c.id] = S.edits[c.id] || {}).sched = list; save(); applyEdits(); overlay = null; say('Session removed. Members who booked are told.'); render(); },
+    ocover: () => { overlay = { t: 'cover' }; render(); },
+    setcover: (d) => { const c = orgClub(); S.pin[c.id] = { key: d.key, sp: c.sport, i: Number(d.i), g: Number(d.g), by: d.by }; save(); haptic('success'); say('Cover photo updated. Members see it now.'); render(); },
     askcancel: (d) => { overlay = { t: 'cancel', id: d.id }; render(); },
     docancel: (d) => { const s = byId(d.id); const n = going(s); S.cancelled[d.id] = true; save(); overlay = null; say(`Cancelled. ${plural(n, 'person')} told.`); render(); },
     uncancel: (d) => { delete S.cancelled[d.id]; save(); say('Session restored.'); render(); },
@@ -1531,6 +1553,7 @@
     if (t.dataset.filt) { filt[t.dataset.filt] = t.value; render(); }
     else if (t.dataset.set) { S.set[t.dataset.set] = t.checked; save(); if (t.dataset.set === 'wa' && t.checked) { say('In the real product this asks for your phone number.'); render(); } }
     else if (t.dataset.agree && overlay) { overlay.agree = t.checked; }
+    else if (t.dataset.feat) { S.feat = t.value || null; save(); say(t.value ? `${club(t.value).name} is now the top club on Home.` : 'Home picks the top club again.'); render(); }
     else if (t.dataset.sharename) { overlay.hide = !t.checked; render(); }
     else if (t.dataset.photo && t.files && t.files[0]) {
       readPro(); const img = new Image(); const url = URL.createObjectURL(t.files[0]);

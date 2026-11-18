@@ -759,3 +759,8 @@ fieldset.levels { border: 0; margin: 0; padding: 0; display: flex; flex-directio
 fieldset.levels legend { padding: 0; margin-bottom: 4px; font-weight: 700; }
 .item .go { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; font-size: 14px; color: var(--acc); white-space: nowrap; }
 .item .go .ic { width: 16px; height: 16px; }
+
+/* organiser cover photo picker */
+.covers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.covers .ph { aspect-ratio: 1; border-radius: 10px; border: 3px solid transparent; padding: 6px; align-items: flex-start; }
+.covers .ph.on { border-color: var(--acc); }
