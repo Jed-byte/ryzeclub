@@ -30,8 +30,9 @@
   --danger-soft: #FEF3F1;
   --ok: #1E7A5A;
   --warn: #8A5200;
-  --display: "Unbounded", "Arial Black", sans-serif;
-  --body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  /* Type: Big Shoulders Display (condensed capitals) for headings and numbers, Figtree for everything you read. */
+  --display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, sans-serif;
   --col: 460px;
   --nav-h: 66px;
   --z-sticky: 5;
@@ -560,7 +561,6 @@ html[data-theme="scarlet"] {
   --acc: #D1262B; --acc-dk: #A81D21; --acc-ink: #FFFFFF; --acc-soft: #EAF2F9; --danger: #B3261E; --danger-soft: #FDECEC;
   --on-dark: #DDEAF4; --on-dark-mut: #9DBEDB; --g-base: #03203D; --g-shade: rgba(2, 16, 30, .6); --g-shade-0: rgba(2, 16, 30, 0);
   --veil: rgba(3, 32, 61, .6); --org-page: #021629; --org-bg: #F5F9FC; --org-glass: rgba(3, 32, 61, .8); --pop: #EB2F33;
-  --headline: "Anton", "Arial Narrow", sans-serif;
 }
 html[data-theme="scarlet"] .g1 { --grad: linear-gradient(160deg, #DDEAF4 0%, #639CC5 45%, #03203D 100%); }
 html[data-theme="scarlet"] .g2 { --grad: linear-gradient(200deg, #639CC5 0%, #2B5E8C 55%, #03203D 100%); }
@@ -575,7 +575,6 @@ html[data-theme="watermelon"] {
   --acc: #474329; --acc-dk: #2F2C1B; --acc-ink: #FFFFFF; --acc-soft: #FBB7D6; --danger: #C62828; --danger-soft: #FCE8E8;
   --on-dark: #FDE1EE; --on-dark-mut: #E3D6C8; --g-base: #474329; --g-shade: rgba(30, 28, 16, .6); --g-shade-0: rgba(30, 28, 16, 0);
   --veil: rgba(47, 44, 27, .55); --org-page: #2F2C1B; --org-bg: #FBF6F1; --org-glass: rgba(71, 67, 41, .82); --pop: #FC75B4;
-  --headline: "Anton", "Arial Narrow", sans-serif;
 }
 html[data-theme="watermelon"] .g1 { --grad: linear-gradient(160deg, #F0E5DB 0%, #C9B8A3 45%, #474329 100%); }
 html[data-theme="watermelon"] .g2 { --grad: linear-gradient(200deg, #FDE1EE 0%, #FC75B4 45%, #474329 100%); }
@@ -585,14 +584,7 @@ html[data-theme="watermelon"] .g5 { --grad: linear-gradient(150deg, #F7EFE7 0%, 
 html[data-theme="watermelon"] .g6 { --grad: linear-gradient(190deg, #FDE1EE 0%, #474329 70%, #2F2C1B 100%); }
 html[data-theme="watermelon"] .glass .top { background-color: rgba(251, 246, 241, .78); }
 
-/* Every theme except Lemon: tall condensed capitals for headlines, as in the references */
-html[data-theme] main h1, html[data-theme] .hero-name, html[data-theme] .pillar b { font-family: var(--headline); font-weight: 400; text-transform: uppercase; letter-spacing: .01em; line-height: 1.02; }
-html[data-theme] main h1 { font-size: 40px; color: var(--acc); }
-html[data-theme] .hero-name { font-size: 30px; }
-html[data-theme] .pillar b { font-size: 24px; }
-html[data-theme] .logo, html[data-theme] .ologo { font-family: var(--headline); font-weight: 400; text-transform: uppercase; letter-spacing: .04em; font-size: 20px; }
-html[data-theme="watermelon"] main h1 { color: var(--ink); }
-@media (min-width: 960px) { html[data-theme] main h1 { font-size: 56px; } }
+
 
 /* Court: court blue and frost white, coral for buttons only (from the Cancha Nine padel reference).
    Coral is too light for white text, so buttons carry dark text. */
@@ -602,7 +594,6 @@ html[data-theme="court"] {
   --cta: #FD8270; --cta-dk: #E4604D; --cta-ink: #3A1410;
   --on-dark: #F4EEF5; --on-dark-mut: #C9D6F2; --g-base: #0D56CA; --g-shade: rgba(5, 30, 80, .6); --g-shade-0: rgba(5, 30, 80, 0);
   --veil: rgba(10, 42, 94, .55); --org-page: #0A3E96; --org-bg: #F9F6FA; --org-glass: rgba(13, 86, 202, .84); --pop: #FD8270;
-  --headline: "Anton", "Arial Narrow", sans-serif;
 }
 html[data-theme="court"] .g1 { --grad: linear-gradient(160deg, #F4EEF5 0%, #5C8FE0 45%, #0D56CA 100%); }
 html[data-theme="court"] .g2 { --grad: linear-gradient(200deg, #FFD3CB 0%, #FD8270 40%, #0D56CA 100%); }
@@ -619,7 +610,6 @@ html[data-theme="kinetic"] {
   --cta: #FEF650; --cta-dk: #E3DA2A; --cta-ink: #7E100D; --cta-edge: #7E100D;
   --on-dark: #FEFEFE; --on-dark-mut: #E8C9C7; --g-base: #7E100D; --g-shade: rgba(40, 4, 3, .6); --g-shade-0: rgba(40, 4, 3, 0);
   --veil: rgba(61, 8, 7, .55); --org-page: #5E0B09; --org-bg: #FFFDF7; --org-glass: rgba(126, 16, 13, .84); --pop: #FEF650;
-  --headline: "Anton", "Arial Narrow", sans-serif;
 }
 html[data-theme="kinetic"] .g1 { --grad: linear-gradient(160deg, #FEF650 0%, #D2391F 45%, #7E100D 100%); }
 html[data-theme="kinetic"] .g2 { --grad: linear-gradient(200deg, #FBE3E1 0%, #B3261E 55%, #5E0B09 100%); }
@@ -636,7 +626,6 @@ html[data-theme="seal"] {
   --cta: #FD6E88; --cta-dk: #E5506C; --cta-ink: #072D59;
   --on-dark: #DBF2FC; --on-dark-mut: #9FC3DD; --g-base: #072D59; --g-shade: rgba(4, 24, 48, .6); --g-shade-0: rgba(4, 24, 48, 0);
   --veil: rgba(7, 45, 89, .55); --org-page: #051F3E; --org-bg: #F5FBFE; --org-glass: rgba(7, 45, 89, .84); --pop: #FD6E88;
-  --headline: "Anton", "Arial Narrow", sans-serif;
 }
 html[data-theme="seal"] .g1 { --grad: linear-gradient(160deg, #DBF2FC 0%, #5A8FC0 45%, #072D59 100%); }
 html[data-theme="seal"] .g2 { --grad: linear-gradient(200deg, #FFD6DE 0%, #FD6E88 40%, #072D59 100%); }
@@ -747,3 +736,20 @@ main.browse { gap: 12px; }
   .wkopen { flex-direction: column; align-items: flex-start; gap: 6px; border-top: 1px solid var(--line); padding-top: 8px; }
   .wkempty { font-size: 13px; }
 }
+
+/* ---------- Typography: one system for every theme ---------- */
+h1, h2, h3, .logo, .ologo, .hero-name, .pillar b, .quiz-opt.big-opt b, .docpage h1, .docpage .home { font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: .01em; line-height: 1; }
+main h1 { font-size: 38px !important; }
+.sheet h1, .sheet h2 { line-height: 1.05; }
+h2 { font-size: 22px; }
+.sheet h2 { font-size: 24px; }
+.logo, .ologo { font-size: 22px; letter-spacing: .03em; }
+.pillar b { font-size: 24px; }
+.hero-name { font-size: 32px; }
+.quiz-opt.big-opt b { font-size: 24px; }
+.docpage h1 { font-size: 40px; }
+/* numbers stay in the display face; names and labels you read are in Figtree */
+.big-n, .streak .n, .cin, .onow-n, .oi-stats b, .ohealth b, .sharecard .n, .badge, .ph .more, .next .nx-what, .ph.poster .pt { font-family: var(--display); font-weight: 800; }
+.disp, .quiz-opt { font-family: var(--body); }
+.card .disp { font-size: 16px !important; }
+@media (min-width: 960px) { main h1 { font-size: 56px !important; } h2 { font-size: 26px; } }
