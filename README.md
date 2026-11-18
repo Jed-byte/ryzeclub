@@ -26,7 +26,7 @@ As an organiser, open **https://jed-byte.github.io/ryzeclub/#organiser**. This i
 
 "See your public page" in the Club tab switches back to the member app. Invite links open as `…/ryzeclub/#join/mdr` with a "Join the club" panel; try it on your phone with the QR code. From the member app, "Open organiser app" on a club you manage, or **Demo**, switches over.
 
-Use the **Demo** button at the top to skip ahead in time, become an organiser, or reset.
+Use the **Demo** button at the top to skip ahead in time, become an organiser, switch colour theme (Lemon, Scarlet, Watermelon, Court, Kinetic, Seal), or reset. A theme can also be opened from a link, for example `?theme=court`.
 
 ### What is not real
 

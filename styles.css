@@ -21,6 +21,11 @@
   --org-bg: #FFFCEE;
   --org-glass: rgba(10, 31, 87, .76);
   --pop: var(--acc);
+  /* Button colour. Defaults to the accent; the Court, Kinetic and Seal themes give actions their own colour (the 10%). */
+  --cta: var(--acc);
+  --cta-dk: var(--acc-dk);
+  --cta-ink: var(--acc-ink);
+  --cta-edge: transparent;
   --danger: #D62E2E;
   --danger-soft: #FEF3F1;
   --ok: #1E7A5A;
@@ -79,8 +84,8 @@ main.pad-bar { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
 /* Buttons. Three levels, always distinguishable: primary (filled accent, the one next step),
    secondary (ink outline), tertiary (soft fill for close and cancel). All are bold and at least 48px tall. */
-.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; border: 2px solid transparent; border-radius: 999px; background: var(--acc); color: var(--acc-ink); font-weight: 700; font-size: 16px; letter-spacing: .005em; padding: 13px 22px; min-height: 50px; box-shadow: 0 2px 0 var(--acc-dk); transition: transform .08s ease, background-color .15s ease, box-shadow .08s ease; }
-.btn:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--acc-dk); }
+.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; border: 2px solid var(--cta-edge); border-radius: 999px; background: var(--cta); color: var(--cta-ink); font-weight: 700; font-size: 16px; letter-spacing: .005em; padding: 13px 22px; min-height: 50px; box-shadow: 0 2px 0 var(--cta-dk); transition: transform .08s ease, background-color .15s ease, box-shadow .08s ease; }
+.btn:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--cta-dk); }
 .btn.big { min-height: 56px; font-size: 17px; padding: 15px 26px; }
 .btn.block { width: 100%; }
 .btn.ghost { background: var(--bg); color: var(--ink); border-color: var(--ink); box-shadow: none; }
@@ -288,7 +293,7 @@ button.item { min-height: 56px; }
 @media (prefers-reduced-motion: reduce) { .btn, .card, .quiz-opt { transition: none; } .btn:active, .card:active, .quiz-opt:active { transform: none; } }
 @media (hover: hover) {
   .days button:hover i { border-color: var(--ink); }
-  .btn:hover { background: var(--acc-dk); }
+  .btn:hover { background: var(--cta-dk); }
   .btn.ghost:hover { background: var(--soft); }
   .btn.quiet:hover { background: var(--line); }
   .card:hover { border-color: var(--ink); }
@@ -548,7 +553,7 @@ input[aria-invalid="true"] { border-color: var(--danger); }
   main .stack > .btn.block, main > .btn.block { width: 100%; }
 }
 
-/* ---------- Colour themes (try them from Demo, or add ?theme=scarlet or ?theme=watermelon to the link) ---------- */
+/* ---------- Colour themes (try them from Demo, or add ?theme=scarlet, watermelon, court, kinetic or seal to the link) ---------- */
 /* Scarlet: Egyptian blue, stone blue, scarlet red. Buttons use a slightly deeper scarlet so white text passes contrast. */
 html[data-theme="scarlet"] {
   --page: #03203D; --bg: #FFFFFF; --ink: #03203D; --mut: #4A5A6B; --line: #D6E2EC; --soft: #EAF2F9;
@@ -580,17 +585,69 @@ html[data-theme="watermelon"] .g5 { --grad: linear-gradient(150deg, #F7EFE7 0%, 
 html[data-theme="watermelon"] .g6 { --grad: linear-gradient(190deg, #FDE1EE 0%, #474329 70%, #2F2C1B 100%); }
 html[data-theme="watermelon"] .glass .top { background-color: rgba(251, 246, 241, .78); }
 
-/* Both new themes: tall condensed capitals for headlines, as in the references */
-html[data-theme="scarlet"] main h1, html[data-theme="watermelon"] main h1,
-html[data-theme="scarlet"] .hero-name, html[data-theme="watermelon"] .hero-name,
-html[data-theme="scarlet"] .pillar b, html[data-theme="watermelon"] .pillar b { font-family: var(--headline); font-weight: 400; text-transform: uppercase; letter-spacing: .01em; line-height: 1.02; }
-html[data-theme="scarlet"] main h1, html[data-theme="watermelon"] main h1 { font-size: 40px; }
-html[data-theme="scarlet"] .hero-name, html[data-theme="watermelon"] .hero-name { font-size: 30px; }
-html[data-theme="scarlet"] .pillar b, html[data-theme="watermelon"] .pillar b { font-size: 24px; }
-html[data-theme="scarlet"] .logo, html[data-theme="watermelon"] .logo, html[data-theme="scarlet"] .ologo, html[data-theme="watermelon"] .ologo { font-family: var(--headline); font-weight: 400; text-transform: uppercase; letter-spacing: .04em; font-size: 20px; }
-html[data-theme="scarlet"] main h1 { color: var(--acc); }
+/* Every theme except Lemon: tall condensed capitals for headlines, as in the references */
+html[data-theme] main h1, html[data-theme] .hero-name, html[data-theme] .pillar b { font-family: var(--headline); font-weight: 400; text-transform: uppercase; letter-spacing: .01em; line-height: 1.02; }
+html[data-theme] main h1 { font-size: 40px; color: var(--acc); }
+html[data-theme] .hero-name { font-size: 30px; }
+html[data-theme] .pillar b { font-size: 24px; }
+html[data-theme] .logo, html[data-theme] .ologo { font-family: var(--headline); font-weight: 400; text-transform: uppercase; letter-spacing: .04em; font-size: 20px; }
 html[data-theme="watermelon"] main h1 { color: var(--ink); }
-@media (min-width: 960px) { html[data-theme="scarlet"] main h1, html[data-theme="watermelon"] main h1 { font-size: 56px; } }
+@media (min-width: 960px) { html[data-theme] main h1 { font-size: 56px; } }
+
+/* Court: court blue and frost white, coral for buttons only (from the Cancha Nine padel reference).
+   Coral is too light for white text, so buttons carry dark text. */
+html[data-theme="court"] {
+  --page: #0D56CA; --bg: #FFFFFF; --ink: #0A2A5E; --mut: #4B5878; --line: #E4DDE6; --soft: #F4EEF5;
+  --acc: #0D56CA; --acc-dk: #0A44A2; --acc-ink: #FFFFFF; --acc-soft: #E2EBFA; --danger: #B3261E; --danger-soft: #FDECEC;
+  --cta: #FD8270; --cta-dk: #E4604D; --cta-ink: #3A1410;
+  --on-dark: #F4EEF5; --on-dark-mut: #C9D6F2; --g-base: #0D56CA; --g-shade: rgba(5, 30, 80, .6); --g-shade-0: rgba(5, 30, 80, 0);
+  --veil: rgba(10, 42, 94, .55); --org-page: #0A3E96; --org-bg: #F9F6FA; --org-glass: rgba(13, 86, 202, .84); --pop: #FD8270;
+  --headline: "Anton", "Arial Narrow", sans-serif;
+}
+html[data-theme="court"] .g1 { --grad: linear-gradient(160deg, #F4EEF5 0%, #5C8FE0 45%, #0D56CA 100%); }
+html[data-theme="court"] .g2 { --grad: linear-gradient(200deg, #FFD3CB 0%, #FD8270 40%, #0D56CA 100%); }
+html[data-theme="court"] .g3 { --grad: linear-gradient(140deg, #E2EBFA 0%, #2F6FD6 50%, #0A3E96 100%); }
+html[data-theme="court"] .g4 { --grad: linear-gradient(180deg, #F4EEF5 0%, #8FB0EA 55%, #0A44A2 100%); }
+html[data-theme="court"] .g5 { --grad: linear-gradient(150deg, #FFE3DE 0%, #6C93D8 55%, #0A2A5E 100%); }
+html[data-theme="court"] .g6 { --grad: linear-gradient(190deg, #E2EBFA 0%, #0D56CA 70%, #0A2A5E 100%); }
+
+/* Kinetic: deep red and snow white, citrus yellow for buttons only. Yellow vanishes on white,
+   so buttons get a deep-red edge and deep-red text. */
+html[data-theme="kinetic"] {
+  --page: #7E100D; --bg: #FEFEFE; --ink: #3D0807; --mut: #6B4A48; --line: #EFE3E2; --soft: #FBF3F2;
+  --acc: #7E100D; --acc-dk: #5E0B09; --acc-ink: #FEF650; --acc-soft: #FBE3E1; --danger: #B3261E; --danger-soft: #FDECEC;
+  --cta: #FEF650; --cta-dk: #E3DA2A; --cta-ink: #7E100D; --cta-edge: #7E100D;
+  --on-dark: #FEFEFE; --on-dark-mut: #E8C9C7; --g-base: #7E100D; --g-shade: rgba(40, 4, 3, .6); --g-shade-0: rgba(40, 4, 3, 0);
+  --veil: rgba(61, 8, 7, .55); --org-page: #5E0B09; --org-bg: #FFFDF7; --org-glass: rgba(126, 16, 13, .84); --pop: #FEF650;
+  --headline: "Anton", "Arial Narrow", sans-serif;
+}
+html[data-theme="kinetic"] .g1 { --grad: linear-gradient(160deg, #FEF650 0%, #D2391F 45%, #7E100D 100%); }
+html[data-theme="kinetic"] .g2 { --grad: linear-gradient(200deg, #FBE3E1 0%, #B3261E 55%, #5E0B09 100%); }
+html[data-theme="kinetic"] .g3 { --grad: linear-gradient(140deg, #FEF650 0%, #E86A22 40%, #7E100D 100%); }
+html[data-theme="kinetic"] .g4 { --grad: linear-gradient(180deg, #F6D2CE 0%, #A3201B 60%, #3D0807 100%); }
+html[data-theme="kinetic"] .g5 { --grad: linear-gradient(150deg, #FEFEFE 0%, #C9473D 50%, #5E0B09 100%); }
+html[data-theme="kinetic"] .g6 { --grad: linear-gradient(190deg, #FBE3E1 0%, #7E100D 70%, #3D0807 100%); }
+html[data-theme="kinetic"] .ask .btn:not(.ghost) { --cta-edge: #FEF650; }
+
+/* Seal: navy and seal blue, crimson pink for buttons only. Navy text on the pink keeps it readable. */
+html[data-theme="seal"] {
+  --page: #072D59; --bg: #FFFFFF; --ink: #072D59; --mut: #4A5D75; --line: #D3E6F0; --soft: #DBF2FC;
+  --acc: #072D59; --acc-dk: #051F3E; --acc-ink: #FFFFFF; --acc-soft: #DBF2FC; --danger: #B3261E; --danger-soft: #FDECEC;
+  --cta: #FD6E88; --cta-dk: #E5506C; --cta-ink: #072D59;
+  --on-dark: #DBF2FC; --on-dark-mut: #9FC3DD; --g-base: #072D59; --g-shade: rgba(4, 24, 48, .6); --g-shade-0: rgba(4, 24, 48, 0);
+  --veil: rgba(7, 45, 89, .55); --org-page: #051F3E; --org-bg: #F5FBFE; --org-glass: rgba(7, 45, 89, .84); --pop: #FD6E88;
+  --headline: "Anton", "Arial Narrow", sans-serif;
+}
+html[data-theme="seal"] .g1 { --grad: linear-gradient(160deg, #DBF2FC 0%, #5A8FC0 45%, #072D59 100%); }
+html[data-theme="seal"] .g2 { --grad: linear-gradient(200deg, #FFD6DE 0%, #FD6E88 40%, #072D59 100%); }
+html[data-theme="seal"] .g3 { --grad: linear-gradient(140deg, #DBF2FC 0%, #2E6A9E 50%, #051F3E 100%); }
+html[data-theme="seal"] .g4 { --grad: linear-gradient(180deg, #EAF8FE 0%, #7FB2D8 55%, #072D59 100%); }
+html[data-theme="seal"] .g5 { --grad: linear-gradient(150deg, #FFE5EA 0%, #6E9CC4 55%, #072D59 100%); }
+html[data-theme="seal"] .g6 { --grad: linear-gradient(190deg, #DBF2FC 0%, #072D59 70%, #041830 100%); }
+
+/* In the three newer themes the "Book" and "Join" tags are filled with the button colour, since it is too light as outlined text. */
+html[data-theme="court"] .tag.cta, html[data-theme="kinetic"] .tag.cta, html[data-theme="seal"] .tag.cta { background: var(--cta); color: var(--cta-ink); border-color: var(--cta-edge, var(--cta)); }
+html[data-theme="court"] .tag.cta, html[data-theme="seal"] .tag.cta { border-color: var(--cta); }
 
 /* ---------- Simpler screens (review fixes) ---------- */
 .pillar { border: 1.5px solid var(--line); background: var(--soft); }
@@ -639,3 +696,54 @@ main.browse { gap: 12px; }
 .locline > .ic:first-child { width: 22px; height: 22px; flex: none; color: var(--ink); }
 .locline:hover { border-color: var(--ink); }
 .minimap { display: block; width: 100%; height: 170px; border: 0; border-radius: 12px; background: var(--soft); }
+
+/* ---------- Demo: colour theme picker ---------- */
+.seg.themes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.seg.themes button { flex-direction: column; gap: 4px; padding: 8px 4px; min-height: 60px; font-size: 13px; }
+.seg.themes .sw { display: flex; gap: 2px; }
+.seg.themes .sw i { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .12); }
+
+/* ---------- My week: next up + Monday to Sunday ---------- */
+/* The cover photo always fills the card width (Safari does not stretch children of a flex button). */
+.nx-main > .ph, .nx-main > .nx-body { align-self: stretch; width: 100%; }
+.next .nx-when { text-transform: uppercase; letter-spacing: .04em; }
+.wk { display: flex; flex-direction: column; gap: 4px; }
+.wkday { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.wkday:last-child { border-bottom: 0; }
+.wkh { display: flex; align-items: baseline; gap: 8px; font-family: var(--body); font-size: 15px; font-weight: 700; color: var(--ink); }
+.wkh .wkd { font-size: 13px; font-weight: 500; color: var(--mut); }
+.wkday.t .wkh span:first-child { color: var(--acc); }
+.wkday.past { opacity: .6; }
+.wkev { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 8px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--ink); text-align: left; }
+.wkev .grow { display: flex; flex-direction: column; gap: 2px; }
+.wkimg { flex: none; width: 52px; height: 52px; border-radius: 10px; padding: 0; }
+.wkopen { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 6px 2px; border: 0; background: none; color: var(--ink); text-align: left; font-size: 14px; }
+.wkempty { align-self: flex-start; min-height: 44px; padding: 0; border: 0; background: none; color: var(--mut); font-size: 14px; text-align: left; }
+.wkempty span { color: var(--acc); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.wknone { color: var(--mut); font-size: 13px; }
+@media (hover: hover) {
+  .wkev:hover { border-color: var(--acc); }
+  .wkopen:hover b, .wkempty:hover span { color: var(--acc); }
+}
+
+/* Desktop: the next session sits as a wide banner and the week becomes a 7-column calendar.
+   The small day strip is not needed there because every day is already on screen. */
+@media (min-width: 960px) {
+  .next { flex-direction: row; align-items: stretch; max-width: none; }
+  .next .nx-main { flex-direction: row; flex: 1; }
+  .next .nx-main > .ph { width: 46%; height: auto; min-height: 220px; }
+  .next .nx-main > .nx-body { flex: 1; width: auto; justify-content: center; padding: 20px 24px; }
+  .next .nx-who { align-self: center; width: 340px; padding: 20px 24px 20px 0; }
+  .next .nx-what { font-size: 30px; }
+  .wkstrip { display: none; }
+  .wk { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; align-items: start; }
+  .wkday { border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 10px; min-height: 220px; background: var(--bg); }
+  .wkday.t { border-color: var(--acc); }
+  .wkday:last-child { border-bottom: 1.5px solid var(--line); }
+  .wkh { flex-direction: column; gap: 0; }
+  .wkev { flex-direction: column; align-items: stretch; gap: 8px; padding: 6px; }
+  .wkev .wkimg { width: 100%; height: 72px; }
+  .wkev .tag { align-self: flex-start; }
+  .wkopen { flex-direction: column; align-items: flex-start; gap: 6px; border-top: 1px solid var(--line); padding-top: 8px; }
+  .wkempty { font-size: 13px; }
+}

@@ -24,6 +24,9 @@
   const pillarOf = (sport) => Object.keys(PILLARS).find((k) => PILLARS[k].sports.includes(sport));
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
   const DAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  // Colour themes for Demo: [key, label, swatches: brand, background, button]. Button colours are kept for actions only.
+  const THEMES = [['', 'Lemon', ['#0E2C7C', '#FEF7D6', '#0E2C7C']], ['scarlet', 'Scarlet', ['#03203D', '#EAF2F9', '#D1262B']], ['watermelon', 'Watermelon', ['#474329', '#F0E5DB', '#FC75B4']],
+    ['court', 'Court', ['#0D56CA', '#F4EEF5', '#FD8270']], ['kinetic', 'Kinetic', ['#7E100D', '#FEFEFE', '#FEF650']], ['seal', 'Seal', ['#072D59', '#DBF2FC', '#FD6E88']]];
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
@@ -700,29 +703,50 @@
     const showNum = S.total > 0 || S.streak > 0;
     const org = S.manage.length ? `<div class="stack tight"><span class="cap">Clubs you manage</span>${S.manage.map((id) => `<button class="mrow" data-act="manage" data-id="${id}"><span class="orgcta-ic">${ic('flag')}</span><span class="grow"><b>${esc(club(id).name)}</b><br><span class="sm mut">Headcounts, schedule, photos</span></span><span class="go">Manage ${ic('chev')}</span></button>`).join('')}</div>` : '';
     const booked = up.filter((s) => has(s.id));
+    const nextS = booked.find((s) => !isCancelled(s));
     if (!LATER()) return `<main class="pad-nav"><h1>My week</h1>
-      ${nextCard(booked.find((s) => !isCancelled(s)))}
-      ${booked.length > 1 ? `<div class="stack tight"><h2>Also booked</h2><div>${booked.slice(1).map((s) => sessionRow(s, true)).join('')}</div></div>` : ''}
+      ${nextCard(nextS)}
+      ${booked.length || S.follows.length ? `<div class="wkstrip"><div class="days">${days}</div><p class="xs mut center">Tap a day to see its sessions</p></div>${weekPlan(nextS)}` : ''}
       ${booked.length ? '' : `<div class="stack"><p class="mut">Nothing booked yet. Pick what you're into.</p>${pillarNav()}<button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button></div>`}
       ${org}</main>`;
     return `<main class="pad-nav">${ask}
       ${S.note ? `<p class="note">${S.note}</p>` : ''}
       <div class="stack"><span class="cap">Hi ${esc(u.name)}</span>
         ${showNum ? `<button class="streak" data-act="profile" style="background:none;border:0;padding:0;text-align:left"><span class="n">${S.streak}</span><span><b class="disp" style="font-size:18px">week streak</b><br><span class="mut sm">${S.prot ? '1 rest week available' : 'Rest week used'} · ${plural(S.total, 'session')}</span><br><span class="det">Your milestones ${ic('chev')}</span></span></button>` : ''}
-        <div class="days">${days}</div><p class="xs mut center">Tap a day to see its sessions</p><p><b>${status}</b></p></div>
+        <div class="wkstrip"><div class="days">${days}</div><p class="xs mut center">Tap a day to see its sessions</p></div><p><b>${status}</b></p></div>
       ${org}
       ${nextCard(up.find((s) => has(s.id) && !isCancelled(s)))}
-      <div class="stack tight"><span class="cap">Coming up</span>
-        ${up.length ? `<div>${up.map((s) => sessionRow(s, true)).join('')}</div>` : (S.follows.length ? '<p class="mut">Nothing booked this week.</p>' : `<p class="mut">Nothing yet. Pick Mind, Body or Soul, or try one of these.</p>${pillarNav()}<span class="cap">Popular this week</span><div class="stack">${['mdr', 'mcc', 'dos'].map((id) => clubCard(club(id))).join('')}</div><button class="btn" data-act="quiz">Find my club ${ic('right')}</button>`)}</div>
+      ${up.length || S.follows.length ? weekPlan(up.find((s) => has(s.id) && !isCancelled(s))) : `<div class="stack tight"><span class="cap">Coming up</span><p class="mut">Nothing yet. Pick Mind, Body or Soul, or try one of these.</p>${pillarNav()}<span class="cap">Popular this week</span><div class="stack">${['mdr', 'mcc', 'dos'].map((id) => clubCard(club(id))).join('')}</div><button class="btn" data-act="quiz">Find my club ${ic('right')}</button></div>`}
       ${S.follows.length ? `<div class="stack tight"><span class="cap">From your clubs</span><div class="strip">${S.follows.slice(0, 3).map((id) => { const c = club(id); const p = leadPhotos(c)[0] || { g: 1, sp: c.sport, i: 0 }; return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="club" data-id="${id}">${esc(c.name.split(' ')[0])}</button>`; }).join('')}</div></div>` : ''}
     </main>`;
   };
+
+  // My week: Monday to Sunday. Every day is listed; booked sessions show their photo, other sessions from your clubs
+  // sit underneath as quieter rows, and empty days invite you to find something. On desktop the days become a 7-column calendar.
+  function weekPlan(skip) {
+    const n = now(); const ws = weekStart(n); const today = ymd(n);
+    const cols = [0, 1, 2, 3, 4, 5, 6].map((i) => {
+      const d = new Date(ws); d.setDate(d.getDate() + i); const key = ymd(d); const past = key < today; const t = key === today;
+      const list = dayList(key).filter((s) => !isCancelled(s) || has(s.id));
+      const mine = list.filter((s) => has(s.id) || S.att[s.id] === 'went');
+      const open = past ? [] : list.filter((s) => !has(s.id) && !S.att[s.id] && s.at > n).slice(0, 2);
+      const ev = mine.map((s) => { const g = 1 + (hash(s.club.id) % 6); const went = S.att[s.id] === 'went';
+        return `<button class="wkev${s === skip ? ' nx' : ''}" data-act="session" data-id="${s.id}"><span class="wkimg ph g${g}"${im(s.club.sport, hash(s.club.id) + 1)}></span>
+          <span class="grow"><b>${esc(s.club.name)}</b><span class="mut sm">${s.t} · ${esc(s.type)}</span></span>${isCancelled(s) ? '<span class="tag warn">Cancelled</span>' : went ? `<span class="tag ok">${ic('check')}Went</span>` : `<span class="tag go">${ic('check')}Going</span>`}</button>`; }).join('');
+      const rows = open.map((s) => `<button class="wkopen" data-act="session" data-id="${s.id}"><span class="grow"><b>${s.t}</b> ${esc(s.club.name)}<br><span class="mut xs">${esc(s.type)} · ${going(s)} going</span></span><span class="tag cta">${s.club.price ? 'Book' : 'Join'}</span></button>`).join('');
+      const empty = !mine.length && !open.length ? (past ? '<p class="wknone">Nothing</p>' : `<button class="wkempty" data-act="browse">Nothing booked · <span>Find a session</span></button>`) : '';
+      return `<section class="wkday${past ? ' past' : ''}${t ? ' t' : ''}" aria-label="${DAYL[d.getDay()]} ${d.getDate()}"><h3 class="wkh"><span>${t ? 'Today' : DAY[d.getDay()]}</span><span class="wkd">${d.getDate()} ${MON[d.getMonth()]}</span></h3>${ev}${rows}${empty}</section>`;
+    }).join('');
+    const later = S.rsvps.map(byId).filter((s) => s && s.at >= new Date(ws.getTime() + 7 * 864e5)).sort((a, b) => a.at - b.at);
+    return `<div class="stack tight"><h2>This week</h2><div class="wk">${cols}</div></div>
+      ${later.length ? `<div class="stack tight"><h2>Later</h2><div>${later.map((s) => sessionRow(s, true)).join('')}</div></div>` : ''}`;
+  }
 
   // My week: the next session you're going to, with its photo and who else is going
   function nextCard(s) {
     if (!s) return '';
     const c = s.club; const g = 1 + (hash(c.id) % 6); const others = going(s) - 1;
-    return `<div class="next"><button class="nx-main" data-act="session" data-id="${s.id}"><span class="ph g${g}"${im(c.sport, hash(c.id) + 1)}><span class="nx-when">${dayWord(s.at)} · ${s.t}</span><span class="nx-what">${esc(s.type)}</span></span>
+    return `<div class="next"><button class="nx-main" data-act="session" data-id="${s.id}"><span class="ph g${g}"${im(c.sport, hash(c.id) + 1)}><span class="nx-when">Next up · ${dayWord(s.at)} · ${s.t}</span><span class="nx-what">${esc(s.type)}</span></span>
       <span class="nx-body"><b>${esc(c.name)}</b><span class="mut sm">${esc(s.place)}</span><span class="det">Session details ${ic('chev')}</span></span></button>
       <div class="nx-who"><button class="whobtn" data-act="who" data-id="${s.id}">${avatars(people(s, 4))}<span class="grow"><b>See who's going</b><br><span class="mut sm">${plural(others, 'other')} · tap to see their profiles</span></span>${ic('chev', 'chev')}</button></div></div>`;
   }
@@ -1194,7 +1218,7 @@
     <button class="btn ghost block" data-act="d-org">${pend ? 'Approve my club request' : S.manage.length ? 'Open the organiser app' : 'Make me organiser of Marina Dawn Runners'}</button>
     ${S.mode === 'org' ? '<button class="btn ghost block" data-act="tomember">Switch to the member app</button>' : ''}
     <span class="cap">Colour theme</span>
-    <div class="seg" role="group" aria-label="Colour theme">${[['', 'Lemon'], ['scarlet', 'Scarlet'], ['watermelon', 'Watermelon']].map(([k, l]) => `<button class="${(document.documentElement.dataset.theme || '') === k ? 'on' : ''}" data-act="theme" data-val="${k}" aria-pressed="${(document.documentElement.dataset.theme || '') === k}">${l}</button>`).join('')}</div>
+    <div class="seg themes" role="group" aria-label="Colour theme">${THEMES.map(([k, l, sw]) => `<button class="${(document.documentElement.dataset.theme || '') === k ? 'on' : ''}" data-act="theme" data-val="${k}" aria-pressed="${(document.documentElement.dataset.theme || '') === k}"><span class="sw" aria-hidden="true">${sw.map((c) => `<i style="background:${c}"></i>`).join('')}</span>${l}</button>`).join('')}</div>
     <span class="cap">Start again</span>
     <button class="btn ghost block" data-act="d-reset">Reset the prototype</button>
     <p class="mut xs">"Skip" needs an RSVP first. After an 11-week streak, your next "I went" earns the 12-week milestone, and you can post photos to your first club (members need 5 sessions with a club).</p>
