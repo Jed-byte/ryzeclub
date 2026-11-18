@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Pulse Merchant Analytics: design review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=block" rel="stylesheet">
+<style>
+@page { size: A4 landscape; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #ffffff; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; color: #101010; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 297mm; height: 210mm; padding: 11mm 13mm 10mm; position: relative; overflow: hidden; page-break-after: always; display: flex; flex-direction: column; }
+.page:last-child { page-break-after: auto; }
+.foot { position: absolute; bottom: 5mm; left: 13mm; right: 13mm; display: flex; justify-content: space-between; font-size: 9px; color: #8a8a8a; }
+.kicker { display: flex; gap: 8px; align-items: center; font-size: 11px; color: #656565; margin-bottom: 4px; }
+.tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.tag.must { background: #04281f; color: #ffffff; }
+.tag.should { background: #e7efed; color: #0a634d; }
+.tag.call { background: #f5f5f5; color: #383838; border: 1px solid #e1e1e1; }
+h1 { font-size: 30px; line-height: 1.15; margin: 0 0 8px; color: #04281f; }
+h2 { font-size: 20px; line-height: 1.2; margin: 0 0 4px; color: #04281f; }
+h3 { font-size: 13px; margin: 0 0 6px; color: #04281f; }
+.why { font-size: 12px; color: #383838; margin: 0 0 8px; max-width: 250mm; line-height: 1.45; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; flex: 1; min-height: 0; }
+.stack { display: grid; grid-template-rows: auto auto; gap: 4mm; flex: 1; min-height: 0; }
+.row { display: grid; grid-template-columns: 1fr 62mm; gap: 6mm; align-items: start; }
+.lab { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+.lab.now { color: #8a4b00; } .lab.now::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #e8590c; }
+.lab.should { color: #0a634d; } .lab.should::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #0a634d; }
+.shot { position: relative; border: 1px solid #e1e1e1; border-radius: 8px; overflow: visible; background: #fff; }
+.shot img { border-radius: 8px; }
+.shot img { display: block; width: 100%; }
+.hb { position: absolute; border: 2px solid #e8590c; border-radius: 6px; background: rgba(232,89,12,.07); }
+.hb b { position: absolute; left: -11px; top: -11px; } .hb.r b { left: auto; right: -11px; } .hb b { width: 20px; height: 20px; border-radius: 50%; background: #e8590c; color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px #fff; }
+.mk { position: absolute; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%; background: #e8590c; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(0,0,0,.25); }
+ol.notes, ul.notes { margin: 6px 0 0; padding: 0; list-style: none; font-size: 11px; line-height: 1.45; color: #383838; }
+ol.notes li { display: grid; grid-template-columns: 20px 1fr; gap: 4px; margin-bottom: 5px; counter-increment: n; }
+ol.notes { counter-reset: n; }
+ol.notes li::before { content: counter(n); width: 16px; height: 16px; border-radius: 50%; background: #e8590c; color: #fff; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+ul.notes li { position: relative; padding-left: 12px; margin-bottom: 5px; }
+ul.notes li::before { content: ''; position: absolute; left: 0; top: 6px; width: 5px; height: 5px; border-radius: 50%; background: #0a634d; }
+.hl { background: #fff1c2; border-radius: 3px; padding: 0 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.mnote { font-size: 10px; color: #8a8a8a; margin-top: 5px; }
+/* mock design system, taken from the Figma file */
+.mock { background: #fcfcfc; border: 1px solid #e1e1e1; border-radius: 8px; padding: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+.tile { background: #fff; border: 1px solid #efefef; border-radius: 14px; padding: 12px; display: flex; justify-content: space-between; gap: 6px; min-height: 92px; }
+.tl { font-size: 12px; color: #656565; display: flex; align-items: center; gap: 4px; }
+.tv { font-size: 20px; font-weight: 700; margin-top: 12px; letter-spacing: -.2px; }
+.tc { font-size: 10px; color: #656565; margin-top: 3px; line-height: 1.35; }
+.ic { width: 30px; height: 30px; border-radius: 7px; background: #e7efed; flex: none; position: relative; }
+.ic::after { content: ''; position: absolute; inset: 9px; border-radius: 3px; background: #0a634d; opacity: .85; }
+.i { display: inline-flex; width: 11px; height: 11px; border: 1.2px solid #8a8a8a; border-radius: 50%; font-size: 7px; align-items: center; justify-content: center; color: #8a8a8a; font-weight: 700; }
+.banner { background: #e7efed; border: 1px solid #0a634d; border-radius: 10px; padding: 9px 12px; font-size: 11px; margin-bottom: 9px; color: #04281f; }
+.banner b { display: block; font-size: 12px; margin-bottom: 2px; }
+.card { background: #fff; border: 1px solid #efefef; border-radius: 14px; padding: 12px; }
+.ch { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: #101010; }
+.sub { font-size: 10px; color: #656565; margin-top: 2px; }
+.scope { font-size: 9.5px; font-weight: 600; padding: 2px 7px; border-radius: 999px; display: inline-flex; gap: 4px; align-items: center; }
+.scope.brand { background: #f5f5f5; color: #383838; border: 1px solid #e1e1e1; }
+.scope.filt { background: #e7efed; color: #0a634d; border: 1px solid #b9d3cb; }
+.lock { width: 8px; height: 9px; border: 1.3px solid currentColor; border-radius: 2px; position: relative; margin-top: 2px; }
+.lock::before { content: ''; position: absolute; width: 5px; height: 5px; border: 1.3px solid currentColor; border-bottom: none; border-radius: 3px 3px 0 0; left: 0; top: -5px; }
+.fbar { display: flex; gap: 7px; align-items: center; font-size: 11px; margin-bottom: 8px; }
+.ctl { background: #fff; border: 1px solid #e1e1e1; border-radius: 8px; padding: 6px 9px; }
+.tabs { display: flex; gap: 16px; font-size: 11.5px; color: #656565; border-bottom: 1px solid #e1e1e1; margin-bottom: 8px; }
+.tabs span { padding: 0 0 6px; } .tabs .on { color: #04281f; font-weight: 600; border-bottom: 2px solid #0a634d; }
+.fnote { font-size: 10px; color: #656565; margin-bottom: 8px; display: flex; gap: 6px; align-items: center; }
+.pill { background: #e7efed; color: #0a634d; border-radius: 999px; padding: 1px 7px; font-weight: 600; font-size: 9.5px; }
+.bar { height: 22px; border-radius: 6px; background: #e7efed; display: flex; align-items: center; justify-content: space-between; padding: 0 8px; font-size: 10px; margin-bottom: 5px; }
+.rrow { display: grid; grid-template-columns: 1fr 34px 30px; gap: 6px; font-size: 10.5px; padding: 5px 0; align-items: center; }
+.rrow .n { font-weight: 700; text-align: right; } .rrow .p { color: #656565; font-size: 9.5px; text-align: right; }
+.sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.track { height: 6px; border-radius: 3px; background: #edf2f1; overflow: hidden; margin: 2px 0 1px; }
+.track > i { display: block; height: 100%; background: #0a634d; border-radius: 3px; }
+.dq { background: #f5f5f5; border: 1px solid #e1e1e1; border-radius: 10px; padding: 9px 10px; font-size: 10.5px; color: #383838; line-height: 1.45; }
+.dq b { color: #101010; }
+.chip { font-size: 9.5px; padding: 2px 7px; border-radius: 999px; display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+.chip.grey { background: #f5f5f5; border: 1px solid #e1e1e1; color: #383838; }
+.chip.dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #8a8a8a; }
+.drow { display: flex; gap: 9px; align-items: center; background: #fff; border: 1px solid #efefef; border-radius: 10px; padding: 8px 10px; }
+.logo { width: 26px; height: 26px; border-radius: 6px; background: #d93f2b; flex: none; }
+.dmain { flex: 1; font-size: 10px; color: #656565; } .dmain b { display: block; color: #101010; font-size: 11.5px; font-weight: 600; }
+.damt { text-align: right; font-size: 11.5px; font-weight: 700; }
+.ans { background: #fff; border: 1px solid #efefef; border-radius: 12px; padding: 11px 12px; font-size: 10.5px; }
+.tell { background: #fff8ec; border: 1px solid #f6e3c1; border-radius: 10px; padding: 9px 10px; margin-top: 8px; line-height: 1.45; color: #383838; }
+.tell .th { display: flex; justify-content: space-between; font-weight: 600; color: #101010; margin-bottom: 4px; } .tell .th span { color: #0a634d; }
+table.mt { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; border: 1px solid #efefef; border-radius: 12px; overflow: hidden; font-size: 10.5px; }
+table.mt th { background: #f5f5f5; color: #656565; font-weight: 500; text-align: left; padding: 8px 9px; font-size: 9.5px; }
+table.mt td { padding: 9px; border-top: 1px solid #efefef; vertical-align: middle; }
+table.mt td small { display: block; color: #656565; font-size: 9.5px; }
+.st { font-size: 9.5px; padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
+.st.act { background: #d0efdb; color: #0e6b33; } .st.done { background: #f5f5f5; color: #383838; } .st.sch { background: #e7efed; color: #0a634d; }
+.btn { display: inline-block; border: 1px solid #e1e1e1; border-radius: 8px; padding: 6px 12px; font-size: 11px; font-weight: 600; background: #fff; }
+.btn.pri { background: #0a634d; color: #fff; border-color: #0a634d; }
+.dl { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 14px; font-size: 10px; color: #656565; }
+.dl b { display: block; color: #101010; font-size: 11px; }
+/* cover and text pages */
+.lead { font-size: 14px; line-height: 1.5; color: #383838; max-width: 230mm; }
+.two { display: grid; grid-template-columns: 1.15fr 1fr; gap: 10mm; margin-top: 6mm; }
+.box { border: 1px solid #e1e1e1; border-radius: 10px; padding: 12px 14px; }
+.box ol { margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.5; color: #383838; }
+.box ol li { margin-bottom: 4px; } .box ol li span { color: #8a8a8a; font-size: 10.5px; }
+.box ul { margin: 0; padding-left: 16px; font-size: 12px; line-height: 1.5; color: #383838; }
+table.tx { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+table.tx th { text-align: left; background: #f5f5f5; color: #383838; padding: 6px 8px; font-weight: 600; }
+table.tx td.ok { color:#0a634d; font-weight:600 } table.tx td.no { color:#8a4b00; font-weight:600 }
+table.tx td { padding: 6px 8px; border-top: 1px solid #efefef; vertical-align: top; color: #383838; }
+.ok { color: #0a634d; font-weight: 600; } .no { color: #8a4b00; font-weight: 600; }
+</style></head><body>
+
+<!-- 1. COVER -->
+<section class="page">
+  <div class="kicker">Design review · round 1 · 13 October 2026</div>
+  <h1>Pulse Merchant Analytics</h1>
+  <p class="lead">From Dennis Jedburgh (Product). Reviewed against the PRD and the design brief, using all 28 screens and the components in the Figma page "Merchant analytics v1". Nothing in the file was changed.</p>
+  <p class="lead" style="margin-top:8px">This is close. Every story in the brief has a screen, most terms are right, and several parts are better than the prototype we handed over. Each page that follows shows one change: <b>how it looks now</b>, with numbered markers on your design, and <b>what it should look like</b>. Where you already designed the answer as a component, the "should" side is your own design. Where it is a mockup, it shows the idea only; layout and visual details are yours.</p>
+  <div class="two">
+    <div class="box">
+      <h3>Before we approve</h3>
+      <ol>
+        <li>Label the sections a campaign filter does not change <span>page 3</span></li>
+        <li>Put the filled campaign, outlet and dispute panels on screens <span>pages 4 to 6</span></li>
+        <li>Remove "couldn't be assessed" from the merchant's view (our change) <span>page 7</span></li>
+        <li>Use the brief's terms on the Overview cards <span>page 8</span></li>
+        <li>No real numbers under zero on the day-one Overview <span>page 9</span></li>
+        <li>Show budget used in the campaigns table <span>page 10</span></li>
+        <li>Remove "Acquirer" from the campaign Details tab <span>page 12</span></li>
+        <li>Make rejections a resolution view, not a list of problems <span>page 13</span></li>
+      </ol>
+    </div>
+    <div class="box">
+      <h3>Also in this review</h3>
+      <ul>
+        <li>What works, keep it <span style="color:#8a8a8a;font-size:10.5px">page 2</span></li>
+        <li>Campaign card wording <span style="color:#8a8a8a;font-size:10.5px">page 11</span></li>
+                <li>Scheduled campaign state <span style="color:#8a8a8a;font-size:10.5px">page 14</span></li>
+        <li>Terms, states and smaller things <span style="color:#8a8a8a;font-size:10.5px">page 15</span></li>
+        <li>Numbers that don't add up (ours to fix) and questions <span style="color:#8a8a8a;font-size:10.5px">page 16</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>1</span></div>
+</section>
+
+<!-- 2. KEEP -->
+<section class="page">
+  <div class="kicker">What works</div>
+  <h2>Keep these: they are better than the brief</h2>
+  <div class="cols" style="grid-template-columns: 1.1fr 1fr; margin-top: 4mm;">
+    <div>
+      <ul class="notes" style="font-size:12px">
+        <li><b>The dispute answer.</b> "AED 54 below the minimum spend", then "What to tell the customer" with a Copy button and a ready sentence. This is the commercial heart of the page.</li>
+        <li><b>The cashback ledger.</b> "Balance = Payable now + On hold" printed beside the bar, plus all four states (current, all zero, all on hold, all paid).</li>
+        <li><b>The info tips.</b> 103 of them with real definitions, for example "GMV ÷ cashback cost. Shows sales we can prove, not that the offer caused them."</li>
+        <li><b>The campaign page.</b> "AED 10 in sales per AED 1 of cashback" and "After AED 1,140 in refunds" are exactly the plain English we want. The completed campaign says "All payable · Refund window closed".</li>
+        <li><b>Day-one states.</b> The Customers, Outlets, Rejections and campaign screens in Flow 1 explain what will appear and when.</li>
+        <li><b>The filter.</b> "1 of 6", Reset, the "Filtered: 1 of 6 campaigns" line, and the "Brand-wide data" note you designed.</li>
+        <li><b>The rules from the brief.</b> Only the four reasons a merchant can change, no targeting shown as an error, one bank per campaign, days left instead of dates in the table.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="lab should">Your dispute answer, keep it as it is</div>
+      <div class="shot"><img src="img/dispute_panel.png" style="width:100%;"></div>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>2</span></div>
+</section>
+
+<!-- 3. FILTER SCOPE -->
+<section class="page">
+  <div class="kicker">US-06 Campaign filter · screens 3.6 to 3.8 <span class="tag must">Before approval</span></div>
+  <h2>Say which sections the campaign filter changes</h2>
+  <p class="why">With "Summer Cashback" selected, the Customers tab shows the funnel for all campaigns next to rejection reasons for Summer only, and nothing tells them apart. A merchant will read the brand-wide funnel as Summer's. The brief's principle 5 asks every section that ignores the filter to say so, and your "Brand-wide data" note already does this on E.2 and E.3.</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (3.6 Customers, filtered to Summer)</div>
+      <div class="shot"><img src="img/filtered_customers.png"><span class="hb" style="left:13.77%;top:9.95%;width:19.64%;height:7.69%"><b>1</b></span><span class="hb" style="left:-0.61%;top:34.09%;width:49.80%;height:65.01%"><b>2</b></span><span class="hb" style="left:49.49%;top:34.09%;width:49.70%;height:65.01%"><b>3</b></span></div>
+      <ol class="notes">
+        <li>The filter says "1 of 6", so the reader expects everything below to be Summer only.</li>
+        <li>The funnel shows 18,400, 8,100 and 3,050: the same numbers as the unfiltered tab. It is brand-wide, with no label.</li>
+        <li>The rejection card shows 72: Summer only. Two scopes side by side, unlabelled.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="lab should">What it should look like</div>
+      <div class="mock">
+        <div class="fbar"><span class="ctl">Faces ▾</span><span class="ctl">Campaigns: 1 of 6 ▾</span><span style="color:#656565">Reset</span></div>
+        <div class="tabs"><span>Overview</span><span class="on">Customers</span><span>Outlets &amp; channel</span><span>Rejections &amp; disputes</span></div>
+        <div class="fnote">Filtered: 1 of 6 campaigns <span class="pill">Summer Cashback ×</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="card"><div class="ch">Engagement funnel</div>
+            <div style="margin:5px 0 8px"><span class="scope brand hl"><i class="lock"></i>All campaigns, not filtered</span></div>
+            <div class="bar">Audience reached <b>18,400</b></div><div class="bar" style="margin-left:6px">Viewed the offer <b>8,100</b></div><div class="bar" style="margin-left:12px">Activated <b>3,050</b></div>
+          </div>
+          <div class="card"><div class="ch">Why purchases didn't earn</div>
+            <div style="margin:5px 0 8px"><span class="scope filt hl">Summer Cashback only</span></div>
+            <div style="font-size:20px;font-weight:700">72 <span style="font-size:10px;color:#656565;font-weight:400">rejected attempts</span></div>
+            <div class="rrow"><span>Minimum spend not met</span><span class="n">41</span><span class="p">57%</span></div>
+            <div class="rrow"><span>Per-customer cap reached</span><span class="n">19</span><span class="p">26%</span></div>
+          </div>
+        </div>
+      </div>
+      <ul class="notes">
+        <li>Every section carries a scope label: "All campaigns, not filtered" (with your lock) or the campaign name.</li>
+        <li>Which tabs follow the filter is a decision for us both. The brief says funnel, customers, outlets, channel and disputes stay brand-wide. Either way, label them.</li>
+        <li>On the filtered Overview, label the ledger "All campaigns" the same way.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>3</span></div>
+</section>
+
+<!-- 4. CAMPAIGN PANEL -->
+<section class="page">
+  <div class="kicker">US-03 Campaign detail · screens 3.1, 3.9 <span class="tag must">Before approval</span></div>
+  <h2>Put the filled campaign panel on a screen</h2>
+  <p class="why">Every Overview screen shows the empty panel. Your filled version (budget used, cashback cost, payable and on hold, rejected attempts) exists only in the components section, so engineering won't see it in context.</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (3.1 Overview)</div>
+      <div class="shot"><img src="img/campaigns_now_r.png"><span class="hb" style="left:45.73%;top:9.87%;width:53.35%;height:88.83%"><b>1</b></span><span class="hb r" style="left:28.35%;top:11.55%;width:5.49%;height:5.21%"><b>2</b></span></div>
+      <ol class="notes">
+        <li>The panel takes about a third of the table's width and shows only an illustration.</li>
+        <li>The table header says "ROI". Use "Campaign ROI (attributed)" or a short form agreed with us.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="lab should">What it should look like: your own component</div>
+      <div class="shot"><img src="img/campaigns_after_r.png"></div>
+      <ul class="notes">
+        <li>Place this state ("MA/Campaigns, Selected = Summer") on 3.1, with the first campaign open by default, or hide the panel until a row is chosen.</li>
+        <li>Your completed-campaign version (Midyear, "All payable · Refund window closed") should be on a screen too.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>4</span></div>
+</section>
+
+<!-- 5. OUTLET PANEL -->
+<section class="page">
+  <div class="kicker">US-08 Outlets and channel · screen 3.3 <span class="tag must">Before approval</span></div>
+  <h2>Put the filled outlet panel on a screen, and fix its empty-state words</h2>
+  <p class="why">Your outlet panel covers the whole story: average order value, customers, channel and terminal IDs. But like the campaign panel, it only lives in components. The empty version also talks about campaigns.</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (3.3 Outlets &amp; channel)</div>
+      <div class="shot"><img src="img/outlets_now_r.png"><span class="hb" style="left:50.76%;top:63.25%;width:40.70%;height:17.52%"><b>1</b></span></div>
+      <ol class="notes">
+        <li>The empty panel says "Select a campaign. Performance, budget, cashback position and rejections for that campaign will show here." This is the outlets table.</li>
+      </ol>
+      <div class="mock" style="margin-top:6px;font-size:11px"><b>Suggested empty text:</b> <span class="hl">"Select an outlet to see its sales, customers and terminals."</span></div>
+    </div>
+    <div>
+      <div class="lab should">What it should look like: your own component</div>
+      <div class="shot"><img src="img/outlets_after_r.png"></div>
+      <ul class="notes">
+        <li>Place this state ("MA/Outlets, Selected = Mall of the Emirates") on 3.3.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>5</span></div>
+</section>
+
+<!-- 6. DISPUTE ANSWER -->
+<section class="page">
+  <div class="kicker">US-10 Dispute lookup · screens 3.4, 3.8, 2.4 <span class="tag must">Before approval</span></div>
+  <h2>Put the dispute answer on a screen</h2>
+  <p class="why">The answer panel is the best thing in the file, and no screen shows it. Every Rejections screen shows the empty "Select a transaction" state.</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (3.4 Rejections &amp; disputes)</div>
+      <div class="shot"><img src="img/dispute_now_r.png"><span class="hb" style="left:46.65%;top:12.66%;width:52.44%;height:86.88%"><b>1</b></span><span class="hb" style="left:1.52%;top:69.69%;width:39.63%;height:4.06%"><b>2</b></span><span class="hb" style="left:-0.91%;top:15.00%;width:46.65%;height:7.81%"><b>3</b></span></div>
+      <ol class="notes">
+        <li>Only the empty state is placed on screens.</li>
+        <li>Merchants shouldn't see this row at all. See the next page.</li>
+        <li>One search box, though the line above promises "date, card, amount, outlet or campaign". Separate fields for card last 4 and amount would match what the customer reads off the receipt.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="lab should">What it should look like: your own component</div>
+      <div class="shot"><img src="img/dispute_after_r.png"></div>
+      <ul class="notes">
+        <li>Place "MA/Dispute lookup, Selected = r2" on 3.4.</li>
+        <li>Add one line to your no-match state (E.3): "Settled purchases can take up to two days to appear."</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>6</span></div>
+</section>
+
+<!-- 7. REMOVE DATA QUALITY -->
+<section class="page">
+  <div class="kicker">US-04 and US-10 · screens 3.2, 3.4 <span class="tag must">Before approval</span></div>
+  <h2>Remove "couldn't be assessed" from the merchant's view</h2>
+  <p class="why">This one is our change, not a design miss: our brief asked for a data-quality group. These purchases failed because some details didn't reach Lune. That stays between the bank and Lune. The merchant can't act on it, and showing it suggests their data is wrong. Merchants should only see the four reasons they can change.</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (3.2 Customers, right card)</div>
+      <div class="shot"><img src="img/customers_reasons.png"><span class="hb" style="left:2.82%;top:81.09%;width:92.74%;height:14.58%"><b>1</b></span></div>
+      <ol class="notes">
+        <li>The "Data quality: 70 transactions couldn't be assessed" box.</li>
+      </ol>
+      <ul class="notes"><li>The dispute lookup also lists these purchases as "Couldn't be assessed · card BIN missing" (3.4).</li></ul>
+    </div>
+    <div>
+      <div class="lab should">What it should look like</div>
+      <div class="mock">
+        <div class="card"><div class="ch">Why transactions didn't qualify</div><div class="sub">Reasons the 300 rejected attempts didn't earn cashback</div>
+          <div style="font-size:20px;font-weight:700;margin-top:8px">300 <span style="font-size:10px;color:#656565;font-weight:400">rejected attempts</span></div>
+          <div class="rrow"><span>Minimum spend not met</span><span class="n">148</span><span class="p">49%</span></div>
+          <div class="rrow"><span>Per-customer cashback cap reached</span><span class="n">77</span><span class="p">26%</span></div>
+          <div class="rrow"><span>Card not eligible for the offer</span><span class="n">68</span><span class="p">23%</span></div>
+          <div class="rrow"><span>Campaign budget exhausted</span><span class="n">7</span><span class="p">2%</span></div>
+          <div class="fnote" style="margin:6px 0 0"><span class="hl">No data-quality box.</span></div>
+        </div>
+        <div class="drow" style="margin-top:9px"><span class="logo"></span><div class="dmain"><b>Mall of the Emirates</b>6 Sep · 19:42 · •• 4821 · Summer Cashback</div><div class="damt">AED 96<br><span style="font-size:9.5px;color:#656565;font-weight:400">Minimum spend not met</span></div></div>
+        <div class="drow" style="margin-top:6px"><span class="logo" style="background:#101010"></span><div class="dmain"><b>Dubai Mall</b>4 Sep · 18:15 · •• 9012 · Summer Cashback</div><div class="damt">AED 520<br><span style="font-size:9.5px;color:#656565;font-weight:400">Per-customer cashback cap reached</span></div></div>
+        <div class="fnote" style="margin:6px 0 0"><span class="hl">The "couldn't be assessed" row is gone from the list.</span></div>
+      </div>
+      <ul class="notes">
+        <li>Remove the data-quality box from the Customers tab, and those rows from the dispute lookup.</li>
+        <li>The 300 and the four reasons don't change: the 70 were never part of them.</li>
+        <li>If a customer asks about one of these purchases, the merchant gets your "no match" state (E.3). We'll confirm a line for it, such as "Still can't find it? Contact Lune support."</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>7</span></div>
+</section>
+
+<!-- 8. KPI TERMS -->
+<section class="page">
+  <div class="kicker">US-01 KPI cards · screens 3.1, 2.1, 1.1 <span class="tag must">Before approval</span></div>
+  <h2>Use the brief's terms on the Overview cards</h2>
+  <p class="why">The terms table in the brief is fixed: these are the words on the merchant's invoice. Your first-period Overview (E.1) and the campaign page already use the full terms; the main Overview screens drop them.</p>
+  <div class="stack">
+    <div class="row">
+      <div><div class="lab now">How it looks now (3.1 Overview)</div>
+        <div class="shot"><img src="img/kpi_overview.png"><span class="hb" style="left:33.77%;top:5.05%;width:15.42%;height:11.55%"><b>1</b></span><span class="hb" style="left:67.14%;top:5.05%;width:14.91%;height:11.55%"><b>2</b></span><span class="hb" style="left:0.41%;top:57.76%;width:11.36%;height:11.55%"><b>3</b></span><span class="hb" style="left:33.77%;top:57.76%;width:23.53%;height:11.55%"><b>4</b></span><span class="hb r" style="left:24.95%;top:36.10%;width:6.69%;height:10.83%"><b>5</b></span></div></div>
+      <ol class="notes" style="margin-top:18px">
+        <li>"Campaign ROI" should be "Campaign ROI (attributed)".</li>
+        <li>"Cashback cost" should be "Cashback cost (net)".</li>
+        <li>"Transactions" should be "Redemptions". Its own info tip already says "One purchase that earned cashback".</li>
+        <li>"Customers who purchased" and the campaign page's "Customers rewarded" are the same thing. Use "Customers rewarded".</li>
+        <li>Remove the change arrows. There is no earlier period at launch, and ↑11.2% on a cost reads as good news.</li>
+      </ol>
+    </div>
+    <div class="row">
+      <div><div class="lab should">What it should look like</div>
+        <div class="mock"><div class="grid3">
+          <div class="tile"><div><div class="tl">GMV <span class="i">i</span></div><div class="tv">AED 1,207,025</div><div class="tc">Settled sales that earned cashback</div></div><span class="ic"></span></div>
+          <div class="tile"><div><div class="tl"><span class="hl">Campaign ROI (attributed)</span> <span class="i">i</span></div><div class="tv">10.0×</div><div class="tc"><span class="hl">AED 10 in sales per AED 1 of cashback</span></div></div><span class="ic"></span></div>
+          <div class="tile"><div><div class="tl"><span class="hl">Cashback cost (net)</span> <span class="i">i</span></div><div class="tv">AED 120,135</div><div class="tc">AED 124,047 accrued <span class="hl">minus</span> AED 3,912 reversed</div></div><span class="ic"></span></div>
+          <div class="tile"><div><div class="tl"><span class="hl">Redemptions</span> <span class="i">i</span></div><div class="tv">5,745</div><div class="tc">300 attempted purchases didn't earn</div></div><span class="ic"></span></div>
+          <div class="tile"><div><div class="tl"><span class="hl">Customers rewarded</span> <span class="i">i</span></div><div class="tv">4,195</div><div class="tc">44.6% of activated customers</div></div><span class="ic"></span></div>
+          <div class="tile"><div><div class="tl">Avg. transaction value <span class="i">i</span></div><div class="tv">AED 210</div><div class="tc">Across all campaigns</div></div><span class="ic"></span></div>
+        </div></div></div>
+      <ul class="notes" style="margin-top:18px">
+        <li>Changed words are highlighted. No arrows.</li>
+        <li>Numbers are left as they are. Some don't add up; that is our data problem (page 16).</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>8</span></div>
+</section>
+
+<!-- 9. DAY ONE -->
+<section class="page">
+  <div class="kicker">US-01 cold start · screen 1.1 <span class="tag must">Before approval</span></div>
+  <h2>No real numbers under zero on the day-one Overview</h2>
+  <p class="why">On a merchant's first day the cards show zero, but the small lines under them still carry numbers from a busy brand. It is also the first screen in a demo.</p>
+  <div class="stack">
+    <div class="row">
+      <div><div class="lab now">How it looks now (1.1 Overview, first-time user)</div>
+        <div class="shot"><img src="img/kpi_dayone.png"><span class="hb r" style="left:68.56%;top:50.00%;width:27.38%;height:7.39%"><b>1</b></span><span class="hb" style="left:0.61%;top:87.50%;width:23.94%;height:7.39%"><b>2</b></span><span class="hb" style="left:33.98%;top:87.50%;width:20.49%;height:7.39%"><b>3</b></span><span class="hb r" style="left:35.19%;top:40.91%;width:4.06%;height:11.36%"><b>4</b></span></div></div>
+      <ol class="notes" style="margin-top:18px">
+        <li>"AED 124,047 accrued" under AED 0.</li>
+        <li>"300 attempted transactions rejected" under 0, while the campaign card on the same screen says "Rejected attempts 0".</li>
+        <li>"44.6% of activated customers" under 0.</li>
+        <li>An ROI of "0" when there is no cost yet. "Not yet" is more honest.</li>
+      </ol>
+    </div>
+    <div class="row">
+      <div><div class="lab should">What it should look like</div>
+        <div class="mock">
+          <div class="banner"><b>No purchases yet</b>Summer Cashback went live on 5 Sep and customers are already activating it. Sales and cashback appear after the first eligible purchase is processed in the nightly update.</div>
+          <div class="grid3">
+            <div class="tile"><div><div class="tl">GMV</div><div class="tv">AED 0</div><div class="tc"><span class="hl">No sales have earned cashback yet</span></div></div><span class="ic"></span></div>
+            <div class="tile"><div><div class="tl">Campaign ROI (attributed)</div><div class="tv"><span class="hl">Not yet</span></div><div class="tc"><span class="hl">Shows after the first redemption</span></div></div><span class="ic"></span></div>
+            <div class="tile"><div><div class="tl">Cashback cost (net)</div><div class="tv">AED 0</div><div class="tc"><span class="hl">Nothing accrued yet</span></div></div><span class="ic"></span></div>
+            <div class="tile"><div><div class="tl">Redemptions</div><div class="tv">0</div><div class="tc"><span class="hl">No rejected attempts yet</span></div></div><span class="ic"></span></div>
+            <div class="tile"><div><div class="tl">Customers rewarded</div><div class="tv">0</div><div class="tc"><span class="hl">3,050 customers have activated</span></div></div><span class="ic"></span></div>
+            <div class="tile"><div><div class="tl">Avg. transaction value</div><div class="tv"><span class="hl">Not yet</span></div><div class="tc"><span class="hl">Shows after the first redemption</span></div></div><span class="ic"></span></div>
+          </div></div></div>
+      <ul class="notes" style="margin-top:18px">
+        <li>Same style as your other day-one screens (1.2 to 1.5), which already do this well.</li>
+        <li>"3,050 customers have activated" turns an empty card into good news, using the count from your day-one funnel.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>9</span></div>
+</section>
+
+<!-- 10. BUDGET IN TABLE -->
+<section class="page">
+  <div class="kicker">US-02 Campaigns table · screens 3.1, 3.9 <span class="tag must">Before approval</span></div>
+  <h2>Show budget used in the campaigns table</h2>
+  <p class="why">The story behind the table is "where do I act this week". That is mostly budget: a campaign about to run out needs attention. Today budget only shows after clicking a row.</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (3.1 Overview)</div>
+      <div class="shot"><img src="img/campaigns_table_l.png"><span class="hb" style="left:1.52%;top:10.80%;width:96.97%;height:6.70%"><b>1</b></span><span class="hb r" style="left:3.33%;top:24.58%;width:24.24%;height:4.47%"><b>2</b></span></div>
+      <ol class="notes">
+        <li>Columns are status, GMV and ROI only. The brief also asks for budget used, redemptions and cashback.</li>
+        <li>Bank and days left in one line works well. Keep it.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="lab should">What it should look like</div>
+      <table class="mt">
+        <tr><th>Campaign</th><th>Status</th><th><span class="hl">Budget used</span></th><th>GMV</th><th>Campaign ROI</th></tr>
+        <tr><td>Summer Cashback<small>Emirates NBD · 21 days left</small></td><td><span class="st act">Active</span></td><td><span class="hl" style="display:block;padding:2px 4px"><b>66%</b><span class="track"><i style="width:66%"></i></span><small>AED 33,115 of 50,000</small></span></td><td>AED 331,200</td><td>10.4×</td></tr>
+        <tr><td>Midyear Beauty Bonanza<small>ADIB · ended 57 days ago</small></td><td><span class="st done">Completed</span></td><td><span class="hl" style="display:block;padding:2px 4px"><b>95%</b><span class="track"><i style="width:95%"></i></span><small>AED 24,604 of 26,000</small></span></td><td>AED 240,260</td><td>10.2×</td></tr>
+      </table>
+      <ul class="notes">
+        <li>A small bar next to days left lets a merchant scan which campaigns are close to their budget.</li>
+        <li>Redemptions and cashback can stay in the side panel if the row gets tight. Your call.</li>
+        <li>Budget figures are from your campaign panel component.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>10</span></div>
+</section>
+
+<!-- 11. CAMPAIGN CARD WORDING -->
+<section class="page">
+  <div class="kicker">US-02 · screens 1.1, 2.1, 3.5</div>
+  <h2>Use the same words on the campaign card as in the table</h2>
+  <p class="why">A merchant with one campaign sees this card. When they add a second, they see the table. The two should speak the same language.</p>
+  <div class="stack">
+    <div class="row">
+      <div><div class="lab now">How it looks now (2.1 Overview)</div>
+        <div class="shot"><img src="img/strip_live.png"><span class="hb r" style="left:20.08%;top:17.39%;width:5.27%;height:28.26%"><b>1</b></span><span class="hb r" style="left:16.02%;top:45.65%;width:17.85%;height:26.09%"><b>2</b></span><span class="hb" style="left:82.15%;top:25.00%;width:15.42%;height:47.83%"><b>3</b></span></div></div>
+      <ol class="notes" style="margin-top:18px">
+        <li>"Live" here, "Active" in the table and side panel.</li>
+        <li>"live since 5 Sep · ends 28 Sep" is a raw end date, which the brief rules out. The campaign page also says it started on 20 Jul, not 5 Sep.</li>
+        <li>"View campaign" here, "Open campaign" on 1.1, "Open campaign page" in the panel.</li>
+      </ol>
+    </div>
+    <div class="row">
+      <div><div class="lab should">What it should look like</div>
+        <div class="mock"><div class="card" style="display:grid;grid-template-columns:1.6fr 1fr 0.8fr auto;gap:14px;align-items:center">
+          <div><b style="font-size:13px">Summer Cashback</b> <span class="st act hl">Active</span><div class="sub" style="font-size:10.5px">Emirates NBD · In-store · <span class="hl">21 days left</span></div></div>
+          <div style="font-size:10.5px">Budget used <b style="float:right">66%</b><span class="track"><i style="width:66%"></i></span><span class="sub">AED 33,115 of 50,000</span></div>
+          <div style="font-size:10.5px">Rejected attempts<br><b style="font-size:13px">72</b></div>
+          <span class="btn"><span class="hl">View campaign</span></span>
+        </div></div></div>
+      <ul class="notes" style="margin-top:18px">
+        <li>Pick one word for each and use it everywhere.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>11</span></div>
+</section>
+
+<!-- 12. DETAILS -->
+<section class="page">
+  <div class="kicker">US-03 Campaign page, Details tab · screens 1.6, 2.6, 3.11 <span class="tag must">Before approval</span></div>
+  <h2>Remove "Acquirer" from the campaign Details tab</h2>
+  <p class="why">We never receive acquirer data, so the page cannot show it. The brief lists it under "will never be available".</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (3.11 Campaign details)</div>
+      <div class="shot"><img src="img/details.png"><span class="hb r" style="left:45.73%;top:70.19%;width:10.79%;height:29.19%"><b>1</b></span><span class="hb" style="left:4.20%;top:75.16%;width:20.99%;height:24.22%"><b>2</b></span><span class="hb r" style="left:10.49%;top:50.31%;width:14.09%;height:4.66%"><b>3</b></span></div>
+      <ol class="notes">
+        <li>"Acquirer: Stripe". Remove the column.</li>
+        <li>The same Merchant ID repeats three times. Show the real list, or one row.</li>
+        <li>"Jul 20, 2026" here; the rest of the page uses "7 Sep 2026". Use one date format.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="lab should">What it should look like</div>
+      <div class="mock">
+        <div class="card"><div class="ch">Campaign details</div>
+          <div class="dl" style="margin-top:10px">
+            <div>Brand<b>Faces</b></div><div>Cashback<b>10%</b></div>
+            <div>Campaign goal<b>Grow average spend</b></div><div>Campaign budget<b>AED 50,000</b></div>
+            <div>Hold period<b>30 days</b></div><div>Minimum spend<b>AED 150</b></div>
+            <div>Duration<b>70 days</b></div><div>Cashback cap<b>AED 200</b></div>
+            <div>Start date<b class="hl">20 Jul 2026</b></div><div>End date<b class="hl">28 Sep 2026</b></div>
+          </div></div>
+        <div class="card" style="margin-top:9px"><div class="ch">Merchant details</div>
+          <table class="mt" style="margin-top:8px"><tr><th>Merchant ID</th></tr><tr><td><span class="hl">MID-7743-2210</span></td></tr></table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>12</span></div>
+</section>
+
+<!-- 13. REASONS ONE HOME -->
+<section class="page">
+  <div class="kicker">US-04 · screens 3.2, 3.4 <span class="tag must">Before approval</span></div>
+  <h2>Make rejections a resolution view, not a list of problems</h2>
+  <p class="why">We have updated the brief (principle 6): this area helps the merchant answer a customer and decide whether to adjust a setting. It should never look like an error report. Today the reasons are red, the tab carries an amber "300" alert badge, and the same reasons appear on two tabs.</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (3.4 top cards and 3.2 card)</div>
+      <div class="shot"><img src="img/reason_cards.png"><span class="hb" style="left:1.62%;top:70.77%;width:97.77%;height:21.54%"><b>1</b></span></div>
+      <div class="shot" style="margin-top:6px;width:72%"><img src="img/customers_reasons2.png"><span class="hb" style="left:0.81%;top:0.00%;width:98.39%;height:99.09%"><b>2</b></span></div>
+      <ol class="notes">
+        <li>Red bars and icons on the Rejections tab.</li>
+        <li>The same reasons again on the Customers tab.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="lab should">What it should look like</div>
+      <div class="mock">
+        <div class="tabs"><span>Overview</span><span>Customers</span><span>Outlets &amp; channel</span><span class="on">Rejections &amp; disputes <span style="color:#656565;font-weight:500">300</span></span></div>
+        <div class="card"><div class="ch">Why purchases didn't earn cashback</div><div class="sub">300 attempts in the last 90 days. Each reason is a campaign setting you can change.</div>
+          <div class="rrow" style="margin-top:6px"><span><span class="sw" style="background:#0a634d"></span>Minimum spend not met</span><span class="n">148</span><span class="p">49%</span></div><div class="track"><i style="width:49%"></i></div>
+          <div class="rrow"><span><span class="sw" style="background:#5c9a8a"></span>Per-customer cap reached</span><span class="n">77</span><span class="p">26%</span></div><div class="track"><i style="width:26%;background:#5c9a8a"></i></div>
+          <div class="rrow"><span><span class="sw" style="background:#9cc2b8"></span>Card not eligible for the offer</span><span class="n">68</span><span class="p">23%</span></div><div class="track"><i style="width:23%;background:#9cc2b8"></i></div>
+          <div class="rrow"><span><span class="sw" style="background:#cfe0db"></span>Campaign budget exhausted</span><span class="n">7</span><span class="p">2%</span></div><div class="track"><i style="width:2%;background:#cfe0db"></i></div>
+        </div>
+        <div class="fnote" style="margin:8px 0 0">On the Customers tab, one line under the funnel: "300 attempts didn't earn cashback. See Rejections."</div>
+      </div>
+      <ul class="notes"><li>Neutral design-system shades instead of red, no warning icons, and a plain count in the tab instead of an amber badge.</li><li>One home for the reasons. Which tab, and its name, is your call; something like "Resolution" fits better than "Rejections".</li></ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>13</span></div>
+</section>
+
+<!-- 14. SCHEDULED -->
+<section class="page">
+  <div class="kicker">Early states · screen 0.1</div>
+  <h2>Show the scheduled campaign, not "Create campaign"</h2>
+  <p class="why">This merchant has already created a campaign. Asking them to create one reads as if it got lost.</p>
+  <div class="cols">
+    <div>
+      <div class="lab now">How it looks now (0.1 Campaign scheduled)</div>
+      <div class="shot"><img src="img/scheduled.png"><span class="hb" style="left:40.95%;top:79.13%;width:16.87%;height:9.06%"><b>1</b></span><span class="hb r" style="left:58.64%;top:69.29%;width:9.67%;height:5.51%"><b>2</b></span></div>
+      <ol class="notes">
+        <li>The only action is "Create campaign".</li>
+        <li>"goes live on 15 Sep", while Flow 1 says the same campaign went live on 5 Sep. Pick one so a demo can walk through them in order.</li>
+      </ol>
+    </div>
+    <div>
+      <div class="lab should">What it should look like</div>
+      <div class="mock" style="padding:18px">
+        <div style="text-align:center;font-size:13px;font-weight:700;color:#04281f">Your campaign hasn't started yet</div>
+        <div style="text-align:center;font-size:10.5px;color:#656565;margin:3px 0 12px">Analytics will appear after the first purchase is processed.</div>
+        <div class="card hl" style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center">
+          <div><b style="font-size:13px">Summer Cashback</b> <span class="st sch">Scheduled</span><div class="sub" style="font-size:10.5px">Emirates NBD · In-store · goes live on 5 Sep · budget AED 50,000</div></div>
+          <span class="btn">View campaign</span>
+        </div>
+        <div style="text-align:center;margin-top:12px"><span style="font-size:10.5px;color:#0a634d;font-weight:600">Create another campaign</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>14</span></div>
+</section>
+
+<!-- 15. TERMS, STATES, SMALLER -->
+<section class="page">
+  <div class="kicker">Checks against the brief</div>
+  <h2>Terms, states and smaller things</h2>
+  <div class="cols" style="grid-template-columns: 1fr 1fr 1fr; gap: 7mm; margin-top: 3mm;">
+    <div>
+      <h3>Terms used on the page</h3>
+      <table class="tx">
+        <tr><th>Term in the brief</th><th>In the design</th></tr>
+        <tr><td>GMV</td><td>Correct; table header says "Sales (GMV)"</td></tr>
+        <tr><td>Redemption</td><td class="no">"Transactions"</td></tr>
+        <tr><td>Campaign ROI (attributed)</td><td class="no">"Campaign ROI" and "ROI" on Overview</td></tr>
+        <tr><td>Accrued, Reversed, Balance</td><td class="ok">Correct</td></tr>
+        <tr><td>Payable now, On hold</td><td class="ok">Correct</td></tr>
+        <tr><td>Activated</td><td class="ok">Correct</td></tr>
+        <tr><td>Outlet</td><td class="ok">Correct</td></tr>
+      </table>
+      <p class="mnote" style="font-size:10.5px;color:#383838">Replace the long dashes in "10 Jun – 7 Sep 2026", "20 Jul – 28 Sep", "AED 100–250" and the empty chart axis "AED —" with "to" or a hyphen.</p>
+    </div>
+    <div>
+      <h3>States the brief asked for</h3>
+      <table class="tx">
+        <tr><th>State</th><th>Designed?</th></tr>
+        <tr><td>Cold start</td><td class="ok">Yes; fix 1.1 (page 9)</td></tr>
+        <tr><td>No campaigns</td><td class="ok">Yes, 0.2</td></tr>
+        <tr><td>Zero rejections</td><td class="ok">Yes, E.2</td></tr>
+        <tr><td>Filter on, both halves</td><td class="no">Partly; labels (page 3)</td></tr>
+        <tr><td>Completed campaign opened</td><td class="ok">Yes, campaign panel</td></tr>
+        <tr><td>No outlet recorded</td><td class="ok">Yes, 3.3</td></tr>
+        <tr><td>Empty table, Completed filter</td><td class="no">Not yet</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Smaller things</h3>
+      <ul class="notes" style="font-size:10.5px">
+        <li>"Updated 7 Sep 2026, 06:00 GST" appears twice on the Overview.</li>
+        <li>The page title "Analytics" repeats the menu; the brand name would be more useful.</li>
+        <li>The brand selector has no label.</li>
+        <li>"Per customer" on the Rejections cards, "Per-customer" elsewhere.</li>
+        <li>The funnel bars step in by the same amount while the shares differ (44%, 38%, 41%).</li>
+        <li>Value bands overlap: "AED 100 to 250" and "AED 250 to 500" both include 250.</li>
+        <li>An in-store-only campaign (2.3) shows an empty Online card. Consider hiding it.</li>
+        <li>Mall logos are hard to read at this size. Check before demos.</li>
+        <li>The file uses a real client email and brand. Keep it private.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>15</span></div>
+</section>
+
+<!-- 16. NUMBERS + QUESTIONS -->
+<section class="page">
+  <div class="kicker">For product, and for you</div>
+  <h2>Numbers that don't add up, and three questions</h2>
+  <div class="cols" style="grid-template-columns: 1.3fr 1fr; margin-top: 3mm;">
+    <div>
+      <h3>Numbers that don't add up (ours to fix, not yours)</h3>
+      <p class="why" style="font-size:11px">Sample data only. Product will send one consistent data set before the next round.</p>
+      <table class="tx">
+        <tr><th>Where</th><th>What is wrong</th></tr>
+        <tr><td>Campaign ROI</td><td>Worked out on net cost (10.0×). The PRD says accrued cost (9.7×). The brief only said "cashback cost", so this one is ours to confirm.</td></tr>
+        <tr><td>Overview vs funnel</td><td>4,195 customers bought, but only 3,050 activated and 1,180 were rewarded. Customers can't earn without activating.</td></tr>
+        <tr><td>3.5, filtered to Summer</td><td>Shows the two-campaign figures (2,230 transactions, AED 46,910 cost), not Summer's (1,380 and AED 31,975).</td></tr>
+        <tr><td>2.1 cost line</td><td>Quotes the brand figures (AED 124,047 accrued) under Summer's AED 31,975.</td></tr>
+        <tr><td>Purchase frequency</td><td>Adds up to at least 5,965 purchases; the Overview has 5,745.</td></tr>
+        <tr><td>Channel customers</td><td>Online plus in-store is 4,092, not 4,195.</td></tr>
+        <tr><td>Dispute list</td><td>Not in date order (14:10 above 19:42 on 6 Sep), and 10 pages of 8 rows is 80, not 300.</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Questions for you</h3>
+      <ol class="notes" style="font-size:11.5px">
+        <li>When a filter is on, should Customers, Outlets and Rejections stay brand-wide as the brief says, or follow the filter? Either can work if it's labelled. Let's agree one.</li>
+        <li>Where should the four reasons live, and what should that tab be called?</li>
+        <li>Would you move the cashback ledger higher on the Overview? It is the one number a finance user checks.</li>
+      </ol>
+      <h3 style="margin-top:14px">Next step</h3>
+      <p class="why" style="font-size:11.5px">A decision review once the eight "before approval" changes are in: approve, or one more round. We'll bring the clean data set to the same meeting.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Pulse Merchant Analytics · design review round 1</span><span>16</span></div>
+</section>
+
+</body></html>
