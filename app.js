@@ -338,14 +338,14 @@
     const out = []; const n = now();
     for (let i = from; i <= to; i++) {
       const d = new Date(n.getFullYear(), n.getMonth(), n.getDate() + i);
-      c.sched.forEach((s) => { if (s.d === d.getDay()) out.push(mk(c, d, s)); });
+      c.sched.forEach((s) => { if (s.date ? s.date === ymd(d) : s.d === d.getDay()) out.push(mk(c, d, s)); });
     }
     return out.sort((a, b) => a.at - b.at);
   }
   function byId(id) {
     const [cid, date, t] = id.split('|'); const c = club(cid); if (!c) return null;
     const [y, mo, da] = date.split('-').map(Number); const d = new Date(y, mo - 1, da);
-    const s = c.sched.find((x) => x.t === t && x.d === d.getDay());
+    const s = c.sched.find((x) => x.t === t && (x.date ? x.date === date : x.d === d.getDay()));
     return s ? mk(c, d, s) : null;
   }
   const has = (id) => S.rsvps.includes(id);
@@ -353,6 +353,8 @@
   const past = (c) => sessions(c, -8, 0).filter((s) => s.at <= now()).reverse();
   const isCancelled = (s) => { if (S.cancelled[s.id]) return true; if (!s.club.cancelNext || has(s.id) || S.manage.includes(s.club.id)) return false; const f = future(s.club)[0]; return !!f && f.id === s.id; };
   function going(s) {
+    // Sessions an organiser has just added start empty; only real bookings count.
+    if (s.added) return has(s.id) ? 1 : 0;
     const base = 8 + (hash(s.id) % 15);
     if (s.cap) {
       const f = future(s.club)[0];
@@ -839,12 +841,14 @@
   };
 
   V.sched = () => {
-    const c = club(route.id); const fut = future(c).slice(0, 5);
-    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h1 style="font-size:21px">Schedule</h1></div>
-      <div class="stack tight"><span class="cap">Every week</span><div>${c.sched.map((s) => `<div class="item"><span class="when"><b>${DAY[s.d]}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${s.type}</b><br><span class="mut sm">${s.note} · ${s.place}${s.cap ? ` · up to ${s.cap}` : ''}</span></span><button class="link sm" data-act="soon" data-what="Editing times and places is not in this prototype yet.">Edit</button></div>`).join('')}</div>
-        <button class="btn small ghost" data-act="soon" data-what="Adding sessions is not in this prototype yet.">Add a session</button></div>
-      <div class="stack tight"><span class="cap">Coming up</span><div>${fut.map((s) => `<div class="item"><span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${s.type}</b><br><span class="mut sm">${isCancelled(s) ? 'Cancelled' : going(s) + ' going'}</span></span>${isCancelled(s) ? `<button class="link sm" data-act="uncancel" data-id="${s.id}">Restore</button>` : `<button class="link sm" data-act="askcancel" data-id="${s.id}">Cancel</button>`}</div>`).join('')}</div></div>
-      <button class="btn quiet block" data-act="soon" data-what="Pausing the club (for summer or Ramadan timings) is not in this prototype yet.">Pause the club</button></main>`;
+    const c = club(route.id); const fut = future(c).slice(0, 6);
+    const weekly = c.sched.map((x, i) => [x, i]).filter(([x]) => !x.date); const once = c.sched.map((x, i) => [x, i]).filter(([x]) => x.date && x.date >= ymd(now()));
+    const row = ([x, i]) => `<button class="item" data-act="editsess" data-idx="${i}"><span class="when"><b>${x.date ? dateShort(new Date(x.date + 'T00:00')) : DAY[x.d]}</b><span class="mut sm">${x.t}</span></span><span class="grow"><b>${esc(x.type)}</b><br><span class="mut sm">${esc(x.note)} · ${esc(x.place)}${x.cap ? ` · up to ${x.cap}` : ''}</span></span><span class="go">Edit ${ic('chev')}</span></button>`;
+    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h1>Schedule</h1><p class="mut sm">Changes show on your page straight away, and members who booked are told.</p></div>
+      <button class="btn block" data-act="addsess">${ic('plus')}Add a session</button>
+      <div class="stack tight"><h2>Every week</h2><div>${weekly.map(row).join('') || '<p class="mut sm">No weekly sessions yet.</p>'}</div></div>
+      ${once.length ? `<div class="stack tight"><h2>One-off sessions</h2><div>${once.map(row).join('')}</div></div>` : ''}
+      <div class="stack tight"><h2>Coming up</h2><p class="mut sm">Cancel a single date without changing the weekly schedule.</p><div>${fut.map((x) => `<div class="item"><span class="when"><b>${whenShort(x.at)}</b><span class="mut sm">${x.t}</span></span><span class="grow"><b>${esc(x.type)}</b><br><span class="mut sm">${isCancelled(x) ? 'Cancelled' : going(x) + ' going'}</span></span>${isCancelled(x) ? `<button class="link sm" data-act="uncancel" data-id="${x.id}">Restore</button>` : `<button class="link sm" data-act="askcancel" data-id="${x.id}">Cancel</button>`}</div>`).join('') || '<p class="mut sm">Nothing in the next two weeks.</p>'}</div></div></main>`;
   };
 
   V.mphotos = () => {
@@ -1166,6 +1170,10 @@
     <label for="cl-ct">Best way to reach you</label><input type="text" id="cl-ct" placeholder="Phone or email" autocomplete="off">
     <button class="btn block" data-act="sendclaim" data-id="${c.id}">Send request</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   O.edit = () => { const c = club(overlay.id); return `<div class="sheet"><h2>Club details</h2>
+    <label for="ed-sport">Activity<br><span class="mut sm">Sets where members find you: Mind, Body or Soul</span></label><select id="ed-sport">${Object.entries(PILLARS).map(([k, p]) => `<optgroup label="${p.name}">${p.sports.map((sp) => `<option value="${sp}" ${c.sport === sp ? 'selected' : ''}>${esc(SPORTS[sp])}</option>`).join('')}</optgroup>`).join('')}</select>
+    <label for="ed-area">Area</label><select id="ed-area">${Object.entries(CITIES).map(([city, list]) => `<optgroup label="${city}">${list.map((a) => `<option ${c.area === a ? 'selected' : ''}>${a}</option>`).join('')}</optgroup>`).join('')}</select>
+    <fieldset class="levels"><legend>Who is it for?<br><span class="mut sm">Members filter by this</span></legend>${Object.entries(LEVELS).map(([k, l]) => `<label class="switch" for="ed-lv-${k}"><span>${l}</span><input type="checkbox" id="ed-lv-${k}" data-lv="${k}" ${c.levels.includes(k) ? 'checked' : ''}></label>`).join('')}
+      <label class="switch" for="ed-ladies"><span>Ladies only</span><input type="checkbox" id="ed-ladies" ${c.ladies ? 'checked' : ''}></label></fieldset>
     <label for="ed-desc">Description</label><textarea id="ed-desc" rows="4" maxlength="300">${esc(c.desc)}</textarea>
     <label for="ed-level">Level or pace</label><input type="text" id="ed-level" maxlength="80" value="${esc(c.level)}">
     <label for="ed-venue">Indoor or outdoor</label><select id="ed-venue">${VENUES.map((v) => `<option ${c.venue === v ? 'selected' : ''}>${v}</option>`).join('')}</select>
@@ -1175,6 +1183,28 @@
     <label for="ed-find">How to find us<br><span class="mut sm">One line for first-timers, added to their reminder</span></label><input type="text" id="ed-find" maxlength="80" placeholder="For example: Look for the orange flag by Pier 7" value="${esc(c.find || '')}">
     <p class="mut xs">Changes show on your public page straight away.</p>
     <button class="btn block" data-act="saveclub" data-id="${c.id}">Save</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+  // Add or edit a session. A weekly session repeats on a day; a one-off session has a date.
+  O.sess = () => {
+    const c = club(overlay.cid); const v = overlay.v; const e = overlay.err || {}; const editing = overlay.idx >= 0;
+    if (overlay.del) { const x = c.sched[overlay.idx]; const booked = future(c).filter((f) => f.t === x.t && (x.date ? ymd(f.at) === x.date : f.at.getDay() === x.d)).reduce((n, f) => n + going(f), 0);
+      return `<div class="sheet"><h2>Remove ${esc(x.type)}?</h2><p>${x.date ? `On ${dateShort(new Date(x.date + 'T00:00'))}` : `Every ${DAYL[x.d]}`} at ${x.t}. ${booked ? `${plural(booked, 'person')} booked in the next two weeks will be told${c.price && payOf(c) ? ' and refunded' : ''}.` : 'Nobody has booked yet.'}</p>
+        <button class="btn danger block" data-act="dodelsess">Remove session</button><button class="btn quiet block" data-act="keepsess">Keep it</button></div>`; }
+    const days = [1, 2, 3, 4, 5, 6, 0];
+    const err = (k) => (e[k] ? `<p class="err" role="alert">${e[k]}</p>` : '');
+    return `<div class="sheet"><h2>${editing ? 'Edit session' : 'Add a session'}</h2>
+      <div class="seg" role="group" aria-label="How often">${[['0', 'Every week'], ['1', 'One date']].map(([k, l]) => `<button class="${(v.once ? '1' : '0') === k ? 'on' : ''}" data-act="sessonce" data-val="${k}" aria-pressed="${(v.once ? '1' : '0') === k}">${l}</button>`).join('')}</div>
+      ${v.once ? `<label for="ss-date">Date</label><input type="date" id="ss-date" min="${ymd(now())}" value="${esc(v.date || '')}"${e.date ? ' aria-invalid="true"' : ''}>${err('date')}`
+        : `<label for="ss-day">Day</label><select id="ss-day">${days.map((d) => `<option value="${d}" ${Number(v.d) === d ? 'selected' : ''}>${DAYL[d]}</option>`).join('')}</select>`}
+      <label for="ss-time">Start time</label><input type="time" id="ss-time" value="${esc(v.t || '')}"${e.t ? ' aria-invalid="true"' : ''}>${err('t')}
+      <label for="ss-type">Session name</label><input type="text" id="ss-type" maxlength="40" placeholder="For example: Long run, or Beginner night" value="${esc(v.type || '')}"${e.type ? ' aria-invalid="true"' : ''}>${err('type')}
+      <label for="ss-note">Level or pace</label><input type="text" id="ss-note" maxlength="60" placeholder="For example: All levels" value="${esc(v.note || '')}">
+      <label for="ss-place">Meeting point</label><input type="text" id="ss-place" maxlength="80" placeholder="For example: Marina Walk, by Pier 7" value="${esc(v.place || '')}"${e.place ? ' aria-invalid="true"' : ''}>${err('place')}
+      <label for="ss-cap">Spots<br><span class="mut sm">Leave empty for no limit</span></label><input type="number" id="ss-cap" min="1" max="500" inputmode="numeric" value="${esc(v.cap || '')}"${e.cap ? ' aria-invalid="true"' : ''}>${err('cap')}
+      <button class="btn block" data-act="savesess">${editing ? 'Save changes' : 'Add session'}</button>
+      ${editing ? '<button class="link danger-link center-link" data-act="delsess">Remove this session</button>' : ''}</div>`;
+  };
+  const readSess = () => { const v = overlay.v; const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; };
+    [['d', 'ss-day'], ['date', 'ss-date'], ['t', 'ss-time'], ['type', 'ss-type'], ['note', 'ss-note'], ['place', 'ss-place'], ['cap', 'ss-cap']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; }); };
   O.cancel = () => { const s = byId(overlay.id); return `<div class="sheet"><div class="stack tight"><h2>Cancel ${nounFor(s)}?</h2><p class="mut sm">${dateShort(s.at)} · ${s.t} · ${s.type}</p></div>
     <p class="notice"><b>${plural(going(s), 'person')} will be told.</b> Their streak still counts this week.</p>
     <label for="cn-why">Reason (optional)</label><input type="text" id="cn-why" maxlength="80" placeholder="Weather, venue closed…">
@@ -1355,10 +1385,35 @@
     editclub: (d) => { overlay = { t: 'edit', id: d.id }; render(); },
     saveclub: (d) => {
       const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; }; const c = club(d.id);
-      S.edits[d.id] = { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, price: /^\d{1,4}$/.test(val('ed-price')) ? Number(val('ed-price')) : c.price, priceFor: val('ed-pfor'), bring: val('ed-bring') || c.bring, find: val('ed-find'), venue: val('ed-venue') || c.venue };
+      const lv = Object.keys(LEVELS).filter((k) => { const el = document.getElementById(`ed-lv-${k}`); return el && el.checked; });
+      if (!lv.length) { say('Tick at least one level, so members know who it is for.'); render(); return; }
+      const lad = document.getElementById('ed-ladies');
+      S.edits[d.id] = Object.assign({}, S.edits[d.id], { sport: val('ed-sport') || c.sport, area: val('ed-area') || c.area, levels: lv, ladies: !!(lad && lad.checked) }, { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, price: /^\d{1,4}$/.test(val('ed-price')) ? Number(val('ed-price')) : c.price, priceFor: val('ed-pfor'), bring: val('ed-bring') || c.bring, find: val('ed-find'), venue: val('ed-venue') || c.venue });
       S.conf[d.id] = now().getTime(); const ck = (S.check[d.id] = S.check[d.id] || {}); ck.d = true; if (val('ed-find')) ck.f = true; save(); applyEdits(); overlay = null; say('Saved. Your public page is updated.'); render();
     },
     confirmclub: (d) => { S.conf[d.id] = now().getTime(); (S.check[d.id] = S.check[d.id] || {}).d = true; save(); say('Thanks. Marked as confirmed today.'); render(); },
+    addsess: () => { const c = club(route.id) || orgClub(); const last = c.sched[c.sched.length - 1] || {}; overlay = { t: 'sess', cid: c.id, idx: -1, v: { once: false, d: 6, t: '', type: '', note: last.note || '', place: last.place || '', cap: '' } }; render(); },
+    editsess: (d) => { const c = club(route.id) || orgClub(); const x = c.sched[Number(d.idx)]; overlay = { t: 'sess', cid: c.id, idx: Number(d.idx), v: Object.assign({ once: !!x.date }, x, { cap: x.cap || '' }) }; render(); },
+    sessonce: (d) => { readSess(); overlay.v.once = d.val === '1'; render(); },
+    savesess: () => {
+      readSess(); const c = club(overlay.cid); const v = overlay.v; const e = {};
+      if (!v.type) e.type = 'Give the session a name, like "Long run".';
+      if (!/^\d{2}:\d{2}$/.test(v.t || '')) e.t = 'Pick a start time.';
+      if (!v.place) e.place = 'Say where to meet, so first-timers can find you.';
+      if (v.once && (!v.date || v.date < ymd(now()))) e.date = 'Pick a date from today on.';
+      if (v.cap && !(/^\d{1,3}$/.test(v.cap) && Number(v.cap) >= 1)) e.cap = 'Use a number from 1 to 500, or leave it empty.';
+      const day = v.once && v.date ? new Date(v.date + 'T00:00').getDay() : Number(v.d);
+      if (!e.t && c.sched.some((x, i) => i !== overlay.idx && x.t === v.t && (v.once ? x.date === v.date : !x.date && x.d === day))) e.t = 'There is already a session at this time.';
+      if (Object.keys(e).length) { overlay.err = e; render(); const f = document.querySelector('.sheet [aria-invalid="true"]'); if (f) f.focus(); return; }
+      const prevItem = overlay.idx >= 0 ? c.sched[overlay.idx] : null; const item = { d: day, t: v.t, type: v.type, note: v.note || 'All levels', place: v.place, added: prevItem ? !!prevItem.added : true }; if (v.cap) item.cap = Number(v.cap); if (v.once) item.date = v.date;
+      const list = c.sched.slice(); if (overlay.idx >= 0) list[overlay.idx] = item; else list.push(item);
+      list.sort((a, b) => ((a.date ? 1 : 0) - (b.date ? 1 : 0)) || (a.date || '').localeCompare(b.date || '') || ((a.d + 6) % 7) - ((b.d + 6) % 7) || a.t.localeCompare(b.t));
+      (S.edits[c.id] = S.edits[c.id] || {}).sched = list; S.conf[c.id] = now().getTime(); save(); applyEdits();
+      const added = overlay.idx < 0; overlay = null; haptic('success'); say(added ? 'Session added. It shows on your page now.' : 'Saved. Members who booked are told.'); render();
+    },
+    delsess: () => { readSess(); overlay.del = true; render(); },
+    keepsess: () => { overlay.del = false; render(); },
+    dodelsess: () => { const c = club(overlay.cid); const list = c.sched.filter((x, i) => i !== overlay.idx); (S.edits[c.id] = S.edits[c.id] || {}).sched = list; save(); applyEdits(); overlay = null; say('Session removed. Members who booked are told.'); render(); },
     askcancel: (d) => { overlay = { t: 'cancel', id: d.id }; render(); },
     docancel: (d) => { const s = byId(d.id); const n = going(s); S.cancelled[d.id] = true; save(); overlay = null; say(`Cancelled. ${plural(n, 'person')} told.`); render(); },
     uncancel: (d) => { delete S.cancelled[d.id]; save(); say('Session restored.'); render(); },
@@ -1386,7 +1441,7 @@
     const reuse = { 'o-sched': V.sched, 'o-photos': V.mphotos, 'o-session': V.attend };
     const body = (OV[v] || reuse[v])();
     const sub = ['o-sched', 'o-session', 'o-checkin'].includes(v);
-    const top = `<header class="top otop"><div class="r">${sub ? `<button class="back" data-act="back">${ic('left')}Back</button>` : `<span class="ologo">ryze club <span class="obadge">Organiser</span></span>`}</div>
+    const top = `<header class="top otop"><div class="r">${sub ? `<button class="back" data-act="back">${ic('left')}${({ 'o-week': 'This week', 'o-club': 'Club', 'o-checks': 'Check-in', 'o-session': 'Session', 'o-sched': 'Schedule' }[(stack[stack.length - 1] || {}).v]) || 'Back'}</button>` : `<span class="ologo">ryze club <span class="obadge">Organiser</span></span>`}</div>
       <div class="r"><button class="pill" data-act="demo">Demo</button></div></header>`;
     const tab = (act, l, i, on) => `<button data-act="${act}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
     const nav = c ? `<nav class="nav onav" aria-label="Organiser">${tab('oweek', 'This week', 'week', v === 'o-week' || v === 'o-session')}${tab('ochecks', 'Check-in', 'check', v === 'o-checks' || v === 'o-checkin')}${LATER() ? `${tab('omembers', 'Members', 'clubs', v === 'o-members')}${tab('ophotos', 'Photos', 'photo', v === 'o-photos')}` : ''}${tab('oclub', 'Club', 'flag', v === 'o-club' || v === 'o-sched')}</nav>` : '';

@@ -106,7 +106,7 @@ main.pad-bar { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 .tag.warn { background: #FBEBD0; color: var(--warn); }
 .tag.ok { background: #DCF1E8; color: var(--ok); }
 select { border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 10px; background: var(--bg); min-height: 40px; max-width: 100%; }
-input[type="text"], input[type="tel"], textarea { border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 12px; width: 100%; background: var(--bg); }
+input[type="text"], input[type="tel"], input[type="number"], input[type="date"], input[type="time"], input[type="search"], textarea { border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 12px; width: 100%; background: var(--bg); }
 label { font-weight: 500; }
 .notice { background: #FBEBD0; color: var(--warn); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
 .note { background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--mut); }
@@ -753,3 +753,9 @@ h2 { font-size: 22px; }
 .disp, .quiz-opt { font-family: var(--body); }
 .card .disp { font-size: 16px !important; }
 @media (min-width: 960px) { main h1 { font-size: 56px !important; } h2 { font-size: 26px; } }
+
+/* organiser forms */
+fieldset.levels { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; }
+fieldset.levels legend { padding: 0; margin-bottom: 4px; font-weight: 700; }
+.item .go { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; font-size: 14px; color: var(--acc); white-space: nowrap; }
+.item .go .ic { width: 16px; height: 16px; }
