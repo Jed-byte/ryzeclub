@@ -69,12 +69,3 @@
   window.addEventListener('resize', later);
   later();
 })();
-
-// Specular highlight that follows the finger or pointer across a glass panel (all browsers).
-document.addEventListener('pointermove', (e) => {
-  const el = e.target.closest && e.target.closest('.nav, .bar, .top');
-  if (!el) return;
-  const r = el.getBoundingClientRect();
-  el.style.setProperty('--gx', `${e.clientX - r.left}px`);
-  el.style.setProperty('--gy', `${e.clientY - r.top}px`);
-}, { passive: true });

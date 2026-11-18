@@ -9,7 +9,6 @@
   const mapQuery = (place, c) => `${place.split(',')[0]}, ${c.area}, ${cityOf(c.area)}, UAE`;
   const mapsUrl = (place, c) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery(place, c))}`;
   // Small map of the meeting point on the club page (Google Maps embed, no key needed). Tapping "Open in Maps" gives directions.
-  const mapEmbed = (place, c) => `<iframe class="minimap" title="Map of ${esc(place)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=${encodeURIComponent(mapQuery(place, c))}&z=15&output=embed"></iframe>`;
   const fullPlace = (c) => `${c.area}, ${cityOf(c.area)}`;
   const mapLink = (place, c, cls = 'go') => `<a class="${cls}" href="${mapsUrl(place, c)}" target="_blank" rel="noopener">${ic('pin')}Directions</a>`;
   const placeOf = (c) => (cityOf(c.area) === 'Dubai' ? c.area : `${c.area}, ${cityOf(c.area)}`);
@@ -563,6 +562,7 @@
     const top = S.feat && club(S.feat);
     return top ? [top].concat(pick.filter((c) => c.id !== top.id)).slice(0, 3) : pick;
   }
+  const footer = () => `<footer class="foot sm"><a href="terms.html" target="_blank" rel="noopener">Terms</a><a href="privacy.html" target="_blank" rel="noopener">Privacy</a><span class="mut">Ryze Club · Dubai</span></footer>`;
   const pillarNav = () => `<nav class="pillars" aria-label="Mind, Body, Soul">${Object.entries(PILLARS).map(([k, p]) => `<button class="pillar p-${k}" data-act="browse" data-pillar="${k}"><span class="pi">${ic(k)}</span><b>${p.name}</b><span class="sm">${p.line}</span><span class="pgo">${plural(CLUBS.filter((c) => p.sports.includes(c.sport)).length, 'club')} ${ic('right')}</span></button>`).join('')}</nav>`;
   V.home = () => `<main class="home ${S.user ? 'pad-nav' : ''}">
     <div class="stack"><div class="stack tight"><h1>Find your people. Keep showing up.</h1><p class="mut">Community clubs in Dubai. Pick what you're into.</p></div>
@@ -571,6 +571,7 @@
       <button class="link center-link" data-act="browse">Or browse all ${CLUBS.length} clubs</button></div>
     <div class="stack"><h2>This week</h2>${featured().map((c) => clubCard(c)).join('')}</div>
     ${S.user ? '' : '<button class="link sm center-link" data-act="browse">Run a club? Find its page and claim it</button>'}
+    ${footer()}
   </main>`;
 
   V.quiz = () => {
@@ -623,15 +624,15 @@
     const n = filtCount();
     const sports = Object.entries(SPORTS).filter(([k]) => !filt.pillar || pillarOf(k) === filt.pillar);
     return `<main class="browse ${S.user ? 'pad-nav' : ''}"><h1>${filt.pillar ? `${PILLARS[filt.pillar].name} clubs` : 'All clubs'}</h1>
-      <div class="seg" role="group" aria-label="Mind, Body or Soul">${[['', 'All']].concat(Object.entries(PILLARS).map(([k, p]) => [k, p.name])).map(([k, l]) => `<button class="${filt.pillar === k ? 'on' : ''}" data-act="filt" data-k="pillar" data-val="${k}" aria-pressed="${filt.pillar === k}">${k ? ic(k) : ''}${l}</button>`).join('')}</div>
+      <div class="seg" role="group" aria-label="Mind, Body or Soul">${[['', 'All']].concat(Object.entries(PILLARS).map(([k, p]) => [k, p.name])).map(([k, l]) => `<button class="${filt.pillar === k ? 'on' : ''}" data-act="filt" data-k="pillar" data-val="${k}" aria-pressed="${filt.pillar === k}">${l}</button>`).join('')}</div>
       <label class="search"><span class="sr">Search clubs</span>${ic('find')}<input type="search" id="find-q" placeholder="Search clubs, sports or areas" value="${esc(filt.q || '')}" autocomplete="off"></label>
-      ${filt.pillar ? `<div class="hscroll" role="group" aria-label="Category">${[['', 'All']].concat(sports).map(([k, l]) => `<button class="chip ${filt.sport === k ? 'on' : ''}" data-act="filt" data-k="sport" data-val="${k}" aria-pressed="${filt.sport === k}">${ic(k || 'all')}${k === 'futsal' ? '5-a-side' : l}</button>`).join('')}</div>` : ''}
+      ${filt.pillar ? `<div class="hscroll" role="group" aria-label="Category">${[['', 'All']].concat(sports).map(([k, l]) => `<button class="chip ${filt.sport === k ? 'on' : ''}" data-act="filt" data-k="sport" data-val="${k}" aria-pressed="${filt.sport === k}">${k === 'futsal' ? '5-a-side' : l}</button>`).join('')}</div>` : ''}
       <div class="hscroll" role="group" aria-label="Filters">
         <button class="chip tool ${n ? 'on' : ''}" data-act="filters">${ic('sliders')}Filters${n ? `<span class="fbadge">${n}</span>` : ''}</button>
         ${filt.area ? `<button class="chip on" data-act="filters">${ic('pin')}${esc(filt.area)}</button>` : ''}
         ${chip('price', 'free', 'Free', 'tag')}${chip('level', 'new', 'Beginners', 'sprout')}</div>
       <div class="row sp sm"><span class="mut">${plural(list.length, 'club')} · ${list.filter(isFree).length} free</span>${n || filt.sport || filt.q ? '<button class="link sm" data-act="clearfilt">Clear all</button>' : ''}</div>
-      <div class="stack">${list.length ? list.map((c) => clubCard(c)).join('') : `<p class="note">Nothing matches those filters yet.</p><button class="btn ghost" data-act="clearfilt">Clear filters</button>`}</div></main>`;
+      <div class="stack">${list.length ? list.map((c) => clubCard(c)).join('') : `<p class="note">Nothing matches those filters yet.</p><button class="btn ghost" data-act="clearfilt">Clear filters</button>`}</div>${footer()}</main>`;
   };
   function filtersSheet() {
     const opt = (v, l, cur) => `<option value="${v}" ${String(cur) === String(v) ? 'selected' : ''}>${l}</option>`;
@@ -673,7 +674,7 @@
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${priceLong(c)}</p>
         ${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
-        ${(() => { const w = (n || { place: c.sched[0].place }).place; return `<a class="locline" href="${mapsUrl(w, c)}" target="_blank" rel="noopener">${ic('pin')}<span class="grow"><b>${esc(w)}</b><br><span class="mut sm">${esc(fullPlace(c))} · Open in Maps</span></span>${ic('chev', 'chev')}</a>${mapEmbed(w, c)}`; })()}
+        ${(() => { const w = (n || { place: c.sched[0].place }).place; return `<a class="locline" href="${mapsUrl(w, c)}" target="_blank" rel="noopener">${ic('pin')}<span class="grow"><b>${esc(w)}</b><br><span class="mut sm">${esc(fullPlace(c))} · Open in Maps</span></span>${ic('chev', 'chev')}</a>`; })()}
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${who}
       <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
@@ -839,7 +840,7 @@
     const s = byId(route.id); const c = s.club; const list = roster(s); const over = ended(s);
     const person = (p, clickable) => `<${clickable ? 'button' : 'div'} class="item" ${clickable ? `data-act="cyc" data-id="${s.id}" data-name="${p.name}"` : ''}><span class="av">${initials(p.name)}</span><span class="grow">${p.name}</span>${p.first ? '<span class="tag ok">First time</span>' : ''}${clickable ? `<span class="mini">${p.st === 'came' ? 'Didn’t come' : `${ic('check')}Came`}</span>` : ''}</${clickable ? 'button' : 'div'}>`;
     const group = (st, title) => { const g = list.filter((p) => p.st === st); return g.length ? `<div class="stack tight"><span class="cap">${title} · ${g.length}</span><div>${g.map((p) => person(p, true)).join('')}</div></div>` : ''; };
-    const head = `<div class="stack tight"><span class="cap">${esc(c.name)}</span><h1 style="font-size:21px">${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]} · ${s.t}</h1><p class="mut sm">${s.type} · ${s.place}</p></div>`;
+    const head = `<div class="stack tight"><h1 style="font-size:21px">${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]} · ${s.t}</h1><p class="mut sm">${esc(c.name)}</p><p class="mut sm">${s.type} · ${s.place}</p></div>`;
     if (isCancelled(s)) return `<main class="pad-nav">${head}<p class="notice">This session is cancelled. Everyone who was going has been told.</p></main>`;
     if (!over) return `<main class="pad-nav">${head}
       ${S.mode === 'org' ? `<button class="btn block big" data-act="ocheck" data-id="${s.id}">${ic('check')}Check people in</button>` : ''}
@@ -857,7 +858,7 @@
     const c = club(route.id); const fut = future(c).slice(0, 6);
     const weekly = c.sched.map((x, i) => [x, i]).filter(([x]) => !x.date); const once = c.sched.map((x, i) => [x, i]).filter(([x]) => x.date && x.date >= ymd(now()));
     const row = ([x, i]) => `<button class="item" data-act="editsess" data-idx="${i}"><span class="when"><b>${x.date ? dateShort(new Date(x.date + 'T00:00')) : DAY[x.d]}</b><span class="mut sm">${x.t}</span></span><span class="grow"><b>${esc(x.type)}</b><br><span class="mut sm">${esc(x.note)} · ${esc(x.place)}${x.cap ? ` · up to ${x.cap}` : ''}</span></span><span class="go">Edit ${ic('chev')}</span></button>`;
-    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h1>Schedule</h1><p class="mut sm">Changes show on your page straight away, and members who booked are told.</p></div>
+    return `<main class="pad-nav"><div class="stack tight"><h1>Schedule</h1><p class="mut sm">${esc(c.name)}</p><p class="mut sm">Changes show on your page straight away, and members who booked are told.</p></div>
       <button class="btn block" data-act="addsess">${ic('plus')}Add a session</button>
       <div class="stack tight"><h2>Every week</h2><div>${weekly.map(row).join('') || '<p class="mut sm">No weekly sessions yet.</p>'}</div></div>
       ${once.length ? `<div class="stack tight"><h2>One-off sessions</h2><div>${once.map(row).join('')}</div></div>` : ''}
@@ -868,7 +869,7 @@
     const c = club(route.id); const pin = S.pin[c.id];
     const recs = past(c).slice(0, 2).flatMap((s, i) => exPhotos(c, s, i, true));
     const all = (c.photos ? leadPhotos(c, true) : []).concat(recs);
-    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h1 style="font-size:21px">Photos</h1><p class="mut sm">Members post these. Pin one to lead your page, or hide any you don't want shown.</p></div>
+    return `<main class="pad-nav"><div class="stack tight"><h1 style="font-size:21px">Photos</h1><p class="mut sm">${esc(c.name)}</p><p class="mut sm">Members post these. Pin one to lead your page, or hide any you don't want shown.</p></div>
       ${all.length ? `<div class="mgrid">${all.map((p) => { const hid = S.hidden[p.key]; const isPin = pin && pin.key === p.key; return `<div class="stack tight"><span class="ph g${p.g} ${hid ? 'dim' : ''}"${im(p.sp, p.i)}>${hid ? 'hidden' : isPin ? 'pinned' : ''}</span><span class="xs mut">by ${p.by}</span>
         <div class="row"><button class="btn small ${isPin ? '' : 'ghost'} grow" data-act="pin" data-id="${c.id}" data-key="${p.key}" data-i="${p.i}" data-g="${p.g}" data-by="${p.by}" ${hid ? 'disabled' : ''}>${isPin ? 'Pinned' : 'Pin'}</button><button class="btn small quiet grow" data-act="hide" data-id="${c.id}" data-key="${p.key}">${hid ? 'Show' : 'Hide'}</button></div></div>`; }).join('')}</div>`
         : '<p class="note">No photos yet. Add a few so newcomers can see the club.</p>'}
@@ -907,7 +908,7 @@
     ['Page confirmed in the last 30 days', !!S.conf[c.id] && now() - S.conf[c.id] < 30 * 864e5, 'confirmclub', 'Confirm now'],
     ['Check-ins at most sessions', Object.keys(S.ci).some((id) => id.startsWith(c.id + '|')) || Object.keys(S.orgAtt).some((id) => id.startsWith(c.id + '|')), 'ochecks', 'Check-in'],
     ['Newcomers who come back', impact(c).stayed / Math.max(1, impact(c).newcomers) >= 0.3, 'onudgeall', 'Message drifters'],
-    ['"How to find us" note for first-timers', !!c.find, 'editclub', 'Add it']
+    ['"How to find us" note for first-timers', !!c.find, 'editclub', 'Add the note'],
   ];
   const ticks = (s) => S.ci[s.id] || {};
 
@@ -917,10 +918,10 @@
       <button class="btn block big" data-act="signin" data-then="org">Sign in with Google ${ic('right')}</button>
       <p class="mut sm center">Looking for a club to join? <button class="link" data-act="tomember">Go to the member app</button></p></main>`;
     const pend = Object.keys(S.claims);
-    if (pend.length) return `<main><div class="stack tight"><span class="cap">Your request</span><h1>We're checking ${esc(club(pend[0]).name)}</h1>
+    if (pend.length) return `<main><div class="stack tight"><h1>We're checking ${esc(club(pend[0]).name)}</h1>
       <p class="mut">We'll confirm within 2 days, usually from the club's Instagram or WhatsApp group.</p></div>
       <p class="note">Prototype only: approve it now to see the organiser app.</p><button class="btn block big" data-act="d-org">Approve my request ${ic('right')}</button></main>`;
-    return `<main><div class="stack tight"><span class="cap">Get started</span><h1>Which club do you run?</h1>
+    return `<main><div class="stack tight"><h1>Which club do you run?</h1>
       <p class="mut">We've already set up a page for each club from its Instagram. Claim yours and check it.</p></div>
       <div>${CLUBS.map((c) => `<div class="item"><span class="grow"><b>${esc(c.name)}</b><br><span class="mut sm">${SPORTS[c.sport]} · ${c.area}</span></span><button class="btn small ghost" data-act="claim" data-id="${c.id}">Claim</button></div>`).join('')}</div>
       <p class="mut sm">Not listed? <button class="link" data-act="soon" data-what="This would open a short form. The Ryze Club curator sets up the page for you.">Ask us to add it</button></p></main>`;
@@ -950,7 +951,7 @@
     const driftN = health(c).drifting.filter((m) => !(S.nudged[c.id] || {})[m.name]).length;
     const driftLine = driftN ? `<button class="osetup-line" data-act="omembers"><span class="grow"><b>${plural(driftN, 'regular')} haven't been back</b> · send a "We missed you"</span><span class="det">Members ${ic('chev')}</span></button>` : '';
     // One to-do card instead of separate prompts.
-    const todo = [['Invite your members', joinedVia(c) > 0, 'ojoin', 'Share link'], ['Confirm this week\'s sessions', confirmed, 'confirmclub', 'Yes, still on'], ['Check your club page', !left, 'oclub', 'Check'], ['Get paid when members book', !c.price || !!payOf(c), 'opay', 'Set up']];
+    const todo = [['Invite your members', joinedVia(c) > 0, 'ojoin', 'Share link'], ['Confirm this week\'s sessions', confirmed, 'confirmclub', 'Yes, still on'], ['Check your club page', !left, 'oclub', 'Check page'], ['Get paid when members book', !c.price || !!payOf(c), 'opay', 'Set up payments']];
     const todoLeft = todo.filter((t) => !t[1]);
     const todoCard = todoLeft.length ? `<section class="todo"><div class="row sp"><h2>To do</h2><span class="sm mut">${todo.length - todoLeft.length} of ${todo.length} done</span></div>
       <div>${todoLeft.map(([t, , act, cta]) => `<div class="item"><span class="grow"><b>${t}</b></span><button class="btn small ghost" data-act="${act}" data-id="${c.id}">${cta}</button></div>`).join('')}</div></section>` : '';
@@ -975,7 +976,7 @@
     const row = (s) => { const t = Object.values(ticks(s)).filter(Boolean).length; const done = t || S.orgAtt[s.id];
       return `<button class="item" data-act="ocheck" data-id="${s.id}"><span class="when"><b>${ended(s) ? DAY[s.at.getDay()] + ' ' + s.at.getDate() : whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span><span class="grow"><b>${esc(s.type)}</b><br><span class="mut sm">${done ? `${t || roster(s).filter((p) => p.st === 'came').length} checked in` : `${going(s)} going`}</span></span>${done ? `<span class="tag ok">${ic('check')}Done</span>` : `<span class="tag cta">${ended(s) ? 'Mark who came' : 'Check in'} ${ic('chev')}</span>`}</button>`; };
     const up = list.filter((s) => !ended(s)); const prev = list.filter((s) => ended(s)).reverse();
-    return `<main class="pad-nav"><div class="stack tight"><h1>Check-in</h1><p class="mut sm">At the session, tap names as people arrive. It takes under a minute.</p></div>
+    return `<main class="pad-nav"><div class="stack tight"><h1>Check-in</h1><p class="mut sm">At the session, tap names as people arrive.</p></div>
       <div class="stack tight"><span class="cap">Coming up</span><div>${up.map(row).join('') || '<p class="mut sm">Nothing in the next week.</p>'}</div></div>
       <div class="stack tight"><span class="cap">Just finished</span><div>${prev.map(row).join('') || '<p class="mut sm">Nothing yet.</p>'}</div></div></main>`;
   };
@@ -984,7 +985,7 @@
     const s = byId(route.id); const t = ticks(s);
     const list = roster(s).sort((a, b) => (b.first - a.first) || a.name.localeCompare(b.name));
     const here = list.filter((p) => t[p.name]).length;
-    return `<main class="pad-nav"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h1 style="font-size:22px">${DAYL[s.at.getDay()]} · ${s.t} · ${esc(s.type)}</h1></div>
+    return `<main class="pad-nav"><div class="stack tight"><h1 style="font-size:22px">${DAYL[s.at.getDay()]} · ${s.t} · ${esc(s.type)}</h1><p class="mut sm">${esc(s.club.name)}</p></div>
       <div class="cihead"><span><span class="cin">${here}</span> of ${list.length} here</span><button class="btn small" data-act="ciall" data-id="${s.id}">${ic('check')}Everyone came</button></div>
       <div class="cilist">${list.map((p) => `<button class="cirow ${t[p.name] ? 'on' : ''}" data-act="ci" data-id="${s.id}" data-name="${esc(p.name)}" aria-pressed="${!!t[p.name]}"><span class="citick">${t[p.name] ? ic('check') : ''}</span><span class="grow">${esc(p.name)}</span>${p.first ? '<span class="tag ok">First time · say hi</span>' : ''}</button>`).join('')}</div>
       <p class="mut sm">Saved as you tap. People you check in aren't asked "Did you go?" and their streak counts straight away.</p>
@@ -1077,7 +1078,7 @@
     else if (mine) act = `${(S.paid || {})[s.id] ? `<p class="okline">${ic('check')}<span class="grow">Paid AED ${S.paid[s.id]} to ${esc(founderOf(s.club))}</span></p>` : ''}<p class="note">You're going. Reminder ${s.at.getHours() < 10 ? 'at 19:00 the evening before' : 'three hours before'}.</p><button class="btn ghost block" data-act="unrsvp" data-id="${s.id}">Can't make it</button><button class="btn quiet block" data-act="soon" data-what="This would add the session to your phone's calendar.">Add to calendar</button>`;
     else if (full) act = `<p class="notice">Full · ${s.cap} of ${s.cap}. There is no waiting list.</p>`;
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">${bookLabel(s.club)}</button>`;
-    return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(s.club.name)}</span><h2>${dayWord(s.at)} · ${s.t}</h2></div>
+    return `<div class="sheet"><div class="stack tight"><h2>${dayWord(s.at)} · ${s.t}</h2><p class="mut sm">${esc(s.club.name)}</p></div>
       <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}
       ${who(s, over)}
@@ -1104,7 +1105,7 @@
   O.pay = () => {
     const s = byId(overlay.id); const c = s.club; const prov = PROVIDERS[payOf(c)]; const n = going(s); const ppl = people(s, 4);
     const names = ppl.slice(0, 2).map((x) => x.split(' ')[0]).join(' and ');
-    return `<div class="sheet"><div class="stack tight"><span class="cap">${esc(c.name)}</span><h2>${n ? `${plural(n, 'person')} going. Join them.` : 'Be the first one in.'}</h2><p class="mut sm">${dayWord(s.at)} · ${s.t} · ${esc(s.type)} · ${esc(s.place)}</p></div>
+    return `<div class="sheet"><div class="stack tight"><h2>${n ? `${plural(n, 'person')} going. Join them.` : 'Be the first one in.'}</h2><p class="mut sm">${esc(c.name)}</p><p class="mut sm">${dayWord(s.at)} · ${s.t} · ${esc(s.type)} · ${esc(s.place)}</p></div>
       ${n ? `<div class="payfaces">${avatars(ppl)}<span class="sm">${esc(names)}${n > 2 ? ` and ${plural(n - 2, 'other')}` : ''} are in</span></div>` : ''}
       <ul class="payget"><li>${ic('check')}Your spot is held</li><li>${ic('check')}See who's going and say hi before you arrive</li><li>${ic('check')}Cancel up to 12 hours before for a full refund</li></ul>
       <div class="paybot"><div class="payamt"><span class="big-n">AED ${c.price}</span><span class="mut sm">${c.priceFor ? esc(c.priceFor) : 'per session'}</span></div>
@@ -1160,7 +1161,7 @@
     [['area', 'ep-area'], ['level', 'ep-level'], ['ig', 'ep-ig'], ['work', 'ep-work'], ['hobbies', 'ep-hob']].forEach(([k, id]) => { const x = v(id); if (x !== undefined) d[k] = k === 'ig' ? x.replace(/^@/, '') : x; });
     const sh = document.getElementById('ep-share'); if (sh) d.share = sh.checked; };
   O.milestone = () => { const m = MS.find((x) => x.id === overlay.id); return `<div class="sheet full" style="justify-content:center;text-align:center;align-items:center">
-    <span class="badge on" style="width:120px;font-size:26px">${m.b}</span><span class="cap">New milestone</span><h1>${m.t}</h1><p>${m.line}</p><p class="mut sm">with ${esc(overlay.club)}</p>
+    <span class="badge on" style="width:120px;font-size:26px">${m.b}</span><h1>${m.t}</h1><p>${m.line}</p><p class="mut sm">with ${esc(overlay.club)}</p>
     <div class="stack" style="width:100%"><button class="btn block" data-act="share">Share</button><button class="btn quiet block" data-act="close">Done</button></div></div>`; };
   O.share = () => { const c = S.follows[0] ? club(S.follows[0]) : null; return `<div class="sheet"><div class="sharecard g1"${c ? im(c.sport, hash(c.id) + 1) : ''}><span class="disp" style="font-size:12px;font-weight:700">ryze club</span><span class="n">${S.streak}</span><b style="font-size:18px">${S.streak === 1 ? 'week' : 'weeks'} in a row</b><span>with ${c ? esc(c.name) : 'Ryze Club'}</span><span id="sc-name">${overlay.hide ? '' : esc(S.user.name)}</span></div>
     <label class="switch" for="sc-show"><span>Show my name</span><input type="checkbox" id="sc-show" data-sharename="1" ${overlay.hide ? '' : 'checked'}></label>
@@ -1568,6 +1569,8 @@
   document.addEventListener('input', (e) => { if (e.target.id !== 'find-q') return; filt.q = e.target.value; const pos = e.target.selectionStart; render(); const box = document.getElementById('find-q'); if (box) { box.focus(); try { box.setSelectionRange(pos, pos); } catch (err) { /* ignore */ } } });
   document.addEventListener('input', (e) => { if (overlay && overlay.t === 'editpro' && e.target.id && e.target.id.startsWith('ep-')) readPro(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay) dismiss(); });
+  // Enter in a sheet's field does the sheet's main action, as a form would.
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Enter' || !e.target.matches || !e.target.matches('.sheet input:not([type=checkbox]), .sheet select')) return; const b = document.querySelector('.sheet .btn:not(.ghost):not(.quiet):not(.danger)'); if (b) { e.preventDefault(); b.click(); } });
   // Keep the field being typed in above the on-screen keyboard.
   document.addEventListener('focusin', (e) => { const t = e.target; if (t.matches && t.matches('.sheet input:not([type=checkbox]), .sheet select, .sheet textarea')) setTimeout(() => t.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300); });
   if (window.visualViewport) { const fit = () => document.documentElement.style.setProperty('--vvh', `${window.visualViewport.height}px`); window.visualViewport.addEventListener('resize', fit); fit(); }
