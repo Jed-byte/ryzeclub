@@ -52,6 +52,11 @@ Everything is under `docs/initiatives/initiative-001-community-fitness-dubai/`.
 | `planning/prds/prd-001-club-discovery-v1/ux/ux-spec.md` | The six design flows and the visual direction |
 | `planning/prds/prd-001-club-discovery-v1/ux/flows/` | Detailed design for each flow |
 | `planning/prds/prd-001-club-discovery-v1/ux/explorations/` | Competitor review and the three visual directions |
+| `planning/prds/prd-001-club-discovery-v1/ux/reviews/` | UX law reviews of prototype screens, with before and after scores |
+
+## Claude skills
+
+`.claude/skills/` holds the skills every Claude session on this repo can use. `ux-law-gates` changes a screen one UX law at a time and checks each change before the next, then has `impeccable` review every change. Where the others come from is in `.claude/skills/SOURCES.md`.
 
 ## Status
 

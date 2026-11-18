@@ -89,6 +89,25 @@ main.pad-bar { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 select { border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 10px; background: var(--bg); min-height: 40px; max-width: 100%; }
 input[type="text"], input[type="tel"], textarea { border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 12px; width: 100%; background: var(--bg); }
 label { font-weight: 500; }
+
+/* Fields with the label inside the box (the Revolut pattern, see .claude/skills/ux-law-gates/reference/forms.md).
+   Empty: the label sits in the middle at full size. Focused or filled: it shrinks to the top edge and stays there. */
+.fl-group { display: flex; flex-direction: column; gap: 8px; }
+.fl { position: relative; }
+.fl input, .fl textarea, .fl select { display: block; width: 100%; max-width: none; min-height: 58px; margin: 0; padding: 25px 14px 7px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--soft); font-size: 16px; line-height: 1.4; appearance: none; -webkit-appearance: none; transition: border-color .15s ease, background-color .15s ease; }
+.fl textarea { min-height: 112px; padding-top: 27px; resize: vertical; }
+.fl select { padding-right: 44px; }
+.fl input:focus, .fl textarea:focus, .fl select:focus { border-color: var(--acc); background: var(--bg); }
+.fl > label { position: absolute; left: 15.5px; right: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; font-weight: 500; color: var(--mut); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; transform-origin: left top; transition: top .16s cubic-bezier(.25, 1, .5, 1), transform .16s cubic-bezier(.25, 1, .5, 1), font-size .16s cubic-bezier(.25, 1, .5, 1); }
+.fl.area > label { top: 18px; transform: none; }
+.fl input:focus + label, .fl input:not(:placeholder-shown) + label, .fl textarea:focus + label, .fl textarea:not(:placeholder-shown) + label, .fl.sel > label { top: 8px; transform: none; font-size: 12.5px; }
+.fl input::placeholder, .fl textarea::placeholder { color: transparent; }
+.fl input:focus::placeholder, .fl textarea:focus::placeholder { color: var(--mut); }
+.fl .fl-chev { position: absolute; right: 14px; top: 50%; width: 20px; height: 20px; transform: translateY(-50%) rotate(90deg); color: var(--ink); pointer-events: none; }
+.fl-hint { margin: -4px 0 6px; padding: 0 2px; font-size: 13px; color: var(--mut); }
+/* A sheet scrolls; its parts must keep their own height instead of being squashed to fit. */
+.sheet > * { flex-shrink: 0; }
+@media (prefers-reduced-motion: reduce) { .fl > label, .fl input, .fl textarea, .fl select { transition: none; } }
 .notice { background: #FBEBD0; color: var(--warn); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
 .note { background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--mut); }
 

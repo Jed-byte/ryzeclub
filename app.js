@@ -203,6 +203,16 @@
 
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // Form fields with the label inside the box: full size while empty, shrunk to the top edge once focused or filled.
+  // The input comes before its label so CSS can float the label; example text only shows once the field has focus.
+  const fhint = (o) => (o.hint ? `<p class="fl-hint" id="${o.id}-hint">${o.hint}</p>` : '');
+  const fld = (o) => {
+    const a = `id="${o.id}" placeholder="${esc(o.ex || ' ')}"${o.max ? ` maxlength="${o.max}"` : ''}${o.mode ? ` inputmode="${o.mode}"` : ''}${o.auto ? ` autocomplete="${o.auto}"` : ''}${o.attrs ? ' ' + o.attrs : ''}${o.hint ? ` aria-describedby="${o.id}-hint"` : ''} enterkeyhint="${o.last ? 'done' : 'next'}"`;
+    const v = o.value == null ? '' : o.value;
+    const box = o.area ? `<textarea ${a} rows="${o.area}">${esc(v)}</textarea>` : `<input type="${o.type || 'text'}" ${a} value="${esc(v)}">`;
+    return `<div class="fl${o.area ? ' area' : ''}">${box}<label for="${o.id}">${o.label}</label></div>${fhint(o)}`;
+  };
+  const fsel = (o) => `<div class="fl sel"><select id="${o.id}"${o.hint ? ` aria-describedby="${o.id}-hint"` : ''}>${o.options.map((x) => { const [v, l] = Array.isArray(x) ? x : [x, x]; return `<option value="${esc(v)}" ${String(o.value) === String(v) ? 'selected' : ''}>${esc(l)}</option>`; }).join('')}</select><label for="${o.id}">${o.label}</label>${ic('chev', 'fl-chev')}</div>${fhint(o)}`;
   const now = () => new Date(Date.now() + S.offset);
   const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const hash = (s) => { let h = 7; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100003; return h; };
@@ -915,7 +925,7 @@
   const O = {};
   O.filters = filtersSheet;
   O.signin = () => `<div class="sheet"><h2>${overlay.then && (overlay.then.act === 'claim' || overlay.then.act === 'org') ? 'Sign in to manage your club' : overlay.then && overlay.then.act === 'who' ? 'Sign in to see who\'s going' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
-    <label for="si-name">First name</label><input type="text" id="si-name" value="${esc(overlay.name || 'Alex')}" maxlength="20" autocomplete="off">
+    ${fld({ id: 'si-name', label: 'First name', value: overlay.name || 'Alex', max: 20, auto: 'given-name', last: true })}
     <label class="switch" for="si-age"><span>I'm 18 or older<br><span class="mut sm">Ryze Club is for adults.</span></span><input type="checkbox" id="si-age"></label>
     <button class="btn block" data-act="dosignin">Continue with Google</button><button class="btn quiet block" data-act="close">Not now</button></div>`;
   O.day = () => {
@@ -1006,11 +1016,11 @@
     return `<div class="sheet"><h2>Your profile</h2><p class="mut sm">Only people going to the same session as you, and that club's organisers, can see this. Everything except your name is optional.</p>
       <div class="row">${face(S.user.name, d.photo, true)}<div class="stack tight"><label class="btn small ghost" for="ep-photo">${d.photo ? 'Change photo' : 'Add a photo'}</label><input type="file" id="ep-photo" accept="image/*" data-photo="1" hidden>
         ${d.photo ? '<button class="link sm" data-act="rmphoto">Remove photo</button>' : '<span class="mut xs">A clear face helps people find you at the meeting point.</span>'}</div></div>
-      <label for="ep-area">Area</label><select id="ep-area"><option value="">Choose</option>${AREAS.map((a) => `<option ${d.area === a ? 'selected' : ''}>${a}</option>`).join('')}</select>
-      <label for="ep-level">Running level</label><select id="ep-level"><option value="">Choose</option>${Object.entries(LEVELS).map(([k, l]) => `<option value="${k}" ${d.level === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
-      <label for="ep-ig">Instagram</label><input type="text" id="ep-ig" maxlength="31" placeholder="@yourhandle" value="${d.ig ? '@' + esc(d.ig) : ''}" autocomplete="off" autocapitalize="off">
-      <label for="ep-work">Work</label><input type="text" id="ep-work" maxlength="40" placeholder="For example: Nurse, or Works in marketing" value="${esc(d.work)}">
-      <label for="ep-hob">Other things you're into</label><input type="text" id="ep-hob" maxlength="80" placeholder="For example: brunch spots, photography" value="${esc(d.hobbies)}">
+      <div class="fl-group">${fsel({ id: 'ep-area', label: 'Area', value: d.area, options: [['', 'Choose']].concat(AREAS) })}
+      ${fsel({ id: 'ep-level', label: 'Running level', value: d.level, options: [['', 'Choose']].concat(Object.entries(LEVELS)) })}
+      ${fld({ id: 'ep-ig', label: 'Instagram', ex: '@yourhandle', value: d.ig ? '@' + d.ig : '', max: 31, auto: 'off', attrs: 'autocapitalize="off" autocorrect="off" spellcheck="false"' })}
+      ${fld({ id: 'ep-work', label: 'Work', ex: 'For example: Nurse, or Works in marketing', value: d.work, max: 40, auto: 'organization-title' })}
+      ${fld({ id: 'ep-hob', label: 'Other things you\'re into', ex: 'For example: brunch spots, photography', value: d.hobbies, max: 80, last: true })}</div>
       <label class="switch" for="ep-share"><span>Show my profile to people at my sessions<br><span class="mut sm">And to those clubs' organisers. Off means they only see your first name.</span></span><input type="checkbox" id="ep-share" ${d.share ? 'checked' : ''}></label>
       <button class="btn block" data-act="savepro">Save</button><button class="btn quiet block" data-act="${overlay.sid ? 'session' : 'close'}"${overlay.sid ? ` data-id="${overlay.sid}"` : ''}>Cancel</button></div>`;
   };
@@ -1026,8 +1036,8 @@
     <button class="btn block" data-act="soon" data-what="This would open your phone's share menu with the image.">Share</button><button class="btn ghost block" data-act="soon" data-what="This would save the image to your phone.">Save image</button><button class="btn quiet block" data-act="close">Close</button></div>`; };
   O.post = () => { const s = byId(overlay.id); const sel = overlay.sel || []; return `<div class="sheet"><div class="stack tight"><h2>Add photos</h2><p class="mut sm">${nounFor(s)} · ${esc(s.club.name)}</p></div>
     <p class="note">On a phone this opens your photo library. Here, pick from these examples (up to 6).</p>
-    <div class="pick">${[1, 2, 3, 4, 5, 6].map((g) => `<button class="ph g${g} ${sel.includes(g) ? 'on' : ''}"${im(s.club.sport, g - 1)} data-act="pick" data-g="${g}" aria-pressed="${sel.includes(g)}" aria-label="Example photo ${g}">${sel.includes(g) ? 'chosen' : ''}</button>`).join('')}</div>
-    <label for="po-cap">Caption (optional)</label><input type="text" id="po-cap" maxlength="140" value="${esc(overlay.cap || '')}">
+    <div class="pick" data-ux-ignore="competing-primaries">${[1, 2, 3, 4, 5, 6].map((g) => `<button class="ph g${g} ${sel.includes(g) ? 'on' : ''}"${im(s.club.sport, g - 1)} data-act="pick" data-g="${g}" aria-pressed="${sel.includes(g)}" aria-label="Example photo ${g}">${sel.includes(g) ? 'chosen' : ''}</button>`).join('')}</div>
+    ${fld({ id: 'po-cap', label: 'Caption (optional)', value: overlay.cap || '', max: 140, last: true, attrs: 'data-ux-ignore="input-wrong-keyboard"' })}
     <label class="switch" for="po-ok"><span>Everyone in these photos agreed to be shown<br><span class="mut sm">In the UAE, posting a photo of someone without their consent is against the law.</span></span><input type="checkbox" id="po-ok" data-agree="1" ${overlay.agree ? 'checked' : ''}></label>
     <button class="btn block" data-act="dopost">Post</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   O.photo = () => { const p = overlay; const s = p.sid ? byId(p.sid) : null;
@@ -1038,23 +1048,23 @@
       <p class="sm">${S.user || p.mine ? `Posted by <b>${esc(p.by)}</b>` : 'Sign in to see who posted this'}${s ? ` · ${nounFor(s)}` : ''}</p>
       ${acts}<button class="btn quiet block" data-act="close">Close</button></div>`; };
   O.claim = () => { const c = club(overlay.id); return `<div class="sheet"><div class="stack tight"><h2>Is this your club?</h2><p class="mut sm">${esc(c.name)}. Tell us who you are and we'll check with the club.</p></div>
-    <label for="cl-role">Your role</label><select id="cl-role"><option>I started it</option><option>I help run it</option><option>I coach or lead sessions</option></select>
-    <label for="cl-ig">The club's Instagram or WhatsApp group link</label><input type="text" id="cl-ig" placeholder="@yourclub" autocomplete="off">
-    <label for="cl-ct">Best way to reach you</label><input type="text" id="cl-ct" placeholder="Phone or email" autocomplete="off">
+    <div class="fl-group">${fsel({ id: 'cl-role', label: 'Your role', value: 'I started it', options: ['I started it', 'I help run it', 'I coach or lead sessions'] })}
+    ${fld({ id: 'cl-ig', label: 'Club Instagram or WhatsApp link', ex: '@yourclub or chat.whatsapp.com/…', auto: 'off', attrs: 'autocapitalize="off" autocorrect="off" spellcheck="false"' })}
+    ${fld({ id: 'cl-ct', label: 'Best way to reach you', ex: 'Phone or email', auto: 'off', last: true, attrs: 'autocapitalize="off" data-ux-ignore="input-wrong-keyboard"' })}</div>
     <button class="btn block" data-act="sendclaim" data-id="${c.id}">Send request</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   O.edit = () => { const c = club(overlay.id); return `<div class="sheet"><h2>Club details</h2>
-    <label for="ed-desc">Description</label><textarea id="ed-desc" rows="4" maxlength="300">${esc(c.desc)}</textarea>
-    <label for="ed-level">Level or pace</label><input type="text" id="ed-level" maxlength="80" value="${esc(c.level)}">
-    <label for="ed-venue">Indoor or outdoor</label><select id="ed-venue">${VENUES.map((v) => `<option ${c.venue === v ? 'selected' : ''}>${v}</option>`).join('')}</select>
-    <label for="ed-price">Price per session (AED)<br><span class="mut sm">Members see exactly this. Use 0 for free.</span></label><input type="number" id="ed-price" min="0" max="1000" step="5" inputmode="numeric" value="${c.price || 0}">
-    <label for="ed-pfor">What the price covers (optional)</label><input type="text" id="ed-pfor" maxlength="40" placeholder="For example: court share, or towards the coach" value="${esc(c.priceFor || '')}">
-    <label for="ed-bring">What to bring</label><input type="text" id="ed-bring" maxlength="80" value="${esc(c.bring)}">
-    <label for="ed-find">How to find us<br><span class="mut sm">One line for first-timers, added to their reminder</span></label><input type="text" id="ed-find" maxlength="80" placeholder="For example: Look for the orange flag by Pier 7" value="${esc(c.find || '')}">
+    <div class="fl-group">${fld({ id: 'ed-desc', label: 'Description', area: 4, value: c.desc, max: 300 })}
+    ${fld({ id: 'ed-level', label: 'Level or pace', value: c.level, max: 80 })}
+    ${fsel({ id: 'ed-venue', label: 'Indoor or outdoor', value: c.venue, options: VENUES })}</div>
+    <div class="fl-group">${fld({ id: 'ed-price', label: 'Price per session (AED)', type: 'number', mode: 'numeric', value: c.price || 0, hint: 'Members see exactly this. Use 0 for free.', attrs: 'min="0" max="1000" step="5"' })}
+    ${fld({ id: 'ed-pfor', label: 'What the price covers (optional)', ex: 'For example: court share, or towards the coach', value: c.priceFor || '', max: 40, attrs: 'data-ux-ignore="input-wrong-keyboard"' })}</div>
+    <div class="fl-group">${fld({ id: 'ed-bring', label: 'What to bring', value: c.bring, max: 80 })}
+    ${fld({ id: 'ed-find', label: 'How to find us', ex: 'For example: Look for the orange flag by Pier 7', value: c.find || '', max: 80, last: true, hint: 'One line for first-timers, added to their reminder.' })}</div>
     <p class="mut xs">Changes show on your public page straight away.</p>
     <button class="btn block" data-act="saveclub" data-id="${c.id}">Save</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   O.cancel = () => { const s = byId(overlay.id); return `<div class="sheet"><div class="stack tight"><h2>Cancel ${nounFor(s)}?</h2><p class="mut sm">${dateShort(s.at)} · ${s.t} · ${s.type}</p></div>
     <p class="notice"><b>${plural(going(s), 'person')} will be told.</b> Their streak still counts this week.</p>
-    <label for="cn-why">Reason (optional)</label><input type="text" id="cn-why" maxlength="80" placeholder="Weather, venue closed…">
+    ${fld({ id: 'cn-why', label: 'Reason (optional)', ex: 'Weather, venue closed…', max: 80, last: true })}
     <button class="btn danger block" data-act="docancel" data-id="${s.id}">Cancel session</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
   O.oshare = () => { const c = orgClub(); const wk = future(c).filter((s) => s.at - now() < 7 * 864e5 && !isCancelled(s));
     return `<div class="sheet"><h2>Share this week</h2><p class="mut sm">Post it in your club's WhatsApp group. People RSVP from the link; chat stays in your group.</p>
