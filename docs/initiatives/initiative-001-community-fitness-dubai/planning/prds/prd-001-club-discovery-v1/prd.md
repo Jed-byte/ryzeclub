@@ -1,348 +1,219 @@
----
-title: PRD-001 — Community club discovery and return loop (V1)
-status: handoff-ready
-created: 2026-10-07
-updated: 2026-10-16
-parent: ../../../discovery/concept-verdict.md
----
+# Ryze Club: PRD
 
-# PRD-001 — Community club discovery and return loop (V1)
+## 1. TL;DR
 
-Product name: **Ryze Club**. A clean, community-driven health platform for Dubai.
+We will build the first release of Ryze Club. A person in Dubai picks Mind, Body or Soul, answers three questions, finds a community club and books a session in one sitting. Paid sessions are paid in the app. The host runs the club from a phone: claim a page that is already filled in, manage sessions, check people in and get paid. Success is a newcomer who books in one sitting, a host who spends under five minutes a week, and money that always agrees with the headcount. The prototype is the source of truth for this PRD.
 
-## 1. Source inputs
+## 2. Situation
 
-- `discovery/prfaq.md` — press release, customer FAQ, internal FAQ, claim ledger.
-- `discovery/concept-verdict.md` — verdict `proceed`, concept strength medium.
-- Opportunity research (in conversation, 2026-10-07): market, regulatory and technical findings with sources.
-- Founder statements: clubs build their own websites; The Padel Mob runs on WhatsApp, a website and Instagram.
-
-## 2. Users
-
-| User | Description | What they need |
-|---|---|---|
-| **Newcomer** (primary) | Someone new to Dubai, or new to a sport, who wants a regular group | Find a suitable club fast, know what to expect, and feel welcome enough to return |
-| **Member** | Someone who already attends a club | Know when sessions are, see who's going, share and see photos |
-| **Organiser** | The person who runs a community club, usually unpaid | One page that stays current with little effort, and a headcount before each session |
-| **Curator** | The platform operator, at first the founder | Add and maintain clubs, handle reports |
+Dubai's community clubs run on Instagram, WhatsApp groups and one-off websites. Hosts collect session fees by bank transfer and screenshots. The first release covers about 15 hosts in three Dubai areas (D41). Streaks, photos, standings and full profiles come in later phases.
 
 ## 3. Problem
 
-Dubai's community clubs are spread across Instagram, WhatsApp groups and one-off websites. A newcomer cannot easily see which clubs exist near them, what level they suit, or when the next session is. After a first visit there is nothing that pulls them back, and session details get buried in chat. Organisers rebuild the same website and still manage attendance by hand.
+A newcomer cannot see which clubs are near them, which level fits, or when the next session is. A host is usually an unpaid volunteer. They rebuild a website, chase payments and count heads by hand. Newcomers do not turn up, and hosts stop.
 
-**Evidence:** demand for community sport is well supported (Dubai Fitness Challenge 2025 had over 3 million participants). The discovery pain itself is assumed, not proven. [ASSUMPTION: A1]
+Evidence: demand for community sport is strong (Dubai Fitness Challenge 2025 had over 3 million participants). The discovery and payment pain is assumed, and we did not interview customers (D6). The pilot tests it (A1, A7).
 
-## 4. Goals
+## 4. Future press release
 
-1. A newcomer can go from landing on the site to an RSVP for a suitable session in one sitting.
-2. A member has a reason to return every week.
-3. A club page stays current and alive with no more than five minutes of organiser effort a week (section 10, organiser effort budget).
-4. The pilot answers the unproven claims in section 12.
+"Run clubs, padel nights and pottery evenings in one place." Like Nike Run Club for every community in Dubai, Ryze Club lets people pick what they are into. They see who is going and book in a minute. Hosts get paid when members book. "I stopped chasing transfers on WhatsApp," says one host. "I open the app, check people in and that is my week."
 
-## 5. Non-goals (not in V1)
+## 5. Goals and success metrics
 
-- Coaches, personal trainers, dietitians and 1:1 sessions.
-- Payments, paid sessions and bookings.
-- Supplements, ads and sponsorship.
-- A general social feed, comments, direct messaging and following people.
-- A native mobile app.
-- Licence, permit or credential checks.
-- Training plans, and medical or nutrition advice.
-- Padel court booking (Playtomic already does this).
-- Golf, paid studio classes, and partner-finding ("golf buddies"). Partner-finding is the first candidate after the pilot.
-- Rewards with real value for streaks (cashback, diet plans, free 1:1 or coaching sessions). Planned for later; see FR-26.
+1. A newcomer goes from the home screen to a booked session in one sitting. At least 30% of newcomers who book once book again within 14 days. We check this at the end of the pilot.
+2. A host runs a routine week in under five minutes on a phone. The median is checked each week of the pilot.
+3. Every money and headcount figure agrees. Booked equals paid plus free. What the host receives equals booked minus the Ryze Club fee. There are zero exceptions from the first paid booking.
+4. At least 80% of listings were confirmed by the host in the last 30 days.
 
-## 6. Product perimeter
+## 6. Non-goals and anti-goals
 
-- Mobile-first website.
-- Dubai only.
-- About 30 hand-picked clubs at launch: running, community padel, and community yoga and pilates groups (free or low-cost groups, not paid studios).
-- Each sport has its own level field (pace for running, level for padel), so sports such as golf with a handicap can be added as data.
-- The founder is the curator for the pilot.
-- Free for everyone.
-- The platform lists sessions that clubs run. It does not organise or host sessions.
+- Streaks, milestones, standings, photos, tagging, full profiles, win-back messages and the host members view are later phases (D41). The prototype shows them only in Demo. Do not build them now.
+- No subscriptions or passes (D39). No one-off friend events (D40). No coaches, 1:1 sessions, ads or supplements. No waiting list (D23).
+- Anti-goal: Ryze Club never holds a member's money. Payment goes to the host's own account.
 
-## 7. Success signals
+## 7. Constraints and principles
 
-Measured over a pilot of about 8 weeks:
+Money moves from the member to the host through the host's own payment account (Ziina or Stripe). Ryze Club takes a fee per booking and stores no card details. Members and hosts must be 18 or older. Personal data stays in a UAE cloud region (D38).
 
-| Signal | Target |
-|---|---|
-| Clubs keeping their schedule current without being chased | At least 10 of 30 |
-| Newcomers who RSVP once and RSVP again within 14 days | At least 30% |
-| Sessions with at least one member photo | At least 50% |
-| Quiz completions that lead to an RSVP | Track, no target yet |
-| Share of listings confirmed in the last 30 days | At least 80% |
-| Organiser time on Ryze Club in a routine week | Median under 5 minutes |
-| Sessions where the organiser checked people in | Track, no target yet |
-| RSVPs that come from a link shared in a club's WhatsApp group | Track, no target yet |
-| Members who join from an organiser's invite link or QR code | Track, no target yet |
-| Lapsed members who RSVP within 14 days of a win-back message | Track, no target yet |
+Platform: Expo app for iPhone, Android and web, phone first (D38).
 
-## 8. Value slices and functional requirements
+Design: Seal theme with Big Shoulders Display and Figtree (D44), plain English.
 
-### VS-1 — Find a club that fits
+Tradeoff rules the team may use without asking:
+(1) Any new task that a host does every week must state its time cost. If it breaks the five-minute budget, cut it.
+(2) If a money figure cannot reconcile to the payments, do not show it.
 
-**FR-1 Match quiz.** A visitor answers three questions (sport, area, level or goal) and receives a short ranked list of clubs.
-- A visitor gets results without creating an account.
-- Each result says why it was suggested, in plain words.
-- If no club fits, the visitor sees the nearest alternatives, not an empty page.
+## 8. Proposed approach (directional)
 
-**FR-2 Browse and filter.** A visitor can browse all clubs and filter by sport, area, day of the week and level.
-- The filtered list is always available, independent of the quiz.
+Nine pieces. A home screen with the three pillars and a "Find my club" quiz. A browse screen with search and filters. A club page with a fixed session bar. A booking sheet that takes payment for paid sessions. A My week screen with the next session and a week plan. A separate host app at `#organiser` with three tabs: This week, Check-in and Club. A Get paid flow in three steps. An invite link and QR code to bring existing members over. A curator who approves claims. Prototype: https://jed-byte.github.io/ryzeclub/ (host app: add `#organiser`). Craft and layout are the designer's.
 
-**FR-3 Club page.** Each club has a public page with: name, sport, description, level and pace, usual location, weekly schedule, next session, cost (free, or noted otherwise), links to the club's own Instagram and WhatsApp, and its photo timeline.
-- A visitor can tell within a few seconds whether beginners are welcome and when the next session is.
-- The page shows when its details were last confirmed.
+## 9. User stories and acceptance criteria
 
-### VS-2 — Show up
+**US-01 | Must:**
+As a newcomer, I want to answer three questions and see clubs that fit, so that I find a club without searching.
 
-**FR-4 Sessions.** A club has sessions, each with a date, time, location, level note and optional capacity. Recurring weekly sessions are supported.
-- A cancelled or changed session is clearly marked, and people who RSVPed are told.
+* Given the three answers (what I am into, where I am based, my level), then the top three exact matches show, each with one plain reason why it fits.
+* Given fewer than three exact matches, then the nearest clubs fill the list and each says how it differs. The list is never empty.
+* Given a thin result, then more clubs in the same pillar and city show below it.
+* States: no account needed to get results.
 
-**FR-5 RSVP.** A signed-in person can RSVP to a session and cancel it.
-- The session shows how many are going, and first names of attendees to signed-in users.
-- Signing up at the moment of RSVP takes one short step: sign in with Google.
-- A person can add a phone number to receive WhatsApp reminders. It is optional.
+**US-02 | Must:**
+As a visitor, I want to browse and filter all clubs, so that I find one on my own terms.
 
-**FR-6 Reminders.** A person who RSVPed receives a reminder before the session by email, and by WhatsApp if they gave a phone number and opted in.
-- The reminder includes time, place and a link to the session.
-- Sessions starting before 10:00 are reminded at 19:00 the evening before; later sessions three hours before.
-- A person can turn reminders off.
+* Given the list, then I can search by name, category or area.
+* I can filter by pillar, category, area (with a city-wide option), day, level, price, indoor or outdoor, and Ladies only.
+* Given any filter state, then the count of clubs and the count of free clubs match the clubs listed.
+* States: no match (offers "Clear filters").
 
-### VS-3 — A club page that stays alive
+**US-03 | Must:**
+As a visitor, I want a club page that answers "is this for me", so that I decide quickly.
 
-**FR-7 Member photo posts.** A person who RSVPed to or attended a session can post photos with an optional short caption, tagged to that club and session.
-- Posting takes under 30 seconds on a phone.
-- Posts appear on the session and on the club's timeline.
-- A person who did not RSVP or attend cannot post to that session.
+* Given a club, then the page shows what it is, area, level, indoor or outdoor, and Ladies only if set.
+* It shows the price per session with what it covers, and how I pay ("Pay in the app" or "Pay at the session").
+* It shows the weekly schedule, the next session and when the host last confirmed the details.
+* Given the club has no session scheduled, then the page says so instead of showing a stale time.
+* Out of scope: photo timeline (later phase).
 
-**FR-8 Organiser posts and pinning.** An organiser can post to any of their club's sessions and pin posts to the top of the club page.
+**US-04 | Must:**
+As a member, I want to book a free session with one sign-in step, so that I secure a spot.
 
-**FR-9 Tagging people.** A poster can tag other attendees of the same session.
-- A tagged person is notified and can remove the tag.
+* Given I am signed out, when I tap to book, then I sign in with Google at that moment and confirm I am 18 or older. The booking then completes.
+* Given a session at capacity, then it shows "Full" and cannot be booked.
+* Given a booking, then I can cancel it and the host headcount drops by one.
 
-**FR-10 Moderation.** Anyone can report a post. An organiser can hide posts on their club. The curator can remove any post.
-- A reported post reaches the curator, and the reporter is told the outcome.
-- A hidden or removed post disappears from all public pages.
+**US-05 | Must:**
+As a member, I want to pay for a paid session in the app, so that I do not need cash or a transfer.
 
-### VS-4 — Keep coming back
+* Given a paid session with the host connected, then the booking sheet shows how many people are going, the price and what it covers.
+* The sheet states that cancelling up to 12 hours before gives a full refund.
+* Given I pay, then I book only after the payment provider confirms. A second tap does nothing while payment is in progress.
+* Given I am offline, then payment is blocked with a clear message.
+* Given a host that is not connected, then the session says "Pay at the session" and booking needs no payment.
 
-**FR-11 Attendance.** Attendance at a session is recorded. [ASSUMPTION: A3]
-- A member can confirm "I went" after a session they RSVPed to, and an organiser can correct the list.
-- A member can change their answer for seven days and can dispute an organiser's mark.
+**US-06 | Must:**
+As a member, I want a full refund when I cancel in time, so that I book without fear.
 
-**FR-12 Streak and history.** A member sees their sessions attended and their current weekly streak.
-- The streak counts weeks with at least one attended session, across any clubs.
-- A week also counts when the member's RSVPed session was cancelled by the club and they attended nothing else.
+* Given I cancel a paid booking at least 12 hours before the start, then I get a full refund and the host sees the booking removed.
+* Given I cancel later than that, then no refund is promised on screen. The rule is stated before I pay.
+* Out of scope: partial refunds.
 
-**FR-13 Newcomer nudge.** After a first attended session, the member is prompted about the club's next session.
-- The nudge is sent once per upcoming session, and stops if the member opts out.
+**US-07 | Must:**
+As a member, I want a My week screen, so that I see what I booked and where to go.
 
-**FR-14 My clubs.** A member can join a club and sees upcoming sessions from their clubs in one place.
+* Given bookings, then the next session shows first with time, place and a way to add it to my calendar. The week plan lists the rest.
+* Given no bookings, then the screen offers "Find my club".
+* Given a session changed or cancelled by the host, then it is marked and I am told.
 
-**FR-22 Milestones and badges.** A member earns visible milestones for streak length and sessions attended : first session; streaks of 4, 12, 26, 52 and 104 weeks; and 25, 100, 250 and 500 sessions in total.
-- A new milestone is celebrated at the moment it is earned and stays on the member's profile.
-- Milestones are earned only from recorded attendance.
+**US-08 | Should:**
+As a member, I want a reminder before a session, so that I do not forget.
 
-**FR-23 Streak rest week.** A member's streak survives one missed week, so travel or illness does not wipe it out. A member holds one rest week at a time; it is used automatically and returns after four counted weeks in a row.
-- The member is told when the rest week has been used and when it is available again.
-- A member whose streak is at risk this week is reminded before the week ends, with their clubs' remaining sessions.
+* Given a booking, then I get a reminder by email, and by WhatsApp if I opted in. Sessions before 10:00 get it at 19:00 the day before. Later sessions get it three hours before.
+* Given I turn reminders off, then none are sent.
+* A first session with a club also carries the club's "How to find us" line.
 
-**FR-24 Club streaks and standings.** Each club page shows its members' collective activity and its most consistent members.
-- Standings rank consistency (weeks attended), not speed or ability, so beginners can appear.
-- A member can opt out of appearing in standings.
+**US-09 | Should:**
+As a visitor, I want Home to show good clubs this week, so that I have somewhere to start.
 
-**FR-25 Shareable streak card.** A member can share a milestone or streak as an image to Instagram or WhatsApp, carrying the Ryze Club name and their club.
+* Given Home, then it shows one club each for Mind, Body and Soul. Each is the club with the soonest session that still has spots, in my area or in the city (Dubai by default).
+* Given two clubs tie, then the choice rotates daily. No paid placement exists.
 
-**FR-27 First-timer welcome.** A newcomer's first session with a club is easy to find, and the organiser knows they are coming.
-- A club can have a one-line "How to find us" note (for example, "Look for the orange flag by Pier 7"), written once by the organiser or the curator. It is added to a member's reminder for their first session with that club.
-- Before the session, organisers see first-timers by first name, marked "First time", in the attendee list and the weekly summary (FR-30), with the prompt to say hello.
-- The flag is information only. It asks nothing extra of the organiser.
+**US-10 | Must:**
+As a member, I want to delete my account, so that I control my data.
 
-**FR-28 Win-back.** A member who has attended at least one session and has no attended session for 21 days receives one message.
-- It names the club they attended most, how many sessions that club has run since their last visit, and its next session with a one-tap RSVP.
-- It is sent once per lapse. Nothing more is sent until the member attends again.
-- It follows the member's message settings and never describes the absence as a failure.
+* Given I confirm, then my profile, bookings and settings are deleted, and hosts no longer see me.
+* Terms and privacy pages are linked from sign-in and Profile.
 
-**FR-29 Seasons.** The curator can run a season: a challenge of four to six weeks, counted in attended weeks (for example, "Show up every week for six weeks").
-- Clubs join with one tap from the organiser's weekly summary (FR-30). Organisers have no other work.
-- Members of a joined club see the season and their progress on Home. Completing it earns a season badge alongside the milestones (FR-22).
-- A club page shows how many of its members are on track.
-- One season each year is timed to the Dubai Fitness Challenge.
-- Seasons count recorded attendance only and carry no prize with real value in V1.
+**US-11 | Must:**
+As a host, I want to claim my club's page, so that I control what members see.
 
-**FR-26 Rewards-ready record.** The record of streaks, milestones and attendance is kept in a form that can later be exchanged for rewards.
-- No rewards are offered in V1.
-- Before any reward with real value is offered, attendance must be confirmed by the organiser or another check, not only by the member. [ASSUMPTION: A9]
+* Given I sign in and choose my club, then I state my role, the club's Instagram or WhatsApp link and a contact. I see "Sent. We'll confirm within 2 days."
+* Given the curator approves, then I see "You now manage" and open the host app. The curator can decline with a reason.
+* Given a club that is not listed, then I can ask the curator to add it. The curator fills in the page.
+* States: pending, declined, club already has a host.
 
-### VS-5 — Organiser runs the club page
+**US-12 | Must:**
+As a host, I want a page that is already filled in, so that I check and confirm instead of typing.
 
-**FR-15 Claim a club.** An organiser can claim a club page that the curator created, or request a new one. The curator approves.
+* Given a first visit, then a checklist shows Club details, Weekly sessions and "How to find us" note. "Looks right" ticks the first two in one tap.
+* Given any edit or a tap on "Yes, still meeting", then "Last confirmed" shows today.
+* Given 60 days without a confirmation, then the public page shows a notice that details may be out of date. The curator is told.
 
-**FR-16 Edit club and schedule.** An organiser can edit club details and add, change or cancel sessions.
-- Any edit refreshes the "last confirmed" date.
-- More than one organiser can manage a club.
+**US-13 | Must:**
+As a host, I want to add, change and cancel sessions, so that the page is right.
 
-**FR-17 Attendee list.** An organiser sees who RSVPed to each session and the headcount, and afterwards who attended and who RSVPed but did not turn up.
+* Given a weekly or one-off session, then I set day or date, time, name, level note, meeting point and optional spots.
+* Given I cancel one date, then the sheet states how many people will be told before it happens. A reason is optional. A paid booking is refunded.
+* Given I change a session that has bookings, then the sheet states how many people will be told.
+* Given I lower spots below the people already booked, then the change is blocked and says how many are booked.
+* Out of scope: pause the club (not built).
 
-**FR-18 Confirm prompt.** An organiser is periodically asked to confirm that the club details are still correct.
-- One tap confirms. A club not confirmed for a set period is flagged as possibly out of date on its page.
-- "All correct" in the weekly summary (FR-30) counts as a confirmation, so an organiser who answers the summary never receives a separate prompt.
-
-**FR-30 Weekly organiser summary.** Each Sunday at 18:00, every organiser receives one message by email, and by WhatsApp if they opted in, covering their club's coming week.
-- It lists each session with the headcount so far and any first-timers, last week's turnout, and anything waiting for them (a co-organiser request, an attendance dispute, a reported photo).
-- It offers, each as one tap: "All correct", "Share this week" (FR-32), "Cancel a session", and joining a running season (FR-29).
-- It replaces separate routine messages to organisers. Only session-day check-in notices (FR-31) are sent in addition.
-
-**FR-31 Check-in at the session.** At the session, an organiser can tick people off as they arrive, or tap "Everyone came" and untick anyone who did not.
-- A "Session today" notice opens check-in in one tap. It works on a phone held in one hand and takes under a minute for 20 people.
-- Check-in records attendance as organiser-confirmed and replaces the member's "Did you go?" for that session.
-- It is optional. If the organiser does nothing, members' own answers stand (FR-11).
+**US-14 | Must:**
+As a host, I want to see this week at a glance, so that I know who is coming.
 
-**FR-32 Share to the club's group.** An organiser can share a session, or the whole week, to the club's WhatsApp group or Instagram in one tap.
-- The ready-made text gives the day, time, place, how many are going, and an RSVP link.
-- The link opens the session for anyone. Signing in is only needed at the moment of RSVP.
-- The club's WhatsApp group stays the place for chat; Ryze Club holds the schedule, RSVPs and attendance.
+* Given the next session, then the first screen shows when, how many are going, how many are first-timers and where. Within 18 hours the main button is "Check people in". Otherwise it is "See who's coming".
+* Given a session list, then each row shows the headcount and the first-timers. The headcount equals the people booked, paid and free.
+* Given first-timers, then they show by first name with the label "First time".
 
-**FR-33 Act from a message.** An organiser can confirm details, cancel a session and check in from the links in their messages, without signing in again on the device that received them.
-- Links are personal to the organiser and expire after seven days.
-- Cancelling from a message still states how many people will be told before it happens.
+**US-15 | Must:**
+As a host, I want to check people in at the session, so that attendance is true.
 
-**FR-34 Co-organiser invite link.** An organiser can invite a co-organiser by sharing a link, for example in the club's WhatsApp group, as well as by email.
-- The first person to accept with Google sign-in becomes a co-organiser. The link works once and expires after seven days.
-- Every organiser sees who joined and can remove them.
+* Given the list, then I tap a name as each person arrives, or tap "Everyone came" and untick anyone missing. First-timers sit at the top.
+* Given each tap, then it saves at once. There is no submit.
+* Given the session ended, then I can change any name between "Came" and "Didn't turn up". "Mark everyone as came" is available.
+* Given weak signal, then ticks stay on the phone and sync later without duplicates.
 
-**FR-35 Ready-made page.** When an organiser claims a club, the curator has already filled in the page from the club's public channels: details, weekly sessions and a cover photo.
-- The organiser's first task is to check and confirm, not to type.
-- A new club request is completed by the curator in the same way before it goes live.
-
-**FR-36 Invite members.** An organiser can bring their existing members onto Ryze Club from the first screen of the organiser app.
-- One personal club link, shown with Copy, a ready-made WhatsApp message, an Instagram bio option and a QR code to show at the meeting point or print.
-- Opening the link lands on the club page with a "You're invited · Join the club" panel. Joining follows the club; signing in happens at that moment if needed.
-- The organiser sees how many people have joined from the link.
-
-### VS-6 — Curation
-
-**FR-19 Curator tools.** The curator can create, edit, hide and remove clubs, approve claims, and see which listings are stale.
-
-**FR-20 Report a listing.** Any visitor can report a wrong or outdated listing.
-
-**FR-21 Pilot measures.** The curator can see the success signals in section 7.
-
-## 9. User journeys
+**US-16 | Must:**
+As a host, I want to get paid when members book, so that I stop chasing transfers.
 
-**UJ-1 Newcomer finds a first run.** (VS-1, VS-2; FR-1, FR-3, FR-5, FR-6)
-Lands on the site, answers three questions, sees three clubs, opens one, sees Tuesday's session and that beginners are welcome, RSVPs, signs up in one step, gets a reminder the evening before.
-
-**UJ-2 First session to second session.** (VS-3, VS-4; FR-7, FR-9, FR-11, FR-13)
-Attends. Afterwards confirms "I went", sees photos from the session, is tagged in one, and is prompted about next week's session. RSVPs again.
-
-**UJ-3 Member posts a photo.** (VS-3; FR-7, FR-9)
-Opens the session they just attended, adds two photos, tags a friend, posts. The photos appear on the club page.
-
-**UJ-4 Organiser claims and runs a club.** (VS-5; FR-15, FR-16, FR-17, FR-8)
-Finds their club already listed, claims it, corrects the schedule, checks the headcount before Friday, and pins the best photo afterwards.
-
-**UJ-5 Unwanted photo.** (VS-3; FR-9, FR-10)
-A member is tagged in a photo they dislike. They remove the tag and report the post. The organiser or curator hides it.
-
-**UJ-6 Stale listing.** (VS-5, VS-6; FR-18, FR-19, FR-20)
-A club stops updating. Its page is flagged as possibly out of date. A visitor reports it. The curator contacts the club or hides the listing.
-
-**UJ-7 Organiser's week.** (VS-5; FR-30, FR-31, FR-32, FR-27)
-On Sunday evening the weekly summary arrives: three sessions, 14 going on Tuesday including two first-timers. The organiser taps "All correct", then "Share this week" into the club's WhatsApp group. On Tuesday at 05:40 a "Session today" notice opens check-in; they tap "Everyone came" and untick two names. The whole week takes under five minutes.
-
-**UJ-8 Lapsed member comes back.** (VS-4; FR-28)
-A member who came to four runs has not been for three weeks. They receive one message: Marina Dawn Runners have run six times since their last visit, and the next one is Thursday at 05:45. They tap "I'm in".
-
-## 10. Cross-cutting requirements
-
-- **Privacy and data.** Collect the minimum: name, contact for reminders, area, sport and level. No health or medical data. Explicit consent at sign-up, and a way to delete an account and its posts, in line with the UAE Personal Data Protection Law.
-- **Photo consent.** Before a member's first RSVP they are asked once whether they are happy to appear in session photos; "no" turns off tagging and any photo of them is removed on request. Whoever posts a photo confirms that everyone pictured agreed. Untag, report and removal are required at launch. Attendee names are visible to signed-in users only. Reason: UAE Federal Decree-Law 34 of 2021, Article 44, makes photographing or publishing people without consent an offence (D37). [ASSUMPTION: A4]
-- **Profile sharing.** A member's profile (photo, work, interests, Instagram) is shown to people going to the same session and that club's organisers only when the member turns sharing on; otherwise they see the first name only (D37).
-- **Minimum age.** Members and organisers must be 18 or older, confirmed at sign-up. This keeps V1 outside the parental-consent rules of the Child Digital Safety Law (Federal Decree-Law 26 of 2025) (D37).
-- **Messages.** Reminders go only to members who opted in and only about sessions they booked. Win-back notes are sent by the organiser from their own account. Anything promotional from Ryze Club needs consent, an opt-out, and a check against the telemarketing rules (Cabinet Resolution 56 of 2024).
-- **Data location.** Personal data is hosted in a UAE cloud region, or abroad only under a contract that applies PDPL-level protection, because the UAE Data Office has not published a list of adequate countries.
-- **AI trust.** The match only ranks existing clubs and explains its reasons. It gives no training, medical or nutrition advice. The filtered list is always available as a fallback.
-- **Data freshness.** Every club page shows a "last confirmed" date.
-- **Accounts and roles.** Visitor (no account), member, organiser, curator.
-- **Devices.** Designed for phones first, and usable on desktop.
-- **Language.** English at launch. [ASSUMPTION: A5]
-- **Extensibility.** A session must later be able to carry a host who is a coach, a price and a 1:1 capacity without being redesigned.
-- **Legal position.** The platform lists and does not organise. Permit and licensing work is deferred by the founder and recorded as an accepted risk.
-- **Organiser effort budget.** An organiser's routine week (read the summary, confirm, share the week's link, check in at sessions) takes under five minutes in total on a phone. Every organiser task fits on one screen and needs no desktop. Organisers are never required to post content, message members, or fill in anything beyond the schedule. Any new feature that adds a regular organiser task must state its time cost and needs founder approval.
-- **Support.** A visible contact route and the report links are the only support channels in V1.
-
-## 11. Assumptions index
-
-| ID | Assumption | Status |
-|---|---|---|
-| A1 | Newcomers find it hard to find a suitable club | Unproven; pilot question |
-| A2 | Launch covers running, community padel and community yoga/pilates, about 30 clubs, Dubai-wide | Confirmed by founder 2026-10-07 |
-| A9 | Self-confirmed attendance is too easy to fake once streaks earn rewards with real value | Assumed; revisit before rewards |
-| A10 | Milestones, streak rest week and standings increase return visits | Unproven; pilot question |
-| A3 | Self-confirmed attendance, correctable by the organiser, is accurate enough | Unproven |
-| A4 | Showing first names of attendees to signed-in users is acceptable to members | Unproven |
-| A5 | English only is enough for the pilot | Unproven |
-| A6 | Members will post photos if it takes under 30 seconds | Unproven; pilot question |
-| A7 | Organisers will claim and maintain pages | Unproven; pilot question |
-| A8 | An AI match is better than a filtered list | Unproven; compare in pilot |
-| A11 | Organisers will share Ryze Club RSVP links in their WhatsApp groups when it takes one tap | Unproven; pilot question |
-| A12 | Organisers will check people in at the session when it takes under a minute | Unproven; pilot question |
-| A13 | One win-back message brings lapsed members back without feeling like spam | Unproven; pilot question |
-| A14 | Organisers will read a weekly summary and answer it | Unproven; pilot question |
-
-## 12. Open questions
-
-### Blockers before handoff
-
-None open.
-
-Resolved 2026-10-07: product name is Ryze Club; reminders go by email and WhatsApp, with Google sign-in; launch scope is running, community padel and community yoga/pilates; the founder is the curator.
-
-### Non-blocking follow-ups
-
-- Check that the name "Ryze Club" is free to use and register in the UAE; other businesses use "Ryze".
-- Automated WhatsApp reminders need a WhatsApp Business account, approved message templates and opt-in; confirm cost and setup.
-- Are Duplays and 10 still active, and what can be learned from them?
-- Get legal confirmation that listing club sessions falls outside the Dubai Sports Council permit rule.
-- UAE legal review before launch, covering the items below (see `../../../discovery/research/domain-research.md`, Legal and privacy section).
-- Have the PDPL Executive Regulations and penalty schedule been published? Sources conflict as of October 2026.
-- Where will the company be registered: mainland (federal PDPL applies) or DIFC/ADGM (their own data laws apply)?
-- Do Ryze Club's own messages count as telemarketing needing TDRA approval?
-- Ladies-only clubs: should the profile carry an optional, self-declared "woman" field that those clubs require, or do clubs screen members themselves?
-- Abu Dhabi: the prototype includes Abu Dhabi clubs; confirm whether the pilot stays Dubai-only.
-- Should clubs be able to set their page or photos to members-only?
-- Arabic support after the pilot.
-- Timing against the Dubai Fitness Challenge in November.
-
-## 13. Design handoff
-
-- Two primary flows to design first: UJ-1 (newcomer to RSVP) and UJ-3 (photo post).
-- The streak is the main retention device. Design the streak, milestone moments, the at-risk reminder and the share card as a set, and keep them encouraging, not punishing.
-- The organiser experience must feel lighter than running a website or a WhatsApp poll. Design to the organiser effort budget in section 10: messages and one-tap actions first, the Manage screens second.
-- The look should be clean and uncluttered: no ads, no feed, photos as the main visual content.
-- States to cover: no matching clubs, no upcoming session, cancelled session, stale listing, empty photo timeline, reported or hidden post.
-- The club page is the most important page and is public, so it is also the landing page from Instagram and search.
-
-## 14. Architecture and engineering handoff
-
-Product-facing needs only; technical choices belong to architecture.
-
-- Core things the product talks about: club, session (recurring or one-off), RSVP, attendance, post with photos, tag, report, user with role.
-- Public club and session pages must be shareable by link and readable without an account.
-- Photo upload from a phone must be fast on mobile data.
-- Reminders must be delivered reliably and on time.
-- The match can start as simple rules and be improved later; the product only requires ranked results with reasons.
-- Sessions must be extensible to hosts, prices and 1:1 (section 10).
-- Pilot measures in section 7 must be collectable from day one, including time spent in Manage per organiser per week.
-- Organiser message links act without a fresh sign-in, are personal, and expire after seven days (FR-33).
-- Account and post deletion must be possible.
-
-## 15. Launch readiness
-
-- About 30 clubs seeded by the curator before launch, each with a confirmed schedule.
-- Three to five friendly clubs onboarded with an organiser who has claimed the page.
-- Privacy notice and photo policy published.
-- Report handling process agreed, with a named person.
+* Given a paid club, then a three-step flow shows the problem, how it works and the fee, then lets me connect Ziina or Stripe.
+* Given I am connected, then This week shows the amount booked and what I receive after the Ryze Club fee. Booked equals the sum of paid bookings. Received equals booked minus the fee.
+* Given I disconnect, then members see "Pay at the session".
+
+**US-17 | Should:**
+As a host, I want to bring my members over, so that my existing group books with me.
+
+* Given the Club tab or first screen, then I get one personal link with Copy, a ready-made WhatsApp message and a QR code.
+* Given a person opens the link, then the club page opens with a "You're invited" panel and a full-width "Join the club" button. Sign-in happens at that moment.
+* Given joins, then I see how many people joined from the link.
+
+**US-18 | Should:**
+As a host, I want to edit my club's details, so that members find me in the right filters.
+
+* Given the editor, then I set category, area, levels, Ladies only, description, price and what it covers, "How to find us" and my cover photo.
+* Given a cover photo, then I choose it from the club's photos. Until I choose, the first photo is used. Only photos of people who agreed show.
+* Given any save, then it shows on the public page at once.
+
+**US-19 | Could:**
+As a host, I want to share the week to my group, so that people book from the link.
+
+* Given a session or the whole week, then ready-made text with day, time, place, how many are going and a link goes to WhatsApp or Instagram.
+* The link opens the session for anyone. Sign-in is needed only to book.
+
+**US-20 | Should:**
+As a host, I want to invite a co-organiser by link, so that I share the work.
+
+* Given the invite, then the first person who signs in with Google joins. The link works once and expires after seven days.
+* Given co-hosts, then every host sees who joined and can remove them. The last host cannot leave without a handover.
+* Out of scope: roles. All hosts have the same abilities. Not built in the prototype.
+
+## 10. Risks, rabbit holes, open questions
+
+Open decisions
+
+- Refunds (Founder, Engineering): the pay sheet promises a full refund up to 12 hours before. The prototype only sends a refund request to the host. Who pays it back, and what happens to the Ryze Club fee, depends on the Ziina exploration.
+- Fee (Founder): the prototype says "10% per booking, and 0% for your first 3 months". Only the 10% is a decision (D39). The three free months need a decision. The host sees "you receive" at 90%. The provider's own fees are not included. Decide what the host receives.
+- Stripe (Founder): the Get paid flow shows Ziina and Stripe. D41 moves Stripe to a later phase. Decide whether the first release shows it.
+- Launch areas (Founder): D41 says three Dubai areas. The prototype lists seven Dubai areas and five Abu Dhabi areas as sample data.
+- Legal position (Founder): charging fees through the platform may change "we list, we do not organise". The UAE lawyer must confirm before launch. Permit risk stays accepted (D4).
+- No-show rule (Product): decide when an unticked name becomes "Didn't turn up", and whether a no-show earns a refund.
+- Messages (Engineering): reminders, "Session today" notices and a weekly host summary are described in the prototype but not sent. WhatsApp needs approved templates.
+
+Cold start
+
+- Each of the 15 hosts must open a Ziina or Stripe account. Ziina needs an Emirates ID. Without it, a paid club shows "Pay at the session" and the money loop does not work.
+- The curator screens are not in the prototype. Claims, reports and stale clubs need a plain internal tool before launch.
+
+Rabbit holes closed
+
+- No host-to-member messaging (the club's WhatsApp group stays the place for chat).
+- No waiting list, no subscriptions, no public ticketed events.
