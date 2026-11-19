@@ -768,3 +768,23 @@ fieldset.levels legend { padding: 0; margin-bottom: 4px; font-weight: 700; }
 /* footer: the legal pages are one tap from Home and Find */
 .foot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 18px; padding-top: 8px; border-top: 1px solid var(--line); }
 .foot a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); font-weight: 700; }
+
+/* Club page schedule: a strip of days, then sessions grouped by day with start time and length on the left. */
+.sdtabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; border-bottom: 1px solid var(--line); scroll-padding: 0 16px; }
+.sdtabs::-webkit-scrollbar { display: none; }
+.sdtab { flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 52px; min-height: 56px; padding: 6px 8px 8px; background: none; border: 0; border-bottom: 3px solid transparent; color: var(--ink); font: inherit; font-size: 12px; }
+.sdtab b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.sdtab.on { border-bottom-color: var(--acc); }
+.sdtab.on span { font-weight: 700; }
+.sdtab:disabled { color: var(--mut); opacity: .55; }
+.sdgrp { scroll-margin-top: 80px; }
+.sdgrp h3 { margin: 16px 0 2px; font-size: 15px; }
+.sdgrp:first-child h3 { margin-top: 8px; }
+.sdnone { margin: 6px 0 4px; }
+.srow { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 60px; padding: 12px 0; background: none; border: 0; border-bottom: 1px solid var(--line); text-align: left; color: var(--ink); font: inherit; }
+.sdgrp .srow:last-child { border-bottom: 0; }
+.srow .st { width: 56px; flex: none; display: flex; flex-direction: column; font-variant-numeric: tabular-nums; }
+.srow .st b { font-size: 16px; }
+.srow .grow { display: flex; flex-direction: column; min-width: 0; }
+.srow .tag { flex: none; }
+@media (min-width: 900px) { .sdtabs { margin: 0; padding: 0; } }

@@ -190,7 +190,7 @@
       top: [['Anna F.', 9], ['Reem Q.', 8]], active: 19 },
     { id: 'ksm', name: 'Kite Beach Sunrise Meditation', sport: 'meditation', area: 'Jumeirah', levels: ['new', 'some'], price: 0, level: 'No experience needed', photos: 2, confirmed: 4, venue: 'Outdoor',
       desc: 'Thirty minutes of guided meditation on the sand before the city wakes up, then tea. Sit on a mat, a towel or a chair.', bring: 'A mat or towel. Tea is provided.',
-      sched: [{ d: 5, t: '06:15', type: 'Guided sit', note: '30 minutes', place: 'Kite Beach, by the lifeguard tower', cap: 30 }, { d: 0, t: '06:15', type: 'Breathwork and sit', note: '40 minutes', place: 'Kite Beach, by the lifeguard tower', cap: 30 }],
+      sched: [{ d: 5, t: '06:15', type: 'Guided sit', len: 30, note: 'All levels', place: 'Kite Beach, by the lifeguard tower', cap: 30 }, { d: 0, t: '06:15', type: 'Breathwork and sit', len: 45, note: 'Some breathwork first', place: 'Kite Beach, by the lifeguard tower', cap: 30 }],
       top: [['Zara I.', 11], ['Hassan B.', 7]], active: 34 },
     { id: 'dos', name: 'Downtown Open Studio', sport: 'painting', area: 'Downtown', levels: ['new', 'some', 'regular'], price: 150, priceFor: 'canvas, paints and coffee', level: 'Never painted is fine', photos: 2, confirmed: 6, venue: 'Indoor', pay: 'ziina',
       desc: 'An open studio evening with a short demo, then everyone paints their own piece. An artist walks round and helps.', bring: 'Clothes you can get paint on.',
@@ -466,6 +466,31 @@
       <span class="sm">${n ? `Next: ${dayWord(n.at)} · ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
     </span><span class="card-go" aria-hidden="true">${ic('chev')}</span></button></div>`;
   }
+  // How long a session lasts. Hosts can set it per session; otherwise a typical length for the sport.
+  const LEN = { running: 60, padel: 90, yoga: 60, volleyball: 90, basketball: 90, football: 90, futsal: 60, boxing: 60, tennis: 90, cycling: 120, chess: 120, books: 90, meditation: 45, painting: 120, pottery: 120 };
+  const lenOf = (s) => Number(s.len) || LEN[s.club.sport] || 60;
+  const endTime = (s) => { const e = new Date(s.at.getTime() + lenOf(s) * 6e4); return `${String(e.getHours()).padStart(2, '0')}:${String(e.getMinutes()).padStart(2, '0')}`; };
+  // Club page schedule: a strip of the next 14 days, then the sessions grouped by day, each with start time and length.
+  // Today is always listed so a member can see there is nothing left today; other empty days are dimmed in the strip.
+  function schedule(c) {
+    const n = now(); const list = future(c);
+    const days = Array.from({ length: 14 }, (_, i) => { const d = new Date(n.getFullYear(), n.getMonth(), n.getDate() + i); const key = ymd(d); return { d, key, list: list.filter((s) => ymd(s.at) === key) }; });
+    const label = (x, i) => (i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : `${DAY[x.d.getDay()]} ${x.d.getDate()}`);
+    const first = days.findIndex((x) => x.list.length);
+    const tabs = days.map((x, i) => `<button class="sdtab${i === first ? ' on' : ''}" data-act="sday" data-val="${x.key}"${x.list.length ? '' : ' disabled'} aria-label="${i < 2 ? label(x, i) : DAYL[x.d.getDay()] + ' ' + x.d.getDate() + ' ' + MON[x.d.getMonth()]}${x.list.length ? '' : ', nothing on'}"><span>${i === 0 ? 'Today' : DAY[x.d.getDay()]}</span><b>${x.d.getDate()}</b></button>`).join('');
+    const row = (s) => {
+      let tag;
+      if (isCancelled(s)) tag = '<span class="tag warn">Cancelled</span>';
+      else if (has(s.id)) tag = `<span class="tag go">${ic('check')}Going</span>`;
+      else if (isFull(s)) tag = '<span class="tag">Full</span>';
+      else tag = `<span class="tag cta">${c.price ? 'Book' : 'Join'}</span>`;
+      const left = s.cap && !isFull(s) && !has(s.id) && s.cap - going(s) <= 5 ? ` · ${plural(s.cap - going(s), 'spot')} left` : '';
+      return `<button class="srow" data-act="session" data-id="${s.id}"><span class="st"><b>${s.t}</b><span class="mut sm">${lenOf(s)} min</span></span>
+        <span class="grow"><b>${esc(s.type)}</b><span class="mut sm">${esc(s.note)} · ${going(s)} going${left}</span></span>${tag}</button>`;
+    };
+    const groups = days.filter((x, i) => i === 0 || x.list.length).map((x) => `<section class="sdgrp" id="sd-${x.key}"><h3>${label(x, days.indexOf(x))}</h3>${x.list.length ? x.list.map(row).join('') : '<p class="mut sm sdnone">Nothing left today</p>'}</section>`).join('');
+    return `<div class="stack tight"><h2>Schedule</h2><div class="sdtabs" role="group" aria-label="Jump to a day">${tabs}</div><div class="sdlist">${groups}</div></div>`;
+  }
   const bookLabel = (c) => (c.price ? `Book · AED ${c.price}` : 'Join · Free');
   function sessionRow(s, showClub) {
     let tag = '';
@@ -660,8 +685,6 @@
       : canSeeWho(n) ? whoBtn('who', `See who's going ${when}`, `${plural(going(n) - 1, 'other')} · tap to see their profiles`)
       : whoBtn('who', `See who's going ${when}`, `${people(n, 2).map((p) => p.split(' ')[0]).join(', ')} and ${going(n) - 2} others · say "I'm in" to see profiles`)) : '';
     const recapHtml = recaps.map((s, i) => recap(c, s, i)).join('');
-    // The bottom bar already sells the next session, so the list shows only the ones after it.
-    const later = fut.filter((s) => !n || s.id !== n.id);
     const top = c.top.length ? `<div class="stack tight"><span class="cap">Most consistent · last 12 weeks</span><p class="sm mut">${c.active} members showed up in the last 4 weeks.</p>
       ${S.user ? `<div>${c.top.map((r, i) => `<div class="rank"><b>${i + 1}</b><span>${r[0]}</span><span>${r[1]} weeks</span></div>`).join('')}${S.clubWeeks[c.id] ? `<div class="rank me"><b>·</b><span>You${S.set.standings ? '' : ' (hidden from others)'}</span><span>${plural(S.clubWeeks[c.id], 'week')}</span></div>` : ''}</div>` : '<p class="note">Sign in to see the standings.</p>'}</div>` : '';
     let bar;
@@ -680,7 +703,7 @@
       ${who}
       <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
       <div class="stack tight"><p>${esc(c.desc)}</p><p class="sm mut">${esc(c.level)}. Bring: ${esc(c.bring)}</p></div>
-      ${later.length ? `<div class="stack tight"><h2>Later sessions</h2><div>${later.map((s) => sessionRow(s)).join('')}</div></div>` : ''}
+      ${fut.length ? schedule(c) : ''}
       ${LATER() && recapHtml ? `<div class="stack"><h2>Recent sessions</h2>${recapHtml}</div>` : ''}
       ${LATER() ? top : ''}
       <details class="about"><summary>About this club ${ic('chev')}</summary><div class="stack tight sm">
@@ -858,7 +881,7 @@
   V.sched = () => {
     const c = club(route.id); const fut = future(c).slice(0, 6);
     const weekly = c.sched.map((x, i) => [x, i]).filter(([x]) => !x.date); const once = c.sched.map((x, i) => [x, i]).filter(([x]) => x.date && x.date >= ymd(now()));
-    const row = ([x, i]) => `<button class="item" data-act="editsess" data-idx="${i}"><span class="when"><b>${x.date ? dateShort(new Date(x.date + 'T00:00')) : DAY[x.d]}</b><span class="mut sm">${x.t}</span></span><span class="grow"><b>${esc(x.type)}</b><br><span class="mut sm">${esc(x.note)} · ${esc(x.place)}${x.cap ? ` · up to ${x.cap}` : ''}</span></span><span class="go">Edit ${ic('chev')}</span></button>`;
+    const row = ([x, i]) => `<button class="item" data-act="editsess" data-idx="${i}"><span class="when"><b>${x.date ? dateShort(new Date(x.date + 'T00:00')) : DAY[x.d]}</b><span class="mut sm">${x.t} · ${Number(x.len) || LEN[c.sport] || 60} min</span></span><span class="grow"><b>${esc(x.type)}</b><br><span class="mut sm">${esc(x.note)} · ${esc(x.place)}${x.cap ? ` · up to ${x.cap}` : ''}</span></span><span class="go">Edit ${ic('chev')}</span></button>`;
     return `<main class="pad-nav"><div class="stack tight"><h1>Schedule</h1><p class="mut sm">${esc(c.name)}</p><p class="mut sm">Changes show on your page straight away, and members who booked are told.</p></div>
       <button class="btn block" data-act="addsess">${ic('plus')}Add a session</button>
       <div class="stack tight"><h2>Every week</h2><div>${weekly.map(row).join('') || '<p class="mut sm">No weekly sessions yet.</p>'}</div></div>
@@ -1080,7 +1103,7 @@
     else if (full) act = `<p class="notice">Full · ${s.cap} of ${s.cap}. There is no waiting list.</p>`;
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">${bookLabel(s.club)}</button>`;
     return `<div class="sheet"><div class="stack tight"><h2>${dayWord(s.at)} · ${s.t}</h2><p class="mut sm">${esc(s.club.name)}</p></div>
-      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
+      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type}</dd><dt>How long</dt><dd>${lenOf(s)} min · until ${endTime(s)}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}
       ${who(s, over)}
       ${overlay.from ? `<button class="btn quiet block" data-act="day" data-date="${overlay.from}">${ic('left')}Back to ${DAYL[s.at.getDay()]}</button>` : '<button class="btn quiet block" data-act="close">Close</button>'}</div>`;
@@ -1212,6 +1235,7 @@
       ${v.once ? `<label for="ss-date">Date</label><input type="date" id="ss-date" min="${ymd(now())}" value="${esc(v.date || '')}"${e.date ? ' aria-invalid="true"' : ''}>${err('date')}`
         : `<label for="ss-day">Day</label><select id="ss-day">${days.map((d) => `<option value="${d}" ${Number(v.d) === d ? 'selected' : ''}>${DAYL[d]}</option>`).join('')}</select>`}
       <label for="ss-time">Start time</label><input type="time" id="ss-time" value="${esc(v.t || '')}"${e.t ? ' aria-invalid="true"' : ''}>${err('t')}
+      <label for="ss-len">How long</label><select id="ss-len">${[30, 45, 60, 75, 90, 120, 150, 180].map((m) => `<option value="${m}" ${Number(v.len || LEN[c.sport] || 60) === m ? 'selected' : ''}>${m < 60 || m % 60 ? m + ' min' : plural(m / 60, 'hour')}</option>`).join('')}</select>
       <label for="ss-type">Session name</label><input type="text" id="ss-type" maxlength="40" placeholder="For example: Long run, or Beginner night" value="${esc(v.type || '')}"${e.type ? ' aria-invalid="true"' : ''}>${err('type')}
       <label for="ss-note">Level or pace</label><input type="text" id="ss-note" maxlength="60" placeholder="For example: All levels" value="${esc(v.note || '')}">
       <label for="ss-place">Meeting point</label><input type="text" id="ss-place" maxlength="80" placeholder="For example: Marina Walk, by Pier 7" value="${esc(v.place || '')}"${e.place ? ' aria-invalid="true"' : ''}>${err('place')}
@@ -1220,7 +1244,7 @@
       ${editing ? '<button class="link danger-link center-link" data-act="delsess">Remove this session</button>' : ''}</div>`;
   };
   const readSess = () => { const v = overlay.v; const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; };
-    [['d', 'ss-day'], ['date', 'ss-date'], ['t', 'ss-time'], ['type', 'ss-type'], ['note', 'ss-note'], ['place', 'ss-place'], ['cap', 'ss-cap']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; }); };
+    [['d', 'ss-day'], ['date', 'ss-date'], ['t', 'ss-time'], ['len', 'ss-len'], ['type', 'ss-type'], ['note', 'ss-note'], ['place', 'ss-place'], ['cap', 'ss-cap']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; }); };
   O.cover = () => { const c = orgClub(); const list = leadPhotos(c, true).concat(past(c).slice(0, 2).flatMap((x, i) => exPhotos(c, x, i, true))).slice(0, 9); const cur = (S.pin[c.id] || leadPhotos(c)[0] || {}).key;
     return `<div class="sheet"><h2>Cover photo</h2><p class="mut sm">The first photo members see on your card in Find and at the top of your page. Only use photos of people who agreed to be in them.</p>
       <div class="covers">${list.map((ph) => `<button class="ph g${ph.g}${ph.key === cur ? ' on' : ''}"${im(ph.sp, ph.i)} data-act="setcover" data-key="${ph.key}" data-i="${ph.i}" data-g="${ph.g}" data-by="${esc(ph.by)}" aria-pressed="${ph.key === cur}" aria-label="Photo by ${esc(ph.by)}${ph.key === cur ? ', current cover' : ''}">${ph.key === cur ? `<span class="tag ok">${ic('check')}Cover</span>` : ''}</button>`).join('')}</div>
@@ -1286,6 +1310,7 @@
     browse: (d) => { if (d.sport) filt = { pillar: pillarOf(d.sport), sport: d.sport, area: '', day: '', level: '', price: '', venue: '', who: '' }; else if (d.pillar !== undefined) filt = { pillar: d.pillar, sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; go('browse'); },
     filt: (d) => { filt[d.k] = d.val; if (d.k === 'pillar') filt.sport = ''; render(); },
     ftog: (d) => { filt[d.k] = filt[d.k] === d.val ? '' : d.val; haptic('tap'); render(); },
+    sday: (d) => { document.querySelectorAll('.sdtab').forEach((b) => b.classList.toggle('on', b.dataset.val === d.val)); const g = document.getElementById(`sd-${d.val}`); if (g) g.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); },
     fset: (d) => { filt[d.k] = d.val; render(); },
     filters: () => { overlay = { t: 'filters' }; render(); }, clearfilt: () => { filt = { pillar: filt.pillar, sport: '', area: '', day: '', level: '', price: '', venue: '', who: '', q: '' }; render(); },
     photook: (d) => {
@@ -1427,7 +1452,7 @@
       const day = v.once && v.date ? new Date(v.date + 'T00:00').getDay() : Number(v.d);
       if (!e.t && c.sched.some((x, i) => i !== overlay.idx && x.t === v.t && (v.once ? x.date === v.date : !x.date && x.d === day))) e.t = 'There is already a session at this time.';
       if (Object.keys(e).length) { overlay.err = e; render(); const f = document.querySelector('.sheet [aria-invalid="true"]'); if (f) f.focus(); return; }
-      const prevItem = overlay.idx >= 0 ? c.sched[overlay.idx] : null; const item = { d: day, t: v.t, type: v.type, note: v.note || 'All levels', place: v.place, added: prevItem ? !!prevItem.added : true }; if (v.cap) item.cap = Number(v.cap); if (v.once) item.date = v.date;
+      const prevItem = overlay.idx >= 0 ? c.sched[overlay.idx] : null; const item = { d: day, t: v.t, type: v.type, note: v.note || 'All levels', place: v.place, added: prevItem ? !!prevItem.added : true }; if (v.cap) item.cap = Number(v.cap); if (v.once) item.date = v.date; if (v.len) item.len = Number(v.len);
       const list = c.sched.slice(); if (overlay.idx >= 0) list[overlay.idx] = item; else list.push(item);
       list.sort((a, b) => ((a.date ? 1 : 0) - (b.date ? 1 : 0)) || (a.date || '').localeCompare(b.date || '') || ((a.d + 6) % 7) - ((b.d + 6) % 7) || a.t.localeCompare(b.t));
       (S.edits[c.id] = S.edits[c.id] || {}).sched = list; S.conf[c.id] = now().getTime(); save(); applyEdits();
