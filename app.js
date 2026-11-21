@@ -13,12 +13,13 @@
   const mapLink = (place, c, cls = 'go') => `<a class="${cls}" href="${mapsUrl(place, c)}" target="_blank" rel="noopener">${ic('pin')}Directions</a>`;
   const placeOf = (c) => (cityOf(c.area) === 'Dubai' ? c.area : `${c.area}, ${cityOf(c.area)}`);
   const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', basketball: 'Basketball', football: 'Football', futsal: 'Indoor football (5-a-side)', boxing: 'Boxing fitness', tennis: 'Tennis', cycling: 'Cycling',
-    chess: 'Chess', books: 'Book club', meditation: 'Meditation', painting: 'Painting & sketching', pottery: 'Pottery' };
+    chess: 'Chess', books: 'Book club', meditation: 'Meditation', painting: 'Painting & sketching', pottery: 'Pottery',
+    language: 'Language exchange', writing: 'Writing circle', games: 'Board games', photo: 'Photography walks', music: 'Music & choir', calligraphy: 'Arabic calligraphy' };
   // Three pillars on the first screen. Every category belongs to one; yoga sits in Body for now.
   const PILLARS = {
-    mind: { name: 'Mind', line: 'Think, focus, unwind', sports: ['chess', 'books', 'meditation'] },
+    mind: { name: 'Mind', line: 'Think, focus, unwind', sports: ['chess', 'books', 'meditation', 'language', 'writing', 'games'] },
     body: { name: 'Body', line: 'Move, play, sweat', sports: ['running', 'padel', 'tennis', 'football', 'futsal', 'basketball', 'volleyball', 'cycling', 'boxing', 'yoga'] },
-    soul: { name: 'Soul', line: 'Make, create, express', sports: ['painting', 'pottery'] }
+    soul: { name: 'Soul', line: 'Make, create, express', sports: ['painting', 'pottery', 'calligraphy', 'photo', 'music'] }
   };
   const pillarOf = (sport) => Object.keys(PILLARS).find((k) => PILLARS[k].sports.includes(sport));
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
@@ -30,7 +31,7 @@
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
-  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', boxing: 'class', tennis: 'session', cycling: 'ride', chess: 'games night', books: 'book night', meditation: 'sit', painting: 'studio', pottery: 'class' };
+  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', boxing: 'class', tennis: 'session', cycling: 'ride', chess: 'games night', books: 'book night', meditation: 'sit', painting: 'studio', pottery: 'class', language: 'exchange', writing: 'circle', games: 'games night', photo: 'walk', music: 'session', calligraphy: 'class' };
 
   // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
   // Most sports, and the social and creative clubs, use free Unsplash photos by page ID (~), which
@@ -207,7 +208,67 @@
     { id: 'ccc', name: 'Corniche Chess Club', sport: 'chess', area: 'Corniche', levels: ['some', 'regular'], price: 0, level: 'Know the rules; rated players welcome', photos: 2, confirmed: 4, venue: 'Indoor',
       desc: 'Weekly blitz and longer games, with a short lesson for improvers first.', bring: 'Nothing.',
       sched: [{ d: 3, t: '20:00', type: 'Blitz night', note: '5 minutes a side', place: 'Corniche café, back room', cap: 20 }],
-      top: [['Khalid Z.', 9], ['Ivan U.', 6]], active: 18 }
+      top: [['Khalid Z.', 9], ['Ivan U.', 6]], active: 18 },
+    { id: 'dlx', name: 'Downtown Language Exchange', sport: 'language', area: 'Downtown', levels: ['new', 'some', 'regular'], price: 0, level: 'Any language, any level', photos: 0, confirmed: 2, venue: 'Indoor',
+      desc: 'Tables by language: Arabic, English, French, Spanish and more. Speak the one you are learning, help with the one you know, and swap tables every 20 minutes.', bring: 'Nothing. Buy a drink if you like.',
+      sched: [{ d: 2, t: '19:30', type: 'Language tables', note: 'All levels', place: 'Boulevard café, terrace room', cap: 40 }],
+      top: [['Sofia R.', 9], ['Karim A.', 7]], active: 36 },
+    { id: 'rlc', name: 'Al Reem Language Café', sport: 'language', area: 'Al Reem Island', levels: ['new', 'some'], price: 0, level: 'Beginners welcome', photos: 0, confirmed: 5, venue: 'Indoor',
+      desc: 'An easy Saturday morning of Arabic and English conversation, with a native speaker hosting each table.', bring: 'Nothing.',
+      sched: [{ d: 6, t: '10:30', type: 'Arabic and English tables', note: 'Beginners welcome', place: 'Reem Mall, food hall café', cap: 30 }],
+      top: [['Elena V.', 6], ['Tariq M.', 5]], active: 21 },
+    { id: 'mwc', name: 'Marina Writing Circle', sport: 'writing', area: 'Marina', levels: ['new', 'some', 'regular'], price: 30, priceFor: 'coffee and the room', level: 'Never written is fine', photos: 0, confirmed: 3, venue: 'Indoor',
+      desc: 'Short prompts, quiet writing time, then reading aloud if you want to. Fiction, poems, journals, anything goes.', bring: 'A notebook or a laptop.',
+      sched: [{ d: 4, t: '19:00', type: 'Prompt night', note: 'All levels', place: 'Marina Walk café, upstairs room', cap: 14 }],
+      top: [['Hannah P.', 8], ['Faisal K.', 6]], active: 17 },
+    { id: 'jbg', name: 'JVC Board Game Night', sport: 'games', area: 'JVC', levels: ['new', 'some', 'regular'], price: 25, priceFor: 'table and a drink', level: 'We teach every game', photos: 0, confirmed: 2, venue: 'Indoor', pay: 'ziina',
+      desc: 'Over 100 games on the shelves and hosts who teach them. Come alone and you will be seated at a table that needs players.', bring: 'Nothing.',
+      sched: [{ d: 5, t: '19:30', type: 'Games night', note: 'All levels', place: 'JVC community centre, hall B', cap: 36 }, { d: 0, t: '16:00', type: 'Family games', note: 'Kids welcome', place: 'JVC community centre, hall B', cap: 30 }],
+      top: [['Ben W.', 10], ['Layla H.', 8], ['Raj S.', 6]], active: 41 },
+    { id: 'hcp', name: 'Dubai Hills Chess in the Park', sport: 'chess', area: 'Dubai Hills', levels: ['new', 'some'], price: 0, level: 'Know how the pieces move', photos: 2, confirmed: 3, venue: 'Outdoor',
+      desc: 'Boards out under the trees on Saturday evenings. Casual games, and a coach shows beginners one idea each week.', bring: 'A board if you have one. We bring ten.',
+      sched: [{ d: 6, t: '17:30', type: 'Casual games', note: 'Beginners welcome', place: 'Dubai Hills Park, by the amphitheatre', cap: 30 }],
+      top: [['Ahmed F.', 7], ['Priya N.', 6]], active: 23 },
+    { id: 'dnf', name: 'Downtown Non-Fiction Club', sport: 'books', area: 'Downtown', levels: ['new', 'some', 'regular'], price: 0, level: 'Read the book, or come anyway', photos: 2, confirmed: 4, venue: 'Indoor',
+      desc: 'One non-fiction book a month: history, science, business or memoir. Members vote on the next pick.', bring: 'The book, if you have it.',
+      sched: [{ d: 1, t: '19:30', type: 'Book night', note: 'This month: a memoir', place: 'Downtown library, meeting room 2', cap: 20 }],
+      top: [['Omar S.', 8], ['Claire B.', 7]], active: 18 },
+    { id: 'hsb', name: 'Hills Sound Bath', sport: 'meditation', area: 'Dubai Hills', levels: ['new', 'some'], price: 60, priceFor: 'mats, blankets and the sound bath', level: 'No experience needed', photos: 2, confirmed: 2, venue: 'Indoor', pay: 'ziina',
+      desc: 'Lie down, close your eyes and let the gongs and bowls do the work. A short breathing practice first, tea after.', bring: 'Comfortable clothes. Mats provided.',
+      sched: [{ d: 0, t: '19:30', type: 'Sound bath', len: 60, note: 'All levels', place: 'Dubai Hills studio, level 1', cap: 20 }],
+      top: [['Nadia S.', 6], ['Jack T.', 4]], active: 19 },
+    { id: 'mph', name: 'Marina Golden Hour Photo Walk', sport: 'photo', area: 'Marina', levels: ['new', 'some', 'regular'], price: 0, level: 'Phone cameras welcome', photos: 0, confirmed: 3, venue: 'Outdoor',
+      desc: 'A slow walk along the water at golden hour with one photo idea to try each week. Share your best shot in the club album after.', bring: 'A phone or a camera.',
+      sched: [{ d: 5, t: '16:45', type: 'Golden hour walk', note: 'About 90 minutes', place: 'Marina Walk, by Pier 7', cap: 25 }],
+      top: [['Yuki O.', 7], ['Daniel M.', 5]], active: 22 },
+    { id: 'cph', name: 'Corniche Photo Walk', sport: 'photo', area: 'Corniche', levels: ['new', 'some'], price: 0, level: 'All levels', photos: 0, confirmed: 6, venue: 'Outdoor',
+      desc: 'Early Saturday walks along the Corniche, then coffee and a look through everyone\'s photos.', bring: 'A phone or a camera, and water.',
+      sched: [{ d: 6, t: '07:00', type: 'Morning walk', note: 'About 2 hours', place: 'Corniche, by the Heritage Park gate', cap: 20 }],
+      top: [['Salma A.', 6], ['Tom H.', 4]], active: 13 },
+    { id: 'jch', name: 'Jumeirah Community Choir', sport: 'music', area: 'Jumeirah', levels: ['new', 'some', 'regular'], price: 30, priceFor: 'the rehearsal room and sheet music', level: 'No auditions, no reading music needed', photos: 0, confirmed: 2, venue: 'Indoor', pay: 'ziina',
+      desc: 'Pop, soul and a bit of Arabic music, learned by ear in parts. Two concerts a year for anyone who wants to sing in them.', bring: 'Water.',
+      sched: [{ d: 1, t: '19:30', type: 'Rehearsal', note: 'All voices', place: 'Jumeirah community hall, main room', cap: 45 }],
+      top: [['Grace O.', 11], ['Hassan B.', 8], ['Meera K.', 7]], active: 38 },
+    { id: 'jaj', name: 'JVC Acoustic Jam', sport: 'music', area: 'JVC', levels: ['some', 'regular'], price: 0, level: 'Play a few songs on something', photos: 0, confirmed: 4, venue: 'Indoor',
+      desc: 'Guitars, ukuleles, a cajón and whoever wants to sing. We pass round the song choice, then open mic for the last half hour.', bring: 'Your instrument. Spare guitar there.',
+      sched: [{ d: 3, t: '20:00', type: 'Jam and open mic', note: 'Some experience', place: 'JVC café, back garden', cap: 20 }],
+      top: [['Marco L.', 7], ['Zainab R.', 5]], active: 16 },
+    { id: 'dac', name: 'Downtown Arabic Calligraphy', sport: 'calligraphy', area: 'Downtown', levels: ['new', 'some'], price: 120, priceFor: 'reed pens, ink and paper', level: 'Complete beginners', photos: 0, confirmed: 3, venue: 'Indoor', pay: 'ziina',
+      desc: 'A calligrapher teaches the basic strokes of the Naskh script with a reed pen. By the end you write a word of your choice to take home.', bring: 'Nothing. Clothes you don\'t mind getting ink on.',
+      sched: [{ d: 6, t: '11:00', type: 'Beginners class', note: 'Naskh script', place: 'Downtown studio space, level 2', cap: 10 }],
+      top: [['Fatima Q.', 6], ['Ella J.', 5]], active: 15 },
+    { id: 'kcc', name: 'Khalifa City Calligraphy Circle', sport: 'calligraphy', area: 'Khalifa City', levels: ['some', 'regular'], price: 80, priceFor: 'ink and paper', level: 'Some practice', photos: 0, confirmed: 5, venue: 'Indoor',
+      desc: 'A relaxed evening of practice with a teacher going round the table. Bring work in progress or start something new.', bring: 'Your own pens if you have them.',
+      sched: [{ d: 2, t: '19:00', type: 'Practice circle', note: 'Some experience', place: 'Khalifa City community centre, room 4', cap: 12 }],
+      top: [['Yousef H.', 7], ['Anna F.', 4]], active: 11 },
+    { id: 'pwm', name: 'Palm Watercolour Mornings', sport: 'painting', area: 'Palm', levels: ['new', 'some'], price: 90, priceFor: 'paper, paints and coffee', level: 'Never painted is fine', photos: 2, confirmed: 2, venue: 'Outdoor',
+      desc: 'Paint the sea and the skyline in watercolour, outside before it gets hot. An artist demonstrates, then helps each person.', bring: 'A hat and water.',
+      sched: [{ d: 0, t: '07:30', type: 'Watercolour morning', note: 'Beginners', place: 'Palm West Beach, by the boardwalk steps', cap: 12 }],
+      top: [['Chloe D.', 5], ['Rania T.', 4]], active: 12 },
+    { id: 'mcs', name: 'Mirdif Clay Studio', sport: 'pottery', area: 'Mirdif', levels: ['new', 'some'], price: 160, priceFor: 'clay, glazing and firing', level: 'Beginners on the wheel', photos: 2, confirmed: 4, venue: 'Indoor', pay: 'ziina',
+      desc: 'Hand-building and wheel throwing in a small group with a potter. Pieces are fired and ready two weeks later.', bring: 'Short nails help. Aprons provided.',
+      sched: [{ d: 3, t: '19:00', type: 'Hand-building', note: 'Beginners', place: 'Mirdif arts centre, studio 3', cap: 10 }, { d: 6, t: '10:00', type: 'Wheel class', note: 'Beginners', place: 'Mirdif arts centre, studio 3', cap: 8 }],
+      top: [['Sara L.', 6], ['Aditya P.', 5]], active: 18 }
   ];
   // Indoor or outdoor. Padel venues vary; everything else listed before these sports meets outdoors.
   const VENUE = { jps: 'Indoor', jpm: 'Outdoor', mpb: 'Indoor and outdoor' };
@@ -315,6 +376,12 @@
     meditation: '<circle cx="12" cy="5.5" r="2"/><path d="M12 8v5M5 18.5c1.5-3.5 4-5.5 7-5.5s5.5 2 7 5.5M8.5 13.5 6 11M15.5 13.5 18 11M4 20.5h16"/>',
     painting: '<path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.3 0 1.8-1 1.4-2-.5-1.3.4-2.5 1.8-2.5H18a2.5 2.5 0 0 0 2.5-2.5c0-5.5-3.8-10-8.5-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7.5" r="1.2"/><circle cx="15" cy="8" r="1.2"/>',
     pottery: '<path d="M9 3.5h6M10 3.5c0 2-3.5 3-3.5 7.5 0 4.5 2.5 8.5 5.5 9.5 3-1 5.5-5 5.5-9.5 0-4.5-3.5-5.5-3.5-7.5M7 12h10"/>',
+    language: '<path d="M3.5 5h10v7H8l-3.5 3v-3h-1z"/><path d="M16.5 9h4v7h-1v3l-3.5-3H11v-1.5"/>',
+    writing: '<path d="M4.5 19.5h3.8L19 8.8a2.2 2.2 0 0 0-3.1-3.1L5.2 16.4z"/><path d="m14.3 7.3 3.1 3.1M12.5 19.5h7"/>',
+    games: '<rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="8.6" cy="8.6" r=".9"/><circle cx="15.4" cy="8.6" r=".9"/><circle cx="12" cy="12" r=".9"/><circle cx="8.6" cy="15.4" r=".9"/><circle cx="15.4" cy="15.4" r=".9"/>',
+    photo: '<path d="M3.5 8h3.3l1.7-2.5h7L17.2 8h3.3v11h-17z"/><circle cx="12" cy="13.3" r="3.4"/>',
+    music: '<path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/>',
+    calligraphy: '<path d="M3.5 18.5c2.8-.6 4.6-3.5 7.6-3.5 2.6 0 2.9 2.5 5 2.5 1.6 0 2.8-.9 3.9-1.9"/><path d="m14.5 3.5 4 4-6 6-3.2-.8-.8-3.2z"/>',
     // sports
     running: '<path d="M3 16.5h15.5a2.5 2.5 0 0 0 2.5-2.5c0-1-.9-1.6-2-1.8l-4.6-1-2.4-4.2H8L6.5 9.5 3 10z"/><path d="M3 19.5h18"/>',
     padel: '<ellipse cx="10" cy="9" rx="5.5" ry="6"/><path d="m13.6 13.6 5.4 6.4"/><circle cx="18.5" cy="5.5" r="1.6"/>',
@@ -406,6 +473,12 @@
     books: ['Half of us loved it, half did not. Great night.', 'Next month\'s pick was a close vote.', 'Four first-timers, all coming back.', 'We talked about the ending for an hour.'],
     meditation: ['The sea was the only sound.', 'Sunrise halfway through.', 'Tea and quiet chat after.', 'Eight first-timers today.'],
     painting: ['Everyone left with something they liked.', 'Ten very different sunsets.', 'Messy hands, calm heads.', 'First painting for half the room.'],
+    language: ['Arabic table was full all night.', 'Someone ordered dinner in Spanish. Success.', 'Twelve languages in one café.', 'Swapped tables every 20 minutes.'],
+    writing: ['Three people read their piece out for the first time.', 'Ten minutes, one prompt, very different stories.', 'Quiet pens, loud laughs after.', 'New faces brought poems.'],
+    games: ['Catan went past midnight.', 'Newcomers won the quiz round.', 'Six tables, nobody left early.', 'Someone finally beat the host.'],
+    photo: ['Golden hour lasted exactly 14 minutes.', 'Same street, twenty different photos.', 'Phones and cameras both welcome.', 'Best shots go on the club page.'],
+    music: ['Four-part harmony on the second try.', 'Two new voices in the altos.', 'Open mic ran long. Nobody minded.', 'Learned a new song start to finish.'],
+    calligraphy: ['First letters wobbly, last ones lovely.', 'Ink everywhere. Worth it.', 'Everyone wrote their own name by the end.', 'Thuluth is harder than it looks.'],
     pottery: ['Three bowls, one mug, many attempts.', 'Centring is harder than it looks.', 'Pieces from last week came out of the kiln.', 'Clay everywhere. Worth it.']
   };
   const captionFor = (s) => { const a = CAPS[s.club.sport] || CAPS.running; return a[hash(s.id) % a.length]; };
@@ -467,7 +540,7 @@
     </span><span class="card-go" aria-hidden="true">${ic('chev')}</span></button></div>`;
   }
   // How long a session lasts. Hosts can set it per session; otherwise a typical length for the sport.
-  const LEN = { running: 60, padel: 90, yoga: 60, volleyball: 90, basketball: 90, football: 90, futsal: 60, boxing: 60, tennis: 90, cycling: 120, chess: 120, books: 90, meditation: 45, painting: 120, pottery: 120 };
+  const LEN = { running: 60, padel: 90, yoga: 60, volleyball: 90, basketball: 90, football: 90, futsal: 60, boxing: 60, tennis: 90, cycling: 120, chess: 120, books: 90, meditation: 45, language: 90, writing: 90, games: 150, photo: 120, music: 90, calligraphy: 90, painting: 120, pottery: 120 };
   const lenOf = (s) => Number(s.len) || LEN[s.club.sport] || 60;
   const endTime = (s) => { const e = new Date(s.at.getTime() + lenOf(s) * 6e4); return `${String(e.getHours()).padStart(2, '0')}:${String(e.getMinutes()).padStart(2, '0')}`; };
   // Club page schedule: a strip of the next 14 days, then the sessions grouped by day, each with start time and length.
