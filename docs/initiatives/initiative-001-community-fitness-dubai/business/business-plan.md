@@ -171,6 +171,40 @@ Low and high scale new hosts (×0.6 / ×1.4), attendance (×0.8 / ×1.15) and wo
 | Total losses (funding needed) | 4.68M | 3.43M | 2.16M |
 | Seed: 18 months plus buffer | 2.92M | 2.58M | 2.18M |
 
+### Ambitious case: 300 hosts in Year 2, 1,000 in Year 3
+
+Year 1 is the same as the base case (90 hosts). To reach 300 and then 1,000 paid hosts, Ryze must sign up about **24 new hosts a month in Year 2 and 81 a month in Year 3**, against 8 to 16 in the base case. That can't be done with the base team, so this case adds hires. They are on the Assumptions tab as "Scale-up" roles, set to not hired (99) by default:
+
+- **Five more community leads** (months 13, 16, 25, 27, 29). Each signs up about 10 to 15 hosts a month.
+- **An Abu Dhabi city lead** (month 19).
+- **Two more host support people** (months 25, 31).
+- **A third engineer** (month 25).
+- **Marketing** of AED 40k a month in Year 2 and 90k in Year 3.
+
+| AED | Year 1 | Year 2 | Year 3 |
+|---|---:|---:|---:|
+| Paid hosts (year end) | 90 | 299 | 998 |
+| Paid bookings | 40k | 170k | 609k |
+| GMV | 3.25M | 13.6M | 48.3M |
+| Ryze revenue | 316k | 1.39M | 4.87M |
+| Team | 1.16M | 1.99M | 3.10M |
+| Marketing and onboarding | 238k | 654k | 1.66M |
+| Total costs | 1.64M | 3.05M | 5.49M |
+| **Profit or loss** | **(1.33M)** | **(1.66M)** | **(621k)** |
+
+- **Profitable every month from March 2030** (month 33). By June 2030 Ryze earns about AED 566k a month and makes about 84k a month.
+- **Total losses: AED 3.79M**, with the low point in February 2030.
+- **An AED 2.8M seed runs out around May 2029** (month 23). That fits a Series A at the end of Year 2, raised on about 300 hosts and AED 1.4M of revenue, growing more than 3x a year. On 8x to 15x the next year's revenue, Ryze would then be worth about **AED 39M to 73M (USD 11M to 20M)**.
+
+**What has to be true:**
+
+- **Seven community people each sign up 10 to 15 hosts a month**, all year.
+- **Host churn stays at 3–4%.** At 5% a month, Ryze reaches 886 hosts and total losses rise to AED 4.2M.
+- **Attendance holds.** At 20% lower attendance, total losses rise to AED 4.8M and Ryze is not profitable by June 2030.
+- **Dubai and Abu Dhabi have enough paid hosts.** 1,000 is a large share of the UAE's paid community clubs, studios and classes. Count them before promising this to investors.
+
+If the base team tried to reach 1,000 hosts without these hires, the forecast would look profitable from September 2029. That isn't realistic, because the same three community people can't sign up 81 hosts a month.
+
 ### What moves the numbers
 
 Each line changes one input from the base case.
