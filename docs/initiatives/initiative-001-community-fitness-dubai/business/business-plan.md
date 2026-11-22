@@ -308,6 +308,35 @@ The founder raises a small first round, proves the paid pilot, then raises the s
 - At the end of 2028 the base case still loses about 90k to 110k a month. Either raise a third round in late 2028 on two years of numbers, or make round 2 about **AED 3.35M (USD 910k)** to reach the end of 2029 without a third raise.
 - If round 2 is late, round 1 runs out in June 2027. The fallback is to end the engineer's contract once the build is done and keep only the founder's pay and running costs, about AED 40k a month before fees.
 
+### Option: the founder builds the MVP
+
+The founder builds the MVP from the prototype with AI coding tools and managed services, hires no engineer, launches the paid pilot, then raises to hire a team on real numbers. Figures use the simple 10% booking fee and assume three months to build, with paid bookings from April 2027.
+
+| AED, first six months | Founder full time, paid 30k a month | **Founder keeps their job while building** |
+|---|---:|---:|
+| Money out (licence, legal, insurance, tools, marketing; plus founder pay and visa if full time) | about 307k | about 115k |
+| Booking fees, April to June | about 47k | about 47k |
+| **Cash needed, with 15% contingency** | **about 300k** | **about 80k** |
+| Compared with the lean plan with an engineer | 450k | 450k |
+
+**What the founder can build:**
+
+- Real login, a database, club pages, sessions and RSVPs, on a managed back end with security rules switched on.
+- Payments through the provider's hosted checkout (Ziina or Stripe), with Apple Pay included. Card details never touch Ryze's code. The 10% is a platform fee on each payment.
+- Email reminders, "I went" and streaks. WhatsApp reminders come later.
+- The organiser app: sessions, who's coming, check-in, payments and refunds.
+- Left out until the raise: the AI match (use filters), seasons and standings, photos beyond the basics, and Ryze Pro.
+
+**What not to do alone:**
+
+- **Security review before taking real money.** A freelance reviewer checks login, data rules and payment webhooks (about AED 5k to 10k).
+- **Terms, privacy policy and the organiser agreement** come from a UAE lawyer (in the budget).
+- **Data hosting** must meet D37: UAE hosting or PDPL-level contracts.
+
+**The real risk is time, not code.** The founder is also the curator and the person who signs up organisers. That is the job the concept verdict calls make-or-break. Keep the build to about three months, and spend the pilot recruiting organisers, not adding features.
+
+**Recommended path:** build the MVP while still employed (check the employment contract for side-business and non-compete clauses). Run the paid pilot with about 16 clubs. Leave the job when the section 11 signals are met, then raise to hire the engineer and community leads. A round raised on real paid bookings is easier to close and can be priced higher than one raised on a prototype.
+
 ### What Ryze could be worth at the end of 2027
 
 These are ranges, not a price, and they are on the forecast's **Valuation** tab. At the end of 2027 the base case has 91 paid communities, about AED 5.4M a year of GMV (December × 12), AED 375k a year of fee income, and AED 1.05M of net revenue forecast for 2028.
