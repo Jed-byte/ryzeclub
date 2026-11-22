@@ -89,7 +89,8 @@ As of 22 November 2026 (D45, D52):
 | 8 | Nudge after saving | Built: after Follow, a sheet suggests the next three sessions |
 | 9 | Amenities | Built: shown on the club page, set by hosts in Club details |
 | 10 | Invite a friend | Later phases: private games and events with a share link (D48) |
-| 11 to 13 | Cheap first try, map, reviews | Parked |
+| 13 | Ratings and reviews | Built in later phases (D53): members who went review clubs and event hosts; hosts reply |
+| 11, 12 | Cheap first try, map | Parked |
 
 ## Lines to use
 

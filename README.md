@@ -28,7 +28,7 @@ As an organiser, open **https://jed-byte.github.io/ryzeclub/#organiser**. This i
 
 Also in the member app: tap a session time straight from a club card, filter by time of day, and see a club's schedule as a strip of days with each session's length. Following a club suggests a session to book this week.
 
-With **Demo → With later phases**, My week also shows **Games and events with friends**: a 5-a-side, a yacht day and a games night to join, and "Plan a game or event" to host one. Hosts choose "I've already paid" or "Collect first, then book", can turn on "Ask to join", approve or decline requests while seeing each person's profile and reliability record, and answer "Would you host them again?" afterwards. Guests pay their share plus AED 3; paid means committed unless someone takes their spot.
+With **Demo → With later phases**, My week also shows **Games and events with friends**: a 5-a-side, a yacht day and a games night to join, and "Plan a game or event" to host one. Hosts choose "I've already paid" or "Collect first, then book", can turn on "Ask to join", approve or decline requests while seeing each person's profile and reliability record, and answer "Would you host them again?" afterwards. Guests pay their share plus AED 3; paid means committed unless someone takes their spot. Later phases also add reviews: after "I went", members review the club, and club pages show the rating and the host's replies. Hosts reply from Club → Reviews in the organiser app. Event pages show each host's rating from past guests.
 
 Use the **Demo** button at the top to skip ahead in time, become an organiser, switch colour theme (Lemon, Scarlet, Watermelon, Court, Kinetic, Seal), or reset. A theme can also be opened from a link, for example `?theme=court`.
 

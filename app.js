@@ -313,7 +313,7 @@
   ];
 
   const fresh = () => ({ user: null, quiz: {}, rsvps: [], follows: [], att: {}, streak: 0, longest: 0, total: 0, weekDone: false, prot: true, sinceProt: 0, badges: [], posts: {}, untag: {}, offset: 0, clubWeeks: {}, set: { standings: true, tagging: true, email: true, wa: false }, note: '',
-    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '', thanks: {}, nudged: {}, ev: {}, myEvents: [], evRate: {} });
+    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '', thanks: {}, nudged: {}, ev: {}, myEvents: [], evRate: {}, reviews: {}, replies: {} });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
   // Drop saved references to clubs and sports that have since been removed from the prototype.
@@ -398,6 +398,7 @@
     meditation: '<circle cx="12" cy="5.5" r="2"/><path d="M12 8v5M5 18.5c1.5-3.5 4-5.5 7-5.5s5.5 2 7 5.5M8.5 13.5 6 11M15.5 13.5 18 11M4 20.5h16"/>',
     painting: '<path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.3 0 1.8-1 1.4-2-.5-1.3.4-2.5 1.8-2.5H18a2.5 2.5 0 0 0 2.5-2.5c0-5.5-3.8-10-8.5-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7.5" r="1.2"/><circle cx="15" cy="8" r="1.2"/>',
     pottery: '<path d="M9 3.5h6M10 3.5c0 2-3.5 3-3.5 7.5 0 4.5 2.5 8.5 5.5 9.5 3-1 5.5-5 5.5-9.5 0-4.5-3.5-5.5-3.5-7.5M7 12h10"/>',
+    star: '<path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/>',
     dance: '<circle cx="13.5" cy="4.5" r="2"/><path d="m13 7.5-2.5 5.5 3 3.5v4.5M10.5 13l-4.5 1.5-1.5-2M13 8.5l3.5 3 3.5-2M10.5 13l-2 7.5"/>',
     language: '<path d="M3.5 5h10v7H8l-3.5 3v-3h-1z"/><path d="M16.5 9h4v7h-1v3l-3.5-3H11v-1.5"/>',
     writing: '<path d="M4.5 19.5h3.8L19 8.8a2.2 2.2 0 0 0-3.1-3.1L5.2 16.4z"/><path d="m14.3 7.3 3.1 3.1M12.5 19.5h7"/>',
@@ -559,7 +560,7 @@
     const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
     return `<div class="card"><button class="card-main" data-act="club" data-id="${c.id}"><span class="card-head">${head}<span class="loc-chip">${ic('pin')}${esc(fullPlace(c))}</span></span><span class="body">
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
-      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}</span>${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}`}
+      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}${LATER() && reviewsOf(c).n >= 3 ? ` · ★ ${reviewsOf(c).avg.toFixed(1)} (${reviewsOf(c).n})` : ''}</span>${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}`}
       <span class="sm">${n ? (cardTimes(c) ? `${going(n)} going to the next one` : `Next: ${dayWord(n.at)} · ${n.t} · ${going(n)} going`) : 'No session scheduled'}</span>
     </span><span class="card-go" aria-hidden="true">${ic('chev')}</span></button>${cardTimes(c)}</div>`;
   }
@@ -811,6 +812,7 @@
       <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
       <div class="stack tight"><p>${esc(c.desc)}</p><p class="sm mut">${esc(c.level)}. Bring: ${esc(c.bring)}</p>${(c.amen || []).length ? `<p class="amen sm"><b>At the venue</b> ${c.amen.map((a) => `<span class="tag">${esc(a)}</span>`).join('')}</p>` : ''}</div>
       ${fut.length ? schedule(c) : ''}
+      ${LATER() ? reviewBlock(c) : ''}
       ${LATER() && recapHtml ? `<div class="stack"><h2>Recent sessions</h2>${recapHtml}</div>` : ''}
       ${LATER() ? top : ''}
       <details class="about"><summary>About this club ${ic('chev')}</summary><div class="stack tight sm">
@@ -880,7 +882,7 @@
       ? `${esc(e.host.split(' ')[0])} books it once ${e.min} people have paid by ${DAYL[payBy.getDay()]} ${payBy.getDate()} ${MON[payBy.getMonth()]}. If not, nobody is charged.`
       : `${evMine(e) ? 'You have' : esc(e.host.split(' ')[0]) + ' has'} already paid AED ${e.total.toLocaleString('en')}. Guests pay their share back.`;
     const pct = Math.min(100, Math.round((paid / spots) * 100));
-    const head = `<div class="stack tight"><span class="cap">${PILLAR_NAMES[e.pillar]} · ${evMine(e) ? 'You’re hosting' : 'Hosted by ' + esc(e.host)}</span><h1 style="font-size:26px">${esc(e.title)}</h1>
+    const head = `<div class="stack tight"><span class="cap">${PILLAR_NAMES[e.pillar]} · ${evMine(e) ? 'You’re hosting' : 'Hosted by ' + esc(e.host)}</span>${evMine(e) ? '' : (() => { const hs = hostStats(e.host); return `<p class="sm">${stars(Math.round(hs.avg), `${hs.avg.toFixed(1)} out of 5 stars`)} <b>${hs.avg.toFixed(1)}</b> <span class="mut">from ${plural(hs.n, 'guest')} · has hosted ${plural(hs.events, 'event')}</span></p>`; })()}<h1 style="font-size:26px">${esc(e.title)}</h1>
       <p class="mut">${DAYL[at.getDay()]} ${at.getDate()} ${MON[at.getMonth()]} · ${e.t}</p><p class="sm">${esc(e.place)}</p>${e.about ? `<p class="sm mut">${esc(e.about)}</p>` : ''}</div>
       <div class="evmoney"><div class="row sp"><span><b>AED ${share}</b> each <span class="mut sm">+ AED ${EVFEE} Ryze fee</span></span><span class="mut sm">AED ${e.total.toLocaleString('en')} ÷ ${e.people} people</span></div>
         <div class="evbar" role="img" aria-label="${paid} of ${spots} spots paid"><span style="width:${pct}%"></span>${e.min ? `<i style="left:${Math.round(((e.min - 1) / spots) * 100)}%" title="Minimum"></i>` : ''}</div>
@@ -889,7 +891,8 @@
     let act;
     if (!S.user) act = `<button class="btn block big" data-act="signin">Sign in to join</button>`;
     else if (st === 'paid') act = `<p class="okline">${ic('check')}<span class="grow">You’re in. Paid AED ${share + EVFEE} to ${esc(e.host.split(' ')[0])}.</span></p>
-      <button class="btn ghost block" data-act="evoffer" data-id="${e.id}">Can’t go? Offer your spot</button>`;
+      <button class="btn ghost block" data-act="evoffer" data-id="${e.id}">Can’t go? Offer your spot</button>
+      ${(S.reviews || {})['ev:' + e.id] ? `<p class="sm mut">You reviewed ${esc(e.host.split(' ')[0])}. Thanks.</p>` : `<button class="link sm center-link" data-act="review" data-id="ev:${e.id}">Demo: the event happened. Review ${esc(e.host.split(' ')[0])} as a host</button>`}`;
     else if (st === 'offered') act = `<p class="note">Your spot is offered to others. If someone takes it, you get AED ${share} back. Until then you’re still going, and still paid.</p>
       <button class="btn ghost block" data-act="evkeep" data-id="${e.id}">I can go after all</button><button class="link sm center-link" data-act="evtaken" data-id="${e.id}">Demo: someone takes my spot</button>`;
     else if (st === 'refunded') act = `<p class="note">Someone took your spot. AED ${share} is on its way back to you.</p>`;
@@ -923,6 +926,7 @@
     return `<div class="stack tight"><span class="cap">Money</span><p class="sm">${moneyLine}</p>
         <p class="sm mut">Money goes straight to your Ziina. Ryze adds its AED ${EVFEE} fee on top of each guest’s share, so you get your full share back.</p></div>
       <div class="row"><button class="btn grow" data-act="soon" data-what="This would open WhatsApp with your event link.">Share link</button><button class="btn ghost grow" data-act="evcancel" data-id="${e.id}">Cancel event</button></div>
+      <p class="sm mut">After the event, guests are asked to review you as a host. Your rating shows on every event you host.</p>
       ${e.ask ? `<div class="stack tight"><span class="cap">Asking to join · ${reqs.length}</span><p class="sm mut">You see their profile and how reliable they’ve been. They pay only once you approve.</p>${reqHtml}</div>` : ''}
       <div class="stack tight"><span class="cap">Paid · ${e.going.length}</span>${e.going.length ? `<div>${e.going.map((n) => `<div class="item"><span class="row grow">${face(n, '')}<span>${esc(n)}</span></span><span class="tag go">${ic('check')}AED ${evShare(e)}</span></div>`).join('')}</div>` : '<p class="sm mut">Nobody has paid yet.</p>'}</div>
       <div class="stack tight"><span class="cap">After the event</span><p class="sm mut">Would you host each guest again? Only hosts see these answers, added up, when that person asks to join something. In the real product this opens once the event has happened.</p>
@@ -1022,6 +1026,7 @@
     return `<main class="pad-nav"><div class="stack tight"><h1>${route.weekJustDone ? `Week ${S.streak} done.` : 'Nice. That one counts too.'}</h1>
       <p class="mut">${esc(c.name)} · ${dateShort(s.at)}. ${plural(S.total, 'session')} in total.</p></div>
       ${newcomer ? offer + photos : photos + offer}
+      ${(S.reviews || {})[c.id] ? '' : `<button class="btn block" data-act="review" data-id="${c.id}">How was it? Review ${esc(c.name)}</button>`}
       ${(S.thanked || {})[s.id] ? `<p class="okline">${ic('check')}<span class="grow">You thanked ${esc(founderOf(c).split(' ')[0])}</span></p>` : `<button class="btn ghost block" data-act="thank" data-id="${c.id}" data-sid="${s.id}">Say thanks to ${esc(founderOf(c).split(' ')[0])}, who ran it</button>`}
       <button class="btn ghost block" data-act="me">${ic('left')}Back to my week</button></main>`;
   };
@@ -1249,6 +1254,7 @@
         ${sec('editclub', 'How to find us', c.find ? `“${esc(c.find)}”` : 'Add a line for first-timers', 'flag')}`}
         ${sec('ocover', 'Cover photo', S.pin[c.id] ? 'Chosen by you · shown on your card and page' : 'Choose the photo members see first', 'photo')}
         ${sec('osched', 'Schedule', `${meetDays(c)} · change or cancel a session`, 'week')}
+        ${LATER() ? (() => { const r = reviewsOf(c); return sec('oreviews', 'Reviews', r.n ? `★ ${r.avg.toFixed(1)} from ${plural(r.n, 'review')} · reply to members` : 'None yet', 'star'); })() : ''}
         ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}
         ${sec('opay', 'Get paid', payOf(c) ? `Connected to ${PROVIDERS[payOf(c)]} · members pay when they book` : 'Connect Ziina or Stripe to take payments', 'tag')}</div>
       ${left ? '' : checklist}
@@ -1280,6 +1286,84 @@
 
   // ---------- overlays ----------
   const O = {};
+  // ---------- reviews of hosts (later phases, D53) ----------
+  // Only members who went can review: one review per club, which they can change. Hosts reply once and can report a
+  // review to the Ryze team, but can't delete it. Event guests review the person who hosted.
+  const RTAGS = ['Welcoming to beginners', 'Well organised', 'Started on time', 'Good value', 'Great host', 'Felt safe'];
+  const RTEXT = [
+    [5, 'Came alone and left with people to come back with. The host learned my name in the first five minutes.', [0, 4]],
+    [5, 'Exactly what the page said: on time, right place, friendly crowd.', [1, 2]],
+    [4, 'Really good session. It got a bit crowded, so arrive early.', [1, 3]],
+    [5, 'Best thing I have done since moving to Dubai.', [0, 5]],
+    [4, 'Good group and a fair price. Parking took a while to find.', [3]],
+    [5, 'The host checks on newcomers and pairs you up. Felt welcome from the start.', [0, 4, 5]],
+    [3, 'Fun, but it started 15 minutes late both times I went.', []],
+  ];
+  const AGO = ['3 days ago', 'last week', '2 weeks ago', '3 weeks ago', 'last month'];
+  const starStr = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+  const stars = (n, label) => `<span class="stars" role="img" aria-label="${label || `${n} out of 5 stars`}">${starStr(n)}</span>`;
+  function reviewsOf(c) {
+    const h = hash(c.id); const seedN = c.photos ? 6 + (h % 34) : h % 5;
+    let n = seedN; let sum = seedN * Math.min(5, 4.3 + (h % 8) / 10);
+    const list = Array.from({ length: Math.min(seedN, 3) }, (_, i) => { const r = RTEXT[(h + i * 3) % RTEXT.length]; const key = `${c.id}:s${i}`;
+      return { key, by: PEOPLE[(h + i * 7) % PEOPLE.length], stars: r[0], text: r[1], tags: r[2].map((t) => RTAGS[t]), ago: AGO[i % AGO.length],
+        reply: (S.replies || {})[key] || (r[0] <= 3 ? 'Fair point, thank you. We now start at the time on the page, and I post in the group if we’re running late.' : '') }; });
+    const tags = RTAGS.map((t, i) => [t, Math.round((seedN * ((h >> i) % 5)) / 6)]).filter((x) => x[1] > 0);
+    const mine = (S.reviews || {})[c.id];
+    if (mine) {
+      n += 1; sum += mine.stars;
+      list.unshift({ key: `${c.id}:me`, mine: true, by: S.user ? S.user.name : 'You', stars: mine.stars, text: mine.text, tags: mine.tags, ago: 'Just now', reply: (S.replies || {})[`${c.id}:me`] || '' });
+      mine.tags.forEach((t) => { const x = tags.find((y) => y[0] === t); if (x) x[1] += 1; else tags.push([t, 1]); });
+    }
+    tags.sort((a, b) => b[1] - a[1]);
+    return { n, avg: n ? sum / n : 0, list, tags };
+  }
+  const canReview = (c) => !!S.user && (Object.keys(S.att).some((id) => id.startsWith(`${c.id}|`) && S.att[id] === 'went') || (S.clubWeeks[c.id] || 0) > 0);
+  const rvItem = (r, host) => `<div class="rv"><div class="row sp"><span class="row">${face(r.by, r.mine ? myPro().photo : '')}<span><b>${r.mine ? 'You' : esc(r.by)}</b><br><span class="xs mut">${r.ago}</span></span></span>${stars(r.stars)}</div>
+    ${r.text ? `<p class="sm">${esc(r.text)}</p>` : ''}${r.tags.length ? `<p class="xs mut">${r.tags.map(esc).join(' · ')}</p>` : ''}
+    ${r.reply ? `<div class="rvreply"><b class="sm">Reply from ${esc(host)}</b><p class="sm">${esc(r.reply)}</p></div>` : ''}
+    ${r.mine ? '' : '<button class="link xs" data-act="soon" data-what="Thanks. The Ryze team checks reported reviews within 2 days.">Report this review</button>'}</div>`;
+  function reviewBlock(c) {
+    const r = reviewsOf(c); const mine = (S.reviews || {})[c.id];
+    const cta = canReview(c) ? `<button class="btn ghost block" data-act="review" data-id="${c.id}">${mine ? 'Edit your review' : 'Review this club'}</button>` : '<p class="sm mut">Only members who went can review this club.</p>';
+    if (!r.n) return `<div class="stack tight"><h2>Reviews</h2><p class="sm mut">No reviews yet. Members can review a club once they’ve been.</p>${canReview(c) ? cta : ''}</div>`;
+    return `<div class="stack tight"><h2>Reviews</h2>
+      <div class="rvsum"><span class="rvbig">${r.avg.toFixed(1)}</span><span>${stars(Math.round(r.avg), `${r.avg.toFixed(1)} out of 5 stars`)}<br><span class="sm mut">${plural(r.n, 'review')} from members who went</span></span></div>
+      ${r.tags.length ? `<div class="wrap">${r.tags.slice(0, 4).map(([t, k]) => `<span class="tag">${esc(t)} · ${k}</span>`).join('')}</div>` : ''}
+      <div>${r.list.map((x) => rvItem(x, founderOf(c))).join('')}</div>${cta}</div>`;
+  }
+  // Event hosts: what guests said about them as a host.
+  function hostStats(name) {
+    const h = hash(name); let n = 8 + (h % 30); let sum = n * Math.min(5, 4.5 + (h % 6) / 10); const events = 2 + (h % 9);
+    const mine = Object.entries(S.reviews || {}).filter(([k, v]) => k.startsWith('ev:') && v.host === name).map(([, v]) => v);
+    mine.forEach((v) => { n += 1; sum += v.stars; });
+    return { n, avg: sum / n, events };
+  }
+
+  O.review = () => {
+    const v = overlay.v; const isEv = overlay.id.startsWith('ev:'); const e = isEv ? ev(overlay.id.slice(3)) : null; const c = isEv ? null : club(overlay.id);
+    const who = isEv ? e.host : c.name;
+    return `<div class="sheet"><div class="stack tight"><h2>${isEv ? `How was ${esc(e.host.split(' ')[0])} as a host?` : `Review ${esc(c.name)}`}</h2><p class="mut sm">${isEv ? esc(e.title) : `Run by ${esc(founderOf(c).replace(/\.$/, ''))}`}. Your first name and photo show with your review.</p></div>
+      <div class="rvstars" role="radiogroup" aria-label="Stars">${[1, 2, 3, 4, 5].map((k) => `<button role="radio" aria-checked="${v.stars === k}" aria-label="${k} star${k > 1 ? 's' : ''}" class="${v.stars >= k ? 'on' : ''}" data-act="rvstar" data-val="${k}">★</button>`).join('')}</div>
+      ${overlay.err ? '<p class="err" role="alert">Tap a star to rate it.</p>' : ''}
+      <span class="flabel">What stood out? (optional)</span>
+      <div class="wrap">${RTAGS.map((t) => `<button class="chip ${v.tags.includes(t) ? 'on' : ''}" data-act="rvtag" data-val="${esc(t)}" aria-pressed="${v.tags.includes(t)}">${esc(t)}</button>`).join('')}</div>
+      <label for="rv-text">A few words for the next newcomer (optional)</label><textarea id="rv-text" rows="3" maxlength="300" placeholder="What should someone know before they go?">${esc(v.text || '')}</textarea>
+      ${v.stars && v.stars <= 2 ? `<p class="note">Sorry it wasn’t good. ${esc(who.split(' ')[0])} can reply, and if something felt unsafe, <button class="link sm" data-act="soon" data-what="This would open a private report to the Ryze team.">tell the Ryze team privately</button>.</p>` : ''}
+      <button class="btn block" data-act="rvsave">${overlay.edit ? 'Update review' : 'Post review'}</button><button class="btn quiet block" data-act="close">Cancel</button></div>`;
+  };
+  const readRv = () => { const el = document.getElementById('rv-text'); if (el && overlay && overlay.v) overlay.v.text = el.value.trim(); };
+  O.reply = () => `<div class="sheet"><div class="stack tight"><h2>Reply to ${esc(overlay.by.split(' ')[0])}</h2><p class="mut sm">Your reply shows under their review on your public page. You can reply once.</p></div>
+    <blockquote class="sm">${stars(overlay.stars)} ${esc(overlay.text || '')}</blockquote>
+    <label for="rp-text">Your reply</label><textarea id="rp-text" rows="3" maxlength="300" placeholder="Thank them, or say what you’ve changed"></textarea>
+    <button class="btn block" data-act="savereply">Post reply</button><button class="btn quiet block" data-act="close">Cancel</button></div>`;
+  OV['o-reviews'] = () => {
+    const c = orgClub(); const r = reviewsOf(c);
+    return `<main class="pad-nav"><div class="stack tight"><h1 style="font-size:22px">Reviews</h1><p class="mut sm">${esc(c.name)} · ${r.n ? `${r.avg.toFixed(1)} from ${plural(r.n, 'review')}` : 'No reviews yet'}</p></div>
+      <p class="note">Only members who went can review. You can reply once to each review and report one that breaks the rules, but you can’t delete reviews. Members trust them because of that.</p>
+      ${r.tags.length ? `<div class="stack tight"><span class="cap">What members mention most</span><div class="wrap">${r.tags.slice(0, 6).map(([t, k]) => `<span class="tag">${esc(t)} · ${k}</span>`).join('')}</div></div>` : ''}
+      <div>${r.list.map((x) => `${rvItem(x, 'you')}${x.reply ? '' : `<button class="btn small ghost" data-act="reply" data-key="${x.key}" data-by="${esc(x.mine ? (S.user ? S.user.name : 'You') : x.by)}" data-stars="${x.stars}" data-text="${esc(x.text || '')}">Reply</button>`}`).join('') || '<p class="mut sm">Reviews appear here once members who came leave one.</p>'}</div></main>`;
+  };
   O.filters = filtersSheet;
   O.signin = () => `<div class="sheet"><h2>${overlay.then && (overlay.then.act === 'claim' || overlay.then.act === 'org') ? 'Sign in to manage your club' : overlay.then && overlay.then.act === 'who' ? 'Sign in to see who\'s going' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
     <label for="si-name">First name</label><input type="text" id="si-name" value="${esc(overlay.name == null ? 'Alex' : overlay.name)}" maxlength="20" autocomplete="given-name"${overlay.err === 'name' ? ' aria-invalid="true" aria-describedby="si-err"' : ''}>
@@ -1709,6 +1793,18 @@
     onudge: (d) => { const c = orgClub(); (S.nudged[c.id] = S.nudged[c.id] || {})[d.name] = true; save(); say(`Sent to ${d.name.split(' ')[0]}, from you, with your next session.`); render(); },
     onudgeall: () => { const c = orgClub(); const n = (S.nudged[c.id] = S.nudged[c.id] || {}); health(c).drifting.forEach((m) => { n[m.name] = true; }); save(); say('Sent to everyone who hasn\'t been back.'); render(); },
     thank: (d) => { S.thanks[d.id] = (S.thanks[d.id] || 0) + 1; (S.thanked = S.thanked || {})[d.sid] = true; save(); say(`Thanks sent to ${founderOf(club(d.id)).split(' ')[0]}.`); render(); },
+    review: needUser((d) => { const old = (S.reviews || {})[d.id]; overlay = { t: 'review', id: d.id, edit: !!old, v: old ? { stars: old.stars, tags: old.tags.slice(), text: old.text } : { stars: 0, tags: [], text: '' } }; render(); }),
+    rvstar: (d) => { readRv(); overlay.v.stars = Number(d.val); overlay.err = false; haptic('tap'); render(); },
+    rvtag: (d) => { readRv(); const t = overlay.v.tags; const i = t.indexOf(d.val); if (i < 0) t.push(d.val); else t.splice(i, 1); render(); },
+    rvsave: () => {
+      readRv(); const v = overlay.v; if (!v.stars) { overlay.err = true; render(); return; }
+      const isEv = overlay.id.startsWith('ev:'); S.reviews = S.reviews || {};
+      S.reviews[overlay.id] = { stars: v.stars, tags: v.tags, text: v.text, host: isEv ? ev(overlay.id.slice(3)).host : founderOf(club(overlay.id)), at: now().getTime() };
+      save(); overlay = null; haptic('success'); say(isEv ? 'Thanks. Your review adds to their host rating.' : 'Thanks. Your review is on the club page.'); render();
+    },
+    reply: (d) => { overlay = { t: 'reply', key: d.key, by: d.by, stars: Number(d.stars), text: d.text }; render(); },
+    savereply: () => { const el = document.getElementById('rp-text'); const t = el ? el.value.trim() : ''; if (!t) { say('Write a reply first.'); render(); return; } S.replies = S.replies || {}; S.replies[overlay.key] = t; save(); overlay = null; say('Reply posted on your page.'); render(); },
+    oreviews: () => go('o-reviews'),
     oweek: () => { stack = []; go('o-week', {}, true); }, ochecks: () => { stack = []; go('o-checks', {}, true); }, oclub: () => { stack = []; go('o-club', {}, true); },
     ophotos: () => { stack = []; go('o-photos', { id: orgClub().id }, true); },
     osched: () => go('o-sched', { id: orgClub().id }), osession: (d) => go('o-session', { id: d.id }), ocheck: (d) => go('o-checkin', { id: d.id }),
@@ -1785,7 +1881,7 @@
     if (v !== route.v) route = { v };
     const reuse = { 'o-sched': V.sched, 'o-photos': V.mphotos, 'o-session': V.attend };
     const body = (OV[v] || reuse[v])();
-    const sub = ['o-sched', 'o-session', 'o-checkin'].includes(v);
+    const sub = ['o-sched', 'o-session', 'o-checkin', 'o-reviews'].includes(v);
     const top = `<header class="top otop"><div class="r">${sub ? `<button class="back" data-act="back">${ic('left')}${({ 'o-week': 'This week', 'o-club': 'Club', 'o-checks': 'Check-in', 'o-session': 'Session', 'o-sched': 'Schedule' }[(stack[stack.length - 1] || {}).v]) || 'Back'}</button>` : `<span class="ologo">ryze club <span class="obadge">Organiser</span></span>`}</div>
       <div class="r"><button class="pill" data-act="demo">Demo</button></div></header>`;
     const tab = (act, l, i, on) => `<button data-act="${act}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;

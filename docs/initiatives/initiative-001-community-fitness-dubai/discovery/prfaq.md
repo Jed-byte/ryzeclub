@@ -60,6 +60,9 @@ For a club session, cancel 12 hours or more before and you get a full refund. Fo
 **Who sees my profile when I ask to join something?**
 Only the host of that event. They see your name, photo, work, area, Instagram, LinkedIn if you added it, and your attendance record. They don't see what other hosts said about you individually.
 
+**Can I see what other members thought of a club or a host?**
+Yes. Members who went can review a club or the host of an event. You see the average, how many people reviewed, what they mention most and the host's replies. Hosts can't delete reviews.
+
 **Can people rate me?**
 After a private event, the host answers one private question about each guest: would you host them again? Hosts see the answers added up when you ask to join something. Nobody sees star ratings of people, and you can always see your own attendance record.
 
@@ -123,3 +126,4 @@ See the success signals in `concept-verdict.md`.
 | A private "would host again" answer and attendance record deter no-shows | Assumed | Compare no-show rates before and after hosts see records |
 | Mind and Soul clubs (workshops, sound baths, dance) pay more per booking than sport clubs | Supported (prototype prices) | Example prices AED 25 to 180; check real Dubai prices |
 | The three-year take-home figures | Assumed | Every input in the take-home model is a planning guess |
+| Reviews from members who went help newcomers choose and push hosts to stay reliable | Assumed | Compare bookings for clubs with and without reviews in the pilot |

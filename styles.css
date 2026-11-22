@@ -813,3 +813,15 @@ fieldset.levels legend { padding: 0; margin-bottom: 4px; font-weight: 700; }
 .evrules { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--mut); }
 .seg.small { padding: 3px; gap: 3px; }
 .seg.small button { min-height: 36px; padding: 0 12px; flex: none; }
+
+/* Reviews of hosts: summary, tag counts, individual reviews with host replies, and the star picker. */
+.stars { color: var(--acc); letter-spacing: 1px; white-space: nowrap; }
+.rvsum { display: flex; align-items: center; gap: 12px; }
+.rvbig { font-family: var(--display); font-size: 40px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.rv { display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.rv .row { gap: 10px; }
+.rvreply { background: var(--soft); border-radius: 10px; padding: 8px 10px; }
+.rvreply p { margin: 2px 0 0; }
+.rvstars { display: flex; gap: 6px; }
+.rvstars button { width: 48px; height: 48px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--bg); color: var(--line); font-size: 26px; line-height: 1; }
+.rvstars button.on { color: var(--acc); border-color: var(--acc); }
