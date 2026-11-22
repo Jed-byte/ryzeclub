@@ -95,7 +95,24 @@ Free communities stay free. Many run clubs never charge. They stay listed becaus
 
 **VAT.** Ryze registers once its own taxable income passes AED 375,000 in 12 months, which happens in 2028. From then on it adds 5% VAT to its fee. Organisers handle VAT on their own sales.
 
-### Fee options: a larger share for Ryze
+### Recommended: one simple fee
+
+**Members pay the organiser's price plus a 10% booking fee. Organisers receive their full price, less the card fee, into their own account at booking.** There are no fee-free months, no cost-share rules and no venue splits. See `money-flows.md`.
+
+This is how comparable apps charge. Spond is free for clubs and members and earns about 3% per payment, which the club can pass on to members. Heylo lets the host choose whether members pay the service fee on top. Eventbrite lets organisers pass fees on to buyers, and on a small ticket those fees can come to more than 10%. Ryze's fee is higher than Spond's because Ryze also brings new members, not just admin.
+
+| | Today (10% from organiser, 3 months free) | **Simple (10% paid by member)** | Simple, 5% fewer bookings | Simple at 12%, 5% fewer bookings |
+|---|---:|---:|---:|---:|
+| Net revenue 2029 | 2.02M | **2.32M** | 2.24M | 2.56M |
+| EBITDA 2029 | (913k) | **(616k)** | (696k) | (370k) |
+| Funding needed | 3.23M | **2.60M** | 2.74M | 2.17M |
+| Round 1, lean six months | 450k | **370k** | | |
+| Round 2, 18 months with buffer | 2.2M | **1.9M** | | |
+| Fees cover the founder's pay from | Dec 2027 | **Aug 2027** | | |
+
+The more complex options below earn more on paper (down to AED 1.1M of funding), but each adds a rule that hosts and members must understand. Start simple, measure how many bookings are paid in the app during the pilot, and raise the fee to 12% later if members accept it. That is one number to change.
+
+### Earlier fee options (not recommended)
 
 Today Ryze takes 10% of community bookings and 12% of workshop tickets, with 0% for an organiser's first 3 months. The organiser also pays the card fee (about 2.6% + AED 1 on Ziina). The forecast now has a **member booking fee**: a flat amount the member pays at checkout on top of the organiser's price, as ticketing sites do. It is earned from day one, even in an organiser's fee-free months.
 
@@ -374,7 +391,7 @@ Marked yellow in the forecast. Check them in this order, because they move the r
 
 | # | Decision | Recommendation |
 |---|---|---|
-| 1 | Fees and the fee-free start | Option F: 15% commission, AED 3 member booking fee (AED 2 under AED 40), one month free. Funding need falls from 3.23M to 1.08M (section 5) |
+| 1 | Fees | One simple fee: members pay 10% on top of the organiser's price; no fee-free months. Funding need falls from 3.23M to 2.60M (section 5) |
 | 2 | Should Ryze organise its own events? | Yes, quarterly, once permits are in place. It changes D4 for these events only |
 | 3 | How should Mind be priced? | Test a monthly pass rather than per-meeting fees |
 | 4 | 12% fee for workshops? | Yes, test it. Ryze brings the audience for one-off events |
