@@ -47,9 +47,9 @@ Everything is under `docs/initiatives/initiative-001-community-fitness-dubai/`.
 |---|---|
 | `discovery/prfaq.md` | Press release and questions used to test the idea |
 | `discovery/concept-verdict.md` | The verdict and what the pilot must prove |
-| `business/business-plan.md` | Business plan for paid Mind, Body and Soul communities, with the three-year forecast |
-| `business/ryze-club-forecast.xlsx` | The forecast model: change the blue inputs on the Assumptions tab |
-| `business/money-flows.md` | How money moves for every type of club: who pays, who receives what, refunds and payouts |
+| `business/business-plan.md` | Business plan from the seed round onwards, built on decisions up to D52, with the three-year forecast |
+| `business/ryze-club-forecast.xlsx` | The forecast model, starting when the seed closes (July 2027): change the blue inputs on the Assumptions tab |
+| `business/money-flows.md` | How money moves for every type of club under D47 and D48 |
 | `planning/prds/prd-001-club-discovery-v1/prd.md` | What V1 must do |
 | `planning/prds/prd-001-club-discovery-v1/decision-log.md` | Every decision and who made it |
 | `planning/prds/prd-001-club-discovery-v1/ux/ux-spec.md` | The six design flows and the visual direction |

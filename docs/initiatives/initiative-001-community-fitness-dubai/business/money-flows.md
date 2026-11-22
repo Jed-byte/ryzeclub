@@ -1,5 +1,5 @@
 ---
-title: Money flows — one simple fee
+title: Money flows — every type of club
 status: draft
 created: 2026-11-22
 updated: 2026-11-22
@@ -8,85 +8,67 @@ parent: business-plan.md
 
 # Money flows
 
-This replaces the earlier draft of the same date. That draft split venue shares, cost-share sessions and two kinds of fee. Every split was another rule for a host to learn and another reason to go back to WhatsApp. This version has one rule.
+How money moves for every type of club, following D47 and D48. Earlier drafts proposed a member booking fee and cost-share rules (D54, D55); D47 superseded them.
 
-## The rule
+## The rules
 
-> **Members pay the organiser's price plus a 10% booking fee. The organiser receives their price, minus the card fee, straight into their own account.**
-
-Five things that follow from it:
-
-- **There is one number to explain.** Members see "AED 60 + AED 6 booking fee", as on Eventbrite or a cinema site.
-- **Organisers keep their whole price**, less the card fee they would pay with any card machine. A padel host passing on the court cost loses nothing, so cost-share and earning sessions need no separate rules.
-- **Money arrives at booking, in the organiser's own Ziina or Stripe account**, on the provider's usual payout schedule. The organiser pays the court, the studio or the cafe deposit up front, as they do today. Ryze never holds the money, so nobody waits on Ryze.
-- **Ryze's 10% is taken off automatically** by the provider as a platform fee on each payment.
-- **There are no fee-free months to manage.** Organisers pay nothing to Ryze, so there is nothing to waive.
+1. **Members pay the host's price, and that is the only price they see.** It goes straight into the host's own Ziina account (Stripe for clubs with a trade licence, in a later phase).
+2. **Ryze keeps 10% of the host's price** (D47). How Ryze collects it is still open: a split at payment, or a monthly invoice to the host.
+3. **The host pays the card fee**, as with any card machine.
+4. **The host gets the money at booking**, on the provider's payout schedule. They pay the court, studio or cafe deposit up front, as they do today.
+5. **Ryze never holds session money.**
+6. **Private games and events with friends:** each guest pays their share plus AED 3 for Ryze, so the organiser gets their full share back (D47, D48).
 
 ```mermaid
 flowchart LR
-    M[Member] -->|price + 10% booking fee<br/>Apple Pay or card| O[Organiser's own<br/>Ziina or Stripe account]
-    O -.->|10% booking fee,<br/>taken by the provider| R[Ryze Club]
-    O -->|pays when they choose| V[Venue: court,<br/>studio, kitchen, cafe]
+    M[Member] -->|host's price| H[Host's own Ziina account]
+    H -.->|10%: split at payment or monthly invoice| R[Ryze Club]
+    H -->|pays when they choose| V[Venue: court, studio, kitchen, cafe]
 ```
 
 ## Every type of club
 
-AED per session, for one member.
+AED for one member and one session.
 
-| Club type | Example | Member pays | Organiser receives | Ryze |
+| Club type | Example | Member pays | Host receives (before card fee) | Ryze |
 |---|---|---:|---:|---:|
-| Free club | Run club, beach volleyball, a free chess club | 0 | 0 | 0 |
-| Cost-share | Padel court share, AED 60 | 66 | 60, less card fee; pays the court | 6 |
-| Coach or instructor | Tennis clinic, AED 120 | 132 | 120, less card fee; pays the court | 12 |
-| Studio class | Boxing studio, AED 90 | 99 | 90, less card fee | 9 |
-| Book club, drink included | AED 70 | 77 | 70, less card fee; pays the cafe | 7 |
-| Supper club or cooking class | AED 180 | 198 | 180, less card fee; buys ingredients, pays the kitchen | 18 |
-| One-off workshop | Pottery taster, AED 250 | 275 | 250, less card fee | 25 |
-| Club membership (dues) | Chess club, AED 50 a month | 55 a month | 50, less card fee | 5 a month |
-| Ryze Mind Body Soul day | AED 295 | 295 | — (Ryze is the seller) | 295, less its costs |
+| Free club | Run club, beach volleyball, free chess club | 0 | 0 | 0 |
+| Shared court or pitch | Padel, AED 60 | 60 | 54; pays the court | 6 |
+| Coach or instructor | Tennis clinic, AED 120 | 120 | 108; pays the court | 12 |
+| Studio class | Boxing studio, AED 90 | 90 | 81 | 9 |
+| Book club, drink included | AED 70 | 70 | 63; pays the cafe | 7 |
+| Supper club or cooking class | AED 150 | 150 | 135; buys ingredients, pays the kitchen | 15 |
+| Dance class | AED 60 | 60 | 54 | 6 |
+| One-off workshop | Pottery taster, AED 250 | 250 | 225 | 25 |
+| Private game or event with friends | 5-a-side, AED 40 share | 43 | 40 | 3 |
+| Coaching (parked) | 1:1 session, AED 250 | 250 | 212.50 | 37.50 (15%) |
 
-The card fee is about 2.6% + AED 1 on Ziina. Confirm current rates with Ziina and Stripe.
+**Shared-court hosts.** When the price only covers the court, 10% comes out of the host's pocket: AED 24 on a AED 240 padel court. Private games (D48) are the fair route for groups that split a court among friends, because the AED 3 goes on top of each share. Ask the pilot hosts which route fits them.
 
-**Pay per session or join.** Members can always pay for a single session. A membership or monthly pass is optional and the club decides whether to offer one. Nobody needs a Ryze membership.
+## Private games and events (D48)
 
-## Cancellations
+| Mode | How it works |
+|---|---|
+| **Already paid** | The host has paid the venue. Guests pay their share plus AED 3, which pays the host back |
+| **Collect first** | Guests pay by a pay-by date. The host books only if the minimum is reached; otherwise nobody is charged |
 
-The organiser picks one cancellation rule when setting up the club:
+**Paid means committed.** A guest who drops out gets their share back only if someone takes their spot, and Ryze keeps the AED 3. If the host cancels, everyone gets everything back.
 
-| Organiser's rule | Member cancels in time | Member cancels late or doesn't turn up |
+## Cancellations for club sessions
+
+| Case | Member gets back | Ryze's 10% |
 |---|---|---|
-| Flexible: 24 hours | Price and booking fee refunded | Nothing back |
-| Strict: no refunds | Nothing back; can give the spot to a friend | Nothing back |
-
-If the club cancels (weather, illness, venue), members get everything back, including the booking fee, and their streak is protected (D28). The organiser refunds with one tap in the organiser app.
-
-## Free clubs and chess clubs
-
-- **A free club pays nothing and is charged nothing.** Free clubs are the shop window: newcomers find Ryze through them and then book paid sessions elsewhere. Charging them would send them back to WhatsApp.
-- **A club that collects dues**, such as a chess club charging AED 50 a month for the cafe, uses the same rule: the member pays the dues plus 10%.
-- **Why a club would use Ryze rather than WhatsApp and Instagram:** newcomers can find it, the organiser sees who is coming, dues and payments arrive without chasing, members build streaks, and photos land on one page. Ryze does not replace the WhatsApp chat (D9). It sits beside it, with links shared into the group (D35).
-- **For a private club that doesn't want newcomers and doesn't collect money, Ryze adds little.** That is fine. They are not the customer. Whether open clubs value these things more than their current habit is still unproven, and the pilot must show it (concept verdict).
+| Member cancels within the host's refund window | Their payment | Returned |
+| Member cancels late or doesn't turn up | Nothing | Kept |
+| Host cancels | Everything; the streak is protected (D28) | Returned |
 
 ## Ryze's other income
 
-These come later and are kept out of the member's and organiser's checkout:
+**Venue commissions (parked idea 6).** Once Ryze brings venues regular weekly groups, venues pay a commission or give Ryze groups a lower rate. Ryze never books or pays venues for groups, and there is no paid placement (D43).
 
-- **Ryze Pro** for organisers who want passes, waitlists and payout reports (from 2028).
-- **Venue partnerships**: cafes, studios and pitches paying to be featured.
-- **Mind Body Soul days**: Ryze sells the tickets and pays its suppliers. This is the only case where Ryze holds money.
+## To confirm before building
 
-## How to build it
-
-1. **Organiser connects once.** Ziina for individuals (Emirates ID), Stripe for clubs with a trade licence. This is already designed in the prototype ("Get paid").
-2. **Organiser sets a price** per session, and later a monthly membership, plus a cancellation rule.
-3. **Member taps "Pay AED 66 and book".** The provider's checkout shows Apple Pay, Google Pay and card. Ryze's 10% is attached to the payment as a platform fee, so the provider takes it off automatically.
-4. **The provider confirms the payment to Ryze** (a webhook). The RSVP is marked paid and counts for the streak.
-5. **Refunds** are issued from the organiser app. Ryze's fee is returned with them.
-6. **The organiser sees** bookings, payments and refunds per session in the organiser app.
-
-To confirm before building (open in `planning/parked.md`):
-
-- Does Ziina support a platform fee on a payment made to an organiser's account? Its API has a "transfers" permission; ask Ziina how a platform takes its share.
-- With Stripe Connect, the platform fee on each payment is the standard set-up. Check that Apple Pay still shows in the checkout when a platform fee is attached.
-- Payout timing for each provider, so organisers know when booking money arrives.
-- The wording of "booking fee" at checkout and on receipts, and VAT on Ryze's fee once Ryze registers.
+- Can Ziina take Ryze's 10% at payment? If not, invoice hosts monthly.
+- Does Apple Pay still show in Ziina's checkout when a platform fee is attached?
+- When does booking money reach the host?
+- Fee-free months for new hosts: not decided. The forecast assumes none.
