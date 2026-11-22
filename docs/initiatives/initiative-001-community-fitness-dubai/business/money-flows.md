@@ -58,7 +58,7 @@ AED for one member and one session.
 
 | Case | Member gets back | Ryze's 10% |
 |---|---|---|
-| Member cancels within the host's refund window | Their payment | Returned |
+| Member cancels 12 hours or more before the start (US-06) | Their payment | Returned |
 | Member cancels late or doesn't turn up | Nothing | Kept |
 | Host cancels | Everything; the streak is protected (D28) | Returned |
 
