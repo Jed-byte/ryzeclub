@@ -1,6 +1,6 @@
 # Parked ideas
 
-Ideas saved for later. Picked up after the Ziina integration exploration (payment intents, organiser OAuth access, how the 10% fee is taken).
+Ideas saved for later. Picked up after the Ziina integration exploration (payment intents, organiser OAuth access, how the 10% fee is taken). Items that need no server were built on 10 November 2026, while the Ziina account is being set up.
 
 Added 10 November 2026, from Instagram posts the founder saved.
 
@@ -22,30 +22,45 @@ Ryze Club charges per booking today, not by subscription. These ideas fit later 
 
 Run every idea through validate-concept before building it.
 
+Built on 10 November 2026 (pay sheet and organiser Get paid):
+- Lead with a hook: the pay sheet opens with how many people are going and their faces, then what booking gets you, with the price next to the button.
+- Sell the treehouse: outcome wording on both sheets.
+- Three screens: organiser Get paid is now three steps (the problem, how it works, connect).
+
+Not in the MVP (decision D39, 10 November 2026): no annual or monthly plans, so make annual the green button, trial only on annual and a price tag on every line are dropped for now. Members pay each community per session. Member reviews above the button wait for real reviews.
+
 ## 2. What makes an app real
 
 Sources: lukegarvai, "Your vibe coded app is fake", 13 October 2026; lincolndevine, "5 tells your app was vibe coded", parts 1 and 2.
 
-Status is what the prototype does as of 10 November 2026.
+Status is what the prototype does as of 10 November 2026, after this round of changes.
 
 | Item | Status |
 |---|---|
 | Real login and logout, password reset, email verification | Not started. Sign-in is a local demo; needs a backend. |
 | API keys off the front end | Needed for Ziina. Keys must live on a server, not in the GitHub Pages site. |
 | Rate limiting, database backups, row-level security | Not started; comes with the backend. |
-| Loading states and skeletons | Not needed yet (no server); needed once data loads over the network. |
+| Loading states and skeletons | Done for paying (button shows "Opening Ziina…"). Skeletons wait for the backend. |
 | Empty states | Partly done. Review every screen. |
-| Clear error messages, form validation | Partly done (age check, required name). Review. |
-| Taps submit twice | To check: guard Pay and I'm in against double taps, especially once real payments exist. |
+| Clear error messages, form validation | Done for sign-in: errors show under the field, and typed values are kept. |
+| Taps submit twice | Done: a second tap on the same control within 0.7 seconds is ignored, and Pay is disabled while it works. |
 | Buttons wait for the server | Plan optimistic updates when the backend arrives. |
 | Missing tap animations | Done: response animations and haptics on follow, I'm in, I went and check-in. |
-| Keyboard covers input fields | To check on iPhone. |
-| Back deletes forms or user entry | To check: sheets and the profile form. |
-| Dark or light mode breaks the UI | Light mode only by design. Check the page still looks right when the phone is in dark mode. |
+| Keyboard covers input fields | Done: sheets fit above the keyboard and the field being typed in scrolls into view. Check on a real iPhone. |
+| Back deletes forms or user entry | Done: the phone's Back closes the sheet or goes back a screen instead of leaving the app, and Edit profile keeps what was typed unless you tap Cancel. |
+| Dark or light mode breaks the UI | Done: the page tells browsers it is light only, so phones in dark mode don't recolour it. |
 | Mobile layout | Done. |
-| Offline support | Not started. Consider caching the week's sessions. |
-| Custom 404 page | Not started (GitHub Pages supports a 404.html). |
-| Analytics, error tracking | Not started. Choose tools that fit UAE data law (PDPL). |
-| Privacy policy page, terms page | Not started. Needed before real users or payments. |
-| Delete account button | Not started. Expected under PDPL. |
+| Offline support | Done: the app opens without a connection and shows an offline bar; booking and paying are blocked until it's back. |
+| Custom 404 page | Done. |
+| Analytics, error tracking | Partly done: the app shows a friendly error screen instead of a blank page, and all errors go through one function ready for a tracker. Choosing the tools is still open (must fit PDPL). |
+| Privacy policy page, terms page | Drafts done, linked from sign-in and Profile. Need a UAE lawyer's review, a contact email and the data hosting location before launch. |
+| Delete account button | Done in the prototype (clears everything on the phone). The real version must also delete server data. |
 | Onboarding flow | Done for members (three-question quiz). Organiser onboarding to review. |
+
+## 3. One-off events with friends (V2)
+
+Added 10 November 2026 (decision D40). Any member creates a one-off event such as a brunch or a yacht day, tags it Mind, Body or Soul, and sends a private link. Friends say I'm in and pay their share through Ziina into the host's account. Everyone is refunded if the minimum headcount isn't reached by the pay-by date.
+
+- Scope: invite-only events among friends. No public listing or ticket sales to strangers (can need an event permit in Dubai; confirm with the lawyer).
+- To test: whether 10% suits friends' money or a smaller or flat fee works better; whether a fourth tag, Social, fits brunches better than Mind, Body or Soul.
+- Data model: an event is a session with no club, plus a host, private link, pay-by date and minimum headcount. Bookings, payments and refunds are reused from V1.
