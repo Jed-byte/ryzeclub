@@ -26,6 +26,10 @@ As an organiser, open **https://jed-byte.github.io/ryzeclub/#organiser**. This i
 
 "See your public page" in the Club tab switches back to the member app. Invite links open as `…/ryzeclub/#join/mdr` with a "Join the club" panel; try it on your phone with the QR code. From the member app, "Open organiser app" on a club you manage, or **Demo**, switches over.
 
+Also in the member app: tap a session time straight from a club card, filter by time of day, and see a club's schedule as a strip of days with each session's length. Following a club suggests a session to book this week.
+
+With **Demo → With later phases**, My week also shows **Games and events with friends**: a 5-a-side, a yacht day and a games night to join, and "Plan a game or event" to host one. Hosts choose "I've already paid" or "Collect first, then book", can turn on "Ask to join", approve or decline requests while seeing each person's profile and reliability record, and answer "Would you host them again?" afterwards. Guests pay their share plus AED 3; paid means committed unless someone takes their spot.
+
 Use the **Demo** button at the top to skip ahead in time, become an organiser, switch colour theme (Lemon, Scarlet, Watermelon, Court, Kinetic, Seal), or reset. A theme can also be opened from a link, for example `?theme=court`.
 
 ### What is not real

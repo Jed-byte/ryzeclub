@@ -2,7 +2,7 @@
 title: Competitor review — ClassPass and Mindbody
 status: draft
 created: 2026-11-19
-updated: 2026-11-19
+updated: 2026-11-22
 parent: ../concept-verdict.md
 ---
 
@@ -72,6 +72,24 @@ These are the gaps Ryze Club should be clear about, in product and in marketing.
 | 7 | **Picks ignore where you are** | First "Must-try" studio was 21 km away | Home's picks follow D43: soonest session with spots, in your area |
 | 8 | **Breaks and leaves the app** | Video opens YouTube. "Add credits" failed. Spinners | Keep paying and booking fast and reliable. Photos stay in the app |
 | 9 | **Mindbody is costly and complex for organisers** | Reviews call it expensive and hard to use, with a phone app that needs a laptop for simple tasks (G2 3.7/5) | The organiser app takes under five minutes a week on a phone (D30). The curator pre-fills the page (D32). No monthly software fee: Ryze Club takes its fee per booking |
+
+## What was built
+
+As of 22 November 2026 (D45, D52):
+
+| # | Pattern | Status |
+|---|---|---|
+| — | ClassPass's schedule layout: day strip, sessions grouped by day with length | Built (D45) |
+| 1 | Tap a time from the list | Built: up to three session buttons on every club card |
+| 2 | Time, distance and spots filters | Time of day built. Spots left shows in the schedule. Distance waits for location |
+| 3 | Ladies-only tag | Already built |
+| 4 | How to get there | Built: "How to find us" now also shows on the booking confirmation |
+| 5 | Report inaccurate information | Already built ("Report a problem with this page") |
+| 6 | No empty days | Built in the schedule ("Nothing left today") |
+| 8 | Nudge after saving | Built: after Follow, a sheet suggests the next three sessions |
+| 9 | Amenities | Built: shown on the club page, set by hosts in Club details |
+| 10 | Invite a friend | Later phases: private games and events with a share link (D48) |
+| 11 to 13 | Cheap first try, map, reviews | Parked |
 
 ## Lines to use
 

@@ -788,3 +788,28 @@ fieldset.levels legend { padding: 0; margin-bottom: 4px; font-weight: 700; }
 .srow .grow { display: flex; flex-direction: column; min-width: 0; }
 .srow .tag { flex: none; }
 @media (min-width: 900px) { .sdtabs { margin: 0; padding: 0; } }
+
+/* Session times on club cards: book from the list without opening the club first. */
+.ctimes { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 14px 14px; }
+.ctime { border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 6px 12px; min-height: 40px; font: inherit; font-size: 13px; font-variant-numeric: tabular-nums; }
+.ctime b { font-weight: 700; }
+.ctime.go { border-color: var(--acc); color: var(--acc); font-weight: 700; }
+.ctime.full { color: var(--mut); }
+/* Amenities on the club page and in the host's edit sheet. */
+.amen { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.amen b { margin-right: 4px; }
+.chk { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 12px; min-height: 40px; font-size: 14px; }
+.chk input { width: 18px; height: 18px; margin: 0; accent-color: var(--acc); }
+
+/* Games and events with friends: cost split, progress to the minimum, requests with reliability. */
+.evrow .tag { flex: none; }
+.evmoney { border: 1.5px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.evbar { position: relative; height: 10px; border-radius: 5px; background: var(--soft); overflow: visible; }
+.evbar span { position: absolute; inset: 0 auto 0 0; border-radius: 5px; background: var(--acc); }
+.evbar i { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+.evreq { border: 1.5px solid var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.warnline { color: var(--warn); font-weight: 700; display: flex; gap: 6px; align-items: center; }
+.warnline .ic { width: 16px; height: 16px; }
+.evrules { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--mut); }
+.seg.small { padding: 3px; gap: 3px; }
+.seg.small button { min-height: 36px; padding: 0 12px; flex: none; }

@@ -2,7 +2,7 @@
 title: PRFAQ — Community fitness platform for Dubai
 status: draft
 created: 2026-10-07
-updated: 2026-10-14
+updated: 2026-11-22
 ---
 
 # PRFAQ — Community fitness platform for Dubai
@@ -10,6 +10,8 @@ updated: 2026-10-14
 Working name: **Ryze Club**. Tagline: *Find your people, keep showing up.*
 
 This is a discovery input for product authors. Downstream teams should rely on the PRD, not this file.
+
+> **Updated 22 November 2026.** The first version said Ryze Club was free and left payments out. Decisions D39 and D41 made paying per session the business model, so this file now describes it. The money model was checked with the validate-concept skill on 22 November; see "Money model" below and the update in `concept-verdict.md`.
 
 ## Press release (V1)
 
@@ -21,12 +23,12 @@ With Ryze Club, every club gets one page with its schedule, RSVPs and photos fro
 
 "I moved here knowing nobody. I found my Tuesday run in five minutes and I haven't missed a week since," says *[illustrative quote, to be replaced with a real one]*.
 
-Ryze Club is free for members and clubs. Start at [site].
+Free clubs stay free. Clubs that charge set their own price, and members pay it in the app in one tap. Start at [site].
 
 ### Honesty check on the release
 
 - The benefit is specific: find a club, then keep going.
-- Nothing depends on coaches, dietitians, supplements, ads or payments.
+- Nothing depends on coaches, dietitians, supplements or ads. Payments are now in (D39): members pay the price the host sets, and Ryze keeps 10% of it.
 - "Five minutes" and "haven't missed a week" are unproven and must be replaced with real pilot evidence before any public use.
 
 ## Customer FAQ
@@ -50,10 +52,19 @@ Only people who RSVPed to or attended a session can post to it. Anyone can untag
 V1 collects the minimum: name, contact for reminders, area, sport and level. No health or medical data.
 
 **Is it free?**
-Yes, for members and clubs in V1.
+Free clubs are free. For clubs that charge, you pay the price on the page and nothing else. The host has set it, and Ryze's fee comes out of their share, not on top.
+
+**What if I pay and then can't go?**
+For a club session, cancel 12 hours or more before and you get a full refund. For a private game or event with friends, paid means committed: you get your share back only if someone takes your spot. If the host cancels, everyone gets everything back.
+
+**Who sees my profile when I ask to join something?**
+Only the host of that event. They see your name, photo, work, area, Instagram, LinkedIn if you added it, and your attendance record. They don't see what other hosts said about you individually.
+
+**Can people rate me?**
+After a private event, the host answers one private question about each guest: would you host them again? Hosts see the answers added up when you ask to join something. Nobody sees star ratings of people, and you can always see your own attendance record.
 
 **Can I find a coach or a dietitian?**
-Not in V1.
+Not in V1. Coaches are a later option, at a 15% fee, once Ryze can check their qualifications and insurance (parked idea 4).
 
 ## Internal FAQ
 
@@ -66,12 +77,17 @@ Low. A web application, a database, a reminder channel and photo storage. No nov
 **What's the smallest credible V1?**
 About 30 hand-picked run and community padel clubs, Dubai-wide, on a mobile-first website, aimed at newcomers.
 
+**How does the money work?**
+Members pay through Ziina straight into the host's account. Ryze keeps 10% of a club's price and never holds session money. Private games and events with friends add a flat AED 3 per guest on top, so the organiser gets their full share back. How Ryze collects its 10% (a split at payment or a monthly invoice) is still open.
+
 **What is explicitly not in V1?**
-Coaches, dietitians, 1:1 sessions, payments, supplements, ads, a general social feed, comments, messaging, a native app, credential or licence checks, and medical or nutrition advice.
+Coaches, dietitians, 1:1 sessions, supplements, ads, a general social feed, comments, messaging, a native app, credential or licence checks, and medical or nutrition advice.
 
 **What are the legal exposures?**
 - Organising sports events in Dubai requires a Dubai Sports Council permit and insurance (Executive Council Resolution 1 of 2020). The platform lists sessions that clubs run; it does not organise them. The founder has deferred licensing work for V1; this is an accepted open risk.
-- The UAE Personal Data Protection Law requires explicit consent and breach notification.
+- The UAE Personal Data Protection Law requires explicit consent and breach notification. Profiles shared when asking to join, and hosts' "would host again" answers, are personal data: members must be able to see their own record and have it corrected.
+- Private events stay invite-only. Selling tickets to strangers can need an event permit in Dubai (D40).
+- Ryze must never hold members' session money, so it stays a listing and payment tool and does not become an organiser or a payment service.
 - Photos of identifiable people are sensitive. Untag, report and removal are requirements, not extras.
 
 **How does it fail?**
@@ -98,3 +114,12 @@ See the success signals in `concept-verdict.md`.
 | Photos and streaks drive return visits | Unproven | Pilot |
 | An AI match beats a filtered list | Unproven | Compare in pilot |
 | Earlier social-sports apps (Duplays, 10) are inactive or weak | Unverified | Check current status |
+| Hosts will accept Ryze keeping 10% of their price | Unproven | Ask the 15 pilot hosts before launch; watch for hosts asking members to pay in cash |
+| Members prefer paying in the app to cash or a bank transfer | Unproven | Share of bookings paid through Ryze in the pilot |
+| Ziina can take Ryze's fee automatically at payment | Unverified | Confirm with Ziina; otherwise invoice hosts monthly |
+| Organisers of private games and events pay the venue first and struggle to collect | User-stated | Founder, 22 November 2026. Test with 5 organisers |
+| "Paid means committed, unless someone takes your spot" feels fair to guests | Assumed | Watch drop-outs and complaints in the first events |
+| Seeing a profile before saying yes makes hosts comfortable letting strangers in | User-stated | Founder, 22 November 2026 |
+| A private "would host again" answer and attendance record deter no-shows | Assumed | Compare no-show rates before and after hosts see records |
+| Mind and Soul clubs (workshops, sound baths, dance) pay more per booking than sport clubs | Supported (prototype prices) | Example prices AED 25 to 180; check real Dubai prices |
+| The three-year take-home figures | Assumed | Every input in the take-home model is a planning guess |
