@@ -58,7 +58,7 @@ Free clubs are free. For clubs that charge, you pay the price on the page and no
 For a club session, cancel 12 hours or more before and you get a full refund. For a private game or event with friends, paid means committed: you get your share back only if someone takes your spot. If the host cancels, everyone gets everything back.
 
 **Who sees my profile when I ask to join something?**
-Only the host of that event. They see your name, photo, work, area, Instagram, LinkedIn if you added it, and your attendance record. They don't see what other hosts said about you individually.
+Some clubs, and some private events, ask new members to request a place first. Only that club's organisers, or that event's host, see your request. They see your name, photo, work, area, Instagram, LinkedIn if you added it, and your attendance record. They don't see what other hosts said about you individually.
 
 **Can I see what other members thought of a club or a host?**
 Yes. Members who went can review a club or the host of an event. You see the average, how many people reviewed, what they mention most and the host's replies. Hosts can't delete reviews.
