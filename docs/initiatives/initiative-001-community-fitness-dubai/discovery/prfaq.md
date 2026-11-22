@@ -60,6 +60,9 @@ For a club session, cancel 12 hours or more before and you get a full refund. Fo
 **Who sees my profile when I ask to join something?**
 Some clubs, and some private events, ask new members to request a place first. Only that club's organisers, or that event's host, see your request. They see your name, photo, work, area, Instagram, LinkedIn if you added it, and your attendance record. They don't see what other hosts said about you individually.
 
+**Can I find one person to play with?**
+Yes. Post a game that needs one player, or three for doubles, with the level you want: a rating for chess, a pace for running, or a level for squash, tennis and the rest. People see whether they fit and ask to play, and you choose. If there's a court to pay for, the cost is split between everyone.
+
 **Can I see what other members thought of a club or a host?**
 Yes. Members who went can review a club or the host of an event. You see the average, how many people reviewed, what they mention most and the host's replies. Hosts can't delete reviews.
 
@@ -127,3 +130,5 @@ See the success signals in `concept-verdict.md`.
 | Mind and Soul clubs (workshops, sound baths, dance) pay more per booking than sport clubs | Supported (prototype prices) | Example prices AED 25 to 180; check real Dubai prices |
 | The three-year take-home figures | Assumed | Every input in the take-home model is a planning guess |
 | Reviews from members who went help newcomers choose and push hosts to stay reliable | Assumed | Compare bookings for clubs with and without reviews in the pilot |
+| People will find one-on-one partners through Ryze instead of existing groups and apps | Unproven | Count posts filled within 48 hours in the pilot |
+| Self-reported levels are honest enough to match on | Assumed | Watch "would play again" answers and reports after games |
