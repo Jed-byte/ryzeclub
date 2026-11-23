@@ -64,3 +64,33 @@ Added 10 November 2026 (decision D40). Any member creates a one-off event such a
 - Scope: invite-only events among friends. No public listing or ticket sales to strangers (can need an event permit in Dubai; confirm with the lawyer).
 - To test: whether 10% suits friends' money or a smaller or flat fee works better; whether a fourth tag, Social, fits brunches better than Mind, Body or Soul.
 - Data model: an event is a session with no club, plus a host, private link, pay-by date and minimum headcount. Bookings, payments and refunds are reused from V1.
+
+Updated 22 November 2026 (D48): the prototype now builds this under later phases, widened to private games such as 5-a-side and games nights. Hosts choose "I've already paid" or "Collect first, then book". Guests pay their share plus AED 3. Paid means committed unless someone takes the spot. Ask to join and reliability records (D49, D50) let hosts check strangers first.
+
+## 4. Coaching
+
+Added 22 November 2026. Coaches (personal trainers, padel and run coaches) sell 1:1 and small-group sessions through Ryze at a 15% fee, because Ryze finds the client.
+
+- Before launch: check qualifications (for example UAE trainer registration) and insurance, and set who is responsible if a client is injured.
+- Risk: 1:1 clients tend to swap numbers and pay the coach directly after a few sessions. What keeps them: packages paid up front, scheduling and reminders, and new clients from clubs.
+- In the take-home model, base case: 5 coaches in year 1, 30 in year 2, 100 in year 3.
+
+## 5. AI for organisers
+
+Added 19 November 2026. Ranked by fit with the five-minute organiser week (D30):
+
+1. Paste your schedule: the organiser pastes the WhatsApp message or Instagram caption they already post, and AI turns it into sessions to confirm. Also speeds up the curator pre-filling pages.
+2. Changes in plain words: "Cancel this Saturday, too hot" updates the page and tells members who booked.
+3. Drafted messages: the weekly post, the first-timer welcome and the win-back note, edited and sent by the organiser.
+
+Not recommended: matching members by height, weight or body goals. It is sensitive health data under the PDPL, close to the no-medical-advice line, and predicts little for community clubs. Match on goals, level, time and area instead, and add search in plain words.
+
+Reminders themselves are rules, not AI: 19:00 the evening before early sessions (D27), three hours before others, WhatsApp by opt-in (D16).
+
+## 6. Venue deals
+
+Added 20 November 2026. Once Ryze brings pitches and courts regular weekly bookings, ask venues for a commission or a lower rate for Ryze groups. Don't book or pay for venues on groups' behalf: that means holding other people's money.
+
+## 7. Map view
+
+Added 19 November 2026, from the ClassPass review. A map with "Redo search in this area", without other businesses' pins. Not needed for 3 areas and about 15 hosts.

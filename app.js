@@ -13,12 +13,13 @@
   const mapLink = (place, c, cls = 'go') => `<a class="${cls}" href="${mapsUrl(place, c)}" target="_blank" rel="noopener">${ic('pin')}Directions</a>`;
   const placeOf = (c) => (cityOf(c.area) === 'Dubai' ? c.area : `${c.area}, ${cityOf(c.area)}`);
   const SPORTS = { running: 'Running', padel: 'Padel', yoga: 'Yoga & pilates', volleyball: 'Volleyball', basketball: 'Basketball', football: 'Football', futsal: 'Indoor football (5-a-side)', boxing: 'Boxing fitness', tennis: 'Tennis', cycling: 'Cycling',
-    chess: 'Chess', books: 'Book club', meditation: 'Meditation', painting: 'Painting & sketching', pottery: 'Pottery' };
+    chess: 'Chess', books: 'Book club', meditation: 'Meditation', painting: 'Painting & sketching', pottery: 'Pottery',
+    language: 'Language exchange', writing: 'Writing circle', games: 'Board games', photo: 'Photography walks', music: 'Music & choir', calligraphy: 'Arabic calligraphy', dance: 'Dance', squash: 'Squash' };
   // Three pillars on the first screen. Every category belongs to one; yoga sits in Body for now.
   const PILLARS = {
-    mind: { name: 'Mind', line: 'Think, focus, unwind', sports: ['chess', 'books', 'meditation'] },
-    body: { name: 'Body', line: 'Move, play, sweat', sports: ['running', 'padel', 'tennis', 'football', 'futsal', 'basketball', 'volleyball', 'cycling', 'boxing', 'yoga'] },
-    soul: { name: 'Soul', line: 'Make, create, express', sports: ['painting', 'pottery'] }
+    mind: { name: 'Mind', line: 'Think, focus, unwind', sports: ['chess', 'books', 'meditation', 'language', 'writing', 'games'] },
+    body: { name: 'Body', line: 'Move, play, sweat', sports: ['running', 'padel', 'tennis', 'squash', 'football', 'futsal', 'basketball', 'volleyball', 'cycling', 'boxing', 'yoga'] },
+    soul: { name: 'Soul', line: 'Make, create, express', sports: ['dance', 'painting', 'pottery', 'calligraphy', 'photo', 'music'] }
   };
   const pillarOf = (sport) => Object.keys(PILLARS).find((k) => PILLARS[k].sports.includes(sport));
   const LEVELS = { new: 'New to it', some: 'Some experience', regular: 'Regular' };
@@ -30,7 +31,7 @@
   const DAYL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PEOPLE = ['Layla H.', 'Omar S.', 'Sana K.', 'Jonas P.', 'Mei L.', 'Farah A.', 'Tom R.', 'Aisha N.', 'Diego M.', 'Priya V.', 'Hassan B.', 'Chloe D.', 'Ravi T.', 'Noor E.', 'Sam W.', 'Yuki O.', 'Maria G.', 'Khalid Z.', 'Anna F.', 'Luca C.', 'Zara I.', 'Ben J.', 'Reem Q.', 'Ivan U.'];
-  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', boxing: 'class', tennis: 'session', cycling: 'ride', chess: 'games night', books: 'book night', meditation: 'sit', painting: 'studio', pottery: 'class' };
+  const NOUN = { running: 'run', padel: 'padel', yoga: 'session', volleyball: 'volleyball', basketball: 'game', football: 'game', futsal: '5-a-side', boxing: 'class', tennis: 'session', cycling: 'ride', chess: 'games night', books: 'book night', meditation: 'sit', painting: 'studio', pottery: 'class', language: 'exchange', writing: 'circle', games: 'games night', photo: 'walk', music: 'session', calligraphy: 'class', dance: 'class', squash: 'game' };
 
   // Stock photos from Unsplash, loaded from their servers. They stand in for members' photos.
   // Most sports, and the social and creative clubs, use free Unsplash photos by page ID (~), which
@@ -58,6 +59,7 @@
   const CLUBS = [
     { id: 'mdr', name: 'Marina Dawn Runners', sport: 'running', area: 'Marina', levels: ['new', 'some', 'regular'], price: 0, level: 'Pace groups from 5:00 to 7:00 per km', photos: 3, confirmed: 4,
       desc: 'Three early runs a week along Marina Walk, with a slow group that nobody gets dropped from. Coffee after on Saturdays.', bring: 'Water. Lights are on along the route.',
+      amen: ['Parking', 'Water', 'Toilets'],
       sched: [{ d: 2, t: '05:45', type: 'Intervals', note: 'All paces', place: 'Marina Walk, by Pier 7' }, { d: 4, t: '05:45', type: '5 km easy', note: '6:30–7:00 per km', place: 'Marina Walk, by Pier 7' }, { d: 6, t: '06:30', type: 'Long run', note: '10–16 km', place: 'Marina Walk, by Pier 7' }],
       top: [['Layla H.', 12], ['Omar S.', 11], ['Sana K.', 9], ['Jonas P.', 8], ['Mei L.', 8]], active: 41 },
     { id: 'pbr', name: 'Palm Boardwalk Run Crew', sport: 'running', area: 'Palm', levels: ['some', 'regular'], price: 0, level: '5:00–6:00 per km', photos: 3, confirmed: 9,
@@ -74,6 +76,7 @@
       top: [['Mei L.', 12], ['Tom R.', 9]], active: 29 },
     { id: 'jps', name: 'JVC Padel Social', sport: 'padel', area: 'JVC', levels: ['new', 'some'], price: 60, priceFor: 'court share', level: 'Beginner to lower intermediate', photos: 3, confirmed: 5,
       desc: 'Rotating doubles so you play with everyone. Come alone; partners are mixed on the night.', bring: 'A racket if you have one. Spares are available.',
+      amen: ['Parking', 'Changing room', 'Showers', 'Water'],
       sched: [{ d: 0, t: '19:00', type: 'Social mixer', note: 'Mixed level', place: 'JVC Community Courts, court 3', cap: 16 }, { d: 3, t: '20:00', type: 'Beginner night', note: 'New players', place: 'JVC Community Courts, court 3', cap: 12 }],
       top: [['Diego M.', 11], ['Aisha N.', 10], ['Sana K.', 8]], active: 38 },
     { id: 'jpm', name: 'Jumeirah Padel Mixers', sport: 'padel', area: 'Jumeirah', levels: ['some', 'regular'], price: 70, priceFor: 'court share', level: 'Intermediate', photos: 2, confirmed: 12, fullNext: true,
@@ -86,6 +89,7 @@
       top: [['Farah A.', 10], ['Priya V.', 7]], active: 19 },
     { id: 'kbf', name: 'Kite Beach Sunrise Flow', sport: 'yoga', area: 'Jumeirah', levels: ['new', 'some', 'regular'], price: 0, level: 'Open level', photos: 3, confirmed: 3,
       desc: 'An hour of yoga on the sand as the sun comes up. Bring a towel if you do not have a mat.', bring: 'Mat or towel, water.',
+      amen: ['Parking', 'Toilets', 'Showers', 'Bag drop'],
       sched: [{ d: 6, t: '06:45', type: 'Sunrise flow', note: 'Open level', place: 'Kite Beach, north end by the showers' }, { d: 3, t: '06:30', type: 'Stretch and breathe', note: 'Gentle', place: 'Kite Beach, north end by the showers' }],
       top: [['Aisha N.', 12], ['Mei L.', 11], ['Sana K.', 8]], active: 35 },
     { id: 'mpp', name: 'Marina Mat Pilates in the Park', sport: 'yoga', area: 'Marina', levels: ['new', 'some'], price: 20, priceFor: 'towards the instructor', level: 'Beginner friendly', photos: 2, confirmed: 71, ladies: true,
@@ -158,6 +162,7 @@
       top: [['Sam W.', 9], ['Yuki O.', 7]], active: 17 },
     { id: 'jlr', name: 'Jumeirah Ladies Run Club', sport: 'running', area: 'Jumeirah', levels: ['new', 'some', 'regular'], price: 0, level: 'Walk-run to 6:00 per km', photos: 3, confirmed: 3, venue: 'Outdoor', ladies: true,
       desc: 'A women-only run club with a walk-run group, so nobody runs alone. Coffee together after every session.', bring: 'Water. Lockers at the beach club for a small fee.',
+      ask: true, askQ: 'Tell us a little about yourself and your running',
       sched: [{ d: 1, t: '06:00', type: '5 km easy', note: 'All paces', place: 'Jumeirah Beach Road, by Sunset Mall' }, { d: 4, t: '18:30', type: 'Sunset 5 km', note: 'All paces', place: 'Jumeirah Beach Road, by Sunset Mall' }],
       top: [['Sana K.', 12], ['Aisha N.', 10], ['Noor E.', 8]], active: 33 },
     { id: 'dlp', name: 'Dubai Hills Ladies Padel', sport: 'padel', area: 'Dubai Hills', levels: ['new', 'some'], price: 50, priceFor: 'court share', level: 'Beginner and improver doubles', photos: 2, confirmed: 5, venue: 'Indoor', ladies: true,
@@ -190,14 +195,17 @@
       top: [['Anna F.', 9], ['Reem Q.', 8]], active: 19 },
     { id: 'ksm', name: 'Kite Beach Sunrise Meditation', sport: 'meditation', area: 'Jumeirah', levels: ['new', 'some'], price: 0, level: 'No experience needed', photos: 2, confirmed: 4, venue: 'Outdoor',
       desc: 'Thirty minutes of guided meditation on the sand before the city wakes up, then tea. Sit on a mat, a towel or a chair.', bring: 'A mat or towel. Tea is provided.',
-      sched: [{ d: 5, t: '06:15', type: 'Guided sit', note: '30 minutes', place: 'Kite Beach, by the lifeguard tower', cap: 30 }, { d: 0, t: '06:15', type: 'Breathwork and sit', note: '40 minutes', place: 'Kite Beach, by the lifeguard tower', cap: 30 }],
+      amen: ['Parking', 'Toilets', 'Shade'],
+      sched: [{ d: 5, t: '06:15', type: 'Guided sit', len: 30, note: 'All levels', place: 'Kite Beach, by the lifeguard tower', cap: 30 }, { d: 0, t: '06:15', type: 'Breathwork and sit', len: 45, note: 'Some breathwork first', place: 'Kite Beach, by the lifeguard tower', cap: 30 }],
       top: [['Zara I.', 11], ['Hassan B.', 7]], active: 34 },
     { id: 'dos', name: 'Downtown Open Studio', sport: 'painting', area: 'Downtown', levels: ['new', 'some', 'regular'], price: 150, priceFor: 'canvas, paints and coffee', level: 'Never painted is fine', photos: 2, confirmed: 6, venue: 'Indoor', pay: 'ziina',
       desc: 'An open studio evening with a short demo, then everyone paints their own piece. An artist walks round and helps.', bring: 'Clothes you can get paint on.',
+      amen: ['Parking', 'Toilets', 'Water'],
       sched: [{ d: 4, t: '19:00', type: 'Open studio', note: 'Acrylics this month', place: 'Downtown studio space, level 2', cap: 14 }],
       top: [['Chloe D.', 8], ['Maria G.', 6]], active: 22 },
     { id: 'jcc', name: 'JVC Clay Collective', sport: 'pottery', area: 'JVC', levels: ['new', 'some'], price: 180, priceFor: 'clay, glazing and firing', level: 'Beginners on the wheel', photos: 2, confirmed: 4, venue: 'Indoor', pay: 'ziina',
       desc: 'Two hours on the wheel with a potter guiding a small group. Your pieces are glazed and fired, ready to collect in two weeks.', bring: 'Short nails help. Aprons provided.',
+      amen: ['Parking', 'Toilets'],
       sched: [{ d: 6, t: '15:00', type: 'Wheel class', note: 'Beginners', place: 'JVC community studio', cap: 8 }, { d: 1, t: '19:00', type: 'Open practice', note: 'Some experience', place: 'JVC community studio', cap: 8 }],
       top: [['Mei L.', 7], ['Noor E.', 5]], active: 16 },
     { id: 'ssw', name: 'Saadiyat Sketch Walk', sport: 'painting', area: 'Saadiyat', levels: ['new', 'some', 'regular'], price: 0, level: 'All levels; just bring a pencil', photos: 2, confirmed: 3, venue: 'Outdoor',
@@ -206,8 +214,91 @@
       top: [['Luca C.', 6], ['Aisha N.', 5]], active: 14 },
     { id: 'ccc', name: 'Corniche Chess Club', sport: 'chess', area: 'Corniche', levels: ['some', 'regular'], price: 0, level: 'Know the rules; rated players welcome', photos: 2, confirmed: 4, venue: 'Indoor',
       desc: 'Weekly blitz and longer games, with a short lesson for improvers first.', bring: 'Nothing.',
+      ask: true, askQ: 'Roughly what is your rating, if you have one?',
       sched: [{ d: 3, t: '20:00', type: 'Blitz night', note: '5 minutes a side', place: 'Corniche café, back room', cap: 20 }],
-      top: [['Khalid Z.', 9], ['Ivan U.', 6]], active: 18 }
+      top: [['Khalid Z.', 9], ['Ivan U.', 6]], active: 18 },
+    { id: 'dlx', name: 'Downtown Language Exchange', sport: 'language', area: 'Downtown', levels: ['new', 'some', 'regular'], price: 0, level: 'Any language, any level', photos: 0, confirmed: 2, venue: 'Indoor',
+      desc: 'Tables by language: Arabic, English, French, Spanish and more. Speak the one you are learning, help with the one you know, and swap tables every 20 minutes.', bring: 'Nothing. Buy a drink if you like.',
+      sched: [{ d: 2, t: '19:30', type: 'Language tables', note: 'All levels', place: 'Boulevard café, terrace room', cap: 40 }],
+      top: [['Sofia R.', 9], ['Karim A.', 7]], active: 36 },
+    { id: 'rlc', name: 'Al Reem Language Café', sport: 'language', area: 'Al Reem Island', levels: ['new', 'some'], price: 0, level: 'Beginners welcome', photos: 0, confirmed: 5, venue: 'Indoor',
+      desc: 'An easy Saturday morning of Arabic and English conversation, with a native speaker hosting each table.', bring: 'Nothing.',
+      sched: [{ d: 6, t: '10:30', type: 'Arabic and English tables', note: 'Beginners welcome', place: 'Reem Mall, food hall café', cap: 30 }],
+      top: [['Elena V.', 6], ['Tariq M.', 5]], active: 21 },
+    { id: 'mwc', name: 'Marina Writing Circle', sport: 'writing', area: 'Marina', levels: ['new', 'some', 'regular'], price: 30, priceFor: 'coffee and the room', level: 'Never written is fine', photos: 0, confirmed: 3, venue: 'Indoor',
+      desc: 'Short prompts, quiet writing time, then reading aloud if you want to. Fiction, poems, journals, anything goes.', bring: 'A notebook or a laptop.',
+      sched: [{ d: 4, t: '19:00', type: 'Prompt night', note: 'All levels', place: 'Marina Walk café, upstairs room', cap: 14 }],
+      top: [['Hannah P.', 8], ['Faisal K.', 6]], active: 17 },
+    { id: 'jbg', name: 'JVC Board Game Night', sport: 'games', area: 'JVC', levels: ['new', 'some', 'regular'], price: 25, priceFor: 'table and a drink', level: 'We teach every game', photos: 0, confirmed: 2, venue: 'Indoor', pay: 'ziina',
+      desc: 'Over 100 games on the shelves and hosts who teach them. Come alone and you will be seated at a table that needs players.', bring: 'Nothing.',
+      sched: [{ d: 5, t: '19:30', type: 'Games night', note: 'All levels', place: 'JVC community centre, hall B', cap: 36 }, { d: 0, t: '16:00', type: 'Family games', note: 'Kids welcome', place: 'JVC community centre, hall B', cap: 30 }],
+      top: [['Ben W.', 10], ['Layla H.', 8], ['Raj S.', 6]], active: 41 },
+    { id: 'hcp', name: 'Dubai Hills Chess in the Park', sport: 'chess', area: 'Dubai Hills', levels: ['new', 'some'], price: 0, level: 'Know how the pieces move', photos: 2, confirmed: 3, venue: 'Outdoor',
+      desc: 'Boards out under the trees on Saturday evenings. Casual games, and a coach shows beginners one idea each week.', bring: 'A board if you have one. We bring ten.',
+      sched: [{ d: 6, t: '17:30', type: 'Casual games', note: 'Beginners welcome', place: 'Dubai Hills Park, by the amphitheatre', cap: 30 }],
+      top: [['Ahmed F.', 7], ['Priya N.', 6]], active: 23 },
+    { id: 'dnf', name: 'Downtown Non-Fiction Club', sport: 'books', area: 'Downtown', levels: ['new', 'some', 'regular'], price: 0, level: 'Read the book, or come anyway', photos: 2, confirmed: 4, venue: 'Indoor',
+      desc: 'One non-fiction book a month: history, science, business or memoir. Members vote on the next pick.', bring: 'The book, if you have it.',
+      sched: [{ d: 1, t: '19:30', type: 'Book night', note: 'This month: a memoir', place: 'Downtown library, meeting room 2', cap: 20 }],
+      top: [['Omar S.', 8], ['Claire B.', 7]], active: 18 },
+    { id: 'hsb', name: 'Hills Sound Bath', sport: 'meditation', area: 'Dubai Hills', levels: ['new', 'some'], price: 60, priceFor: 'mats, blankets and the sound bath', level: 'No experience needed', photos: 2, confirmed: 2, venue: 'Indoor', pay: 'ziina',
+      desc: 'Lie down, close your eyes and let the gongs and bowls do the work. A short breathing practice first, tea after.', bring: 'Comfortable clothes. Mats provided.',
+      amen: ['Parking', 'Changing room', 'Water'],
+      sched: [{ d: 0, t: '19:30', type: 'Sound bath', len: 60, note: 'All levels', place: 'Dubai Hills studio, level 1', cap: 20 }],
+      top: [['Nadia S.', 6], ['Jack T.', 4]], active: 19 },
+    { id: 'mph', name: 'Marina Golden Hour Photo Walk', sport: 'photo', area: 'Marina', levels: ['new', 'some', 'regular'], price: 0, level: 'Phone cameras welcome', photos: 0, confirmed: 3, venue: 'Outdoor',
+      desc: 'A slow walk along the water at golden hour with one photo idea to try each week. Share your best shot in the club album after.', bring: 'A phone or a camera.',
+      sched: [{ d: 5, t: '16:45', type: 'Golden hour walk', note: 'About 90 minutes', place: 'Marina Walk, by Pier 7', cap: 25 }],
+      top: [['Yuki O.', 7], ['Daniel M.', 5]], active: 22 },
+    { id: 'cph', name: 'Corniche Photo Walk', sport: 'photo', area: 'Corniche', levels: ['new', 'some'], price: 0, level: 'All levels', photos: 0, confirmed: 6, venue: 'Outdoor',
+      desc: 'Early Saturday walks along the Corniche, then coffee and a look through everyone\'s photos.', bring: 'A phone or a camera, and water.',
+      sched: [{ d: 6, t: '07:00', type: 'Morning walk', note: 'About 2 hours', place: 'Corniche, by the Heritage Park gate', cap: 20 }],
+      top: [['Salma A.', 6], ['Tom H.', 4]], active: 13 },
+    { id: 'jch', name: 'Jumeirah Community Choir', sport: 'music', area: 'Jumeirah', levels: ['new', 'some', 'regular'], price: 30, priceFor: 'the rehearsal room and sheet music', level: 'No auditions, no reading music needed', photos: 0, confirmed: 2, venue: 'Indoor', pay: 'ziina',
+      desc: 'Pop, soul and a bit of Arabic music, learned by ear in parts. Two concerts a year for anyone who wants to sing in them.', bring: 'Water.',
+      sched: [{ d: 1, t: '19:30', type: 'Rehearsal', note: 'All voices', place: 'Jumeirah community hall, main room', cap: 45 }],
+      top: [['Grace O.', 11], ['Hassan B.', 8], ['Meera K.', 7]], active: 38 },
+    { id: 'jaj', name: 'JVC Acoustic Jam', sport: 'music', area: 'JVC', levels: ['some', 'regular'], price: 0, level: 'Play a few songs on something', photos: 0, confirmed: 4, venue: 'Indoor',
+      desc: 'Guitars, ukuleles, a cajón and whoever wants to sing. We pass round the song choice, then open mic for the last half hour.', bring: 'Your instrument. Spare guitar there.',
+      ask: true, askQ: 'What do you play?',
+      sched: [{ d: 3, t: '20:00', type: 'Jam and open mic', note: 'Some experience', place: 'JVC café, back garden', cap: 20 }],
+      top: [['Marco L.', 7], ['Zainab R.', 5]], active: 16 },
+    { id: 'dac', name: 'Downtown Arabic Calligraphy', sport: 'calligraphy', area: 'Downtown', levels: ['new', 'some'], price: 120, priceFor: 'reed pens, ink and paper', level: 'Complete beginners', photos: 0, confirmed: 3, venue: 'Indoor', pay: 'ziina',
+      desc: 'A calligrapher teaches the basic strokes of the Naskh script with a reed pen. By the end you write a word of your choice to take home.', bring: 'Nothing. Clothes you don\'t mind getting ink on.',
+      sched: [{ d: 6, t: '11:00', type: 'Beginners class', note: 'Naskh script', place: 'Downtown studio space, level 2', cap: 10 }],
+      top: [['Fatima Q.', 6], ['Ella J.', 5]], active: 15 },
+    { id: 'kcc', name: 'Khalifa City Calligraphy Circle', sport: 'calligraphy', area: 'Khalifa City', levels: ['some', 'regular'], price: 80, priceFor: 'ink and paper', level: 'Some practice', photos: 0, confirmed: 5, venue: 'Indoor',
+      desc: 'A relaxed evening of practice with a teacher going round the table. Bring work in progress or start something new.', bring: 'Your own pens if you have them.',
+      sched: [{ d: 2, t: '19:00', type: 'Practice circle', note: 'Some experience', place: 'Khalifa City community centre, room 4', cap: 12 }],
+      top: [['Yousef H.', 7], ['Anna F.', 4]], active: 11 },
+    { id: 'pwm', name: 'Palm Watercolour Mornings', sport: 'painting', area: 'Palm', levels: ['new', 'some'], price: 90, priceFor: 'paper, paints and coffee', level: 'Never painted is fine', photos: 2, confirmed: 2, venue: 'Outdoor',
+      desc: 'Paint the sea and the skyline in watercolour, outside before it gets hot. An artist demonstrates, then helps each person.', bring: 'A hat and water.',
+      sched: [{ d: 0, t: '07:30', type: 'Watercolour morning', note: 'Beginners', place: 'Palm West Beach, by the boardwalk steps', cap: 12 }],
+      top: [['Chloe D.', 5], ['Rania T.', 4]], active: 12 },
+    { id: 'mcs', name: 'Mirdif Clay Studio', sport: 'pottery', area: 'Mirdif', levels: ['new', 'some'], price: 160, priceFor: 'clay, glazing and firing', level: 'Beginners on the wheel', photos: 2, confirmed: 4, venue: 'Indoor', pay: 'ziina',
+      desc: 'Hand-building and wheel throwing in a small group with a potter. Pieces are fired and ready two weeks later.', bring: 'Short nails help. Aprons provided.',
+      sched: [{ d: 3, t: '19:00', type: 'Hand-building', note: 'Beginners', place: 'Mirdif arts centre, studio 3', cap: 10 }, { d: 6, t: '10:00', type: 'Wheel class', note: 'Beginners', place: 'Mirdif arts centre, studio 3', cap: 8 }],
+      top: [['Sara L.', 6], ['Aditya P.', 5]], active: 18 },
+    { id: 'mss', name: 'Marina Salsa Social', sport: 'dance', area: 'Marina', levels: ['new', 'some', 'regular'], price: 50, priceFor: 'beginner lesson and the social', level: 'Come alone, no partner needed', photos: 0, confirmed: 2, venue: 'Indoor', pay: 'ziina',
+      desc: 'A 45-minute beginner lesson, then the floor opens for a social. Partners rotate, so you will dance with everyone.', bring: 'Shoes that turn easily. No trainers with grip.',
+      find: 'Upstairs, follow the music', amen: ['Parking', 'Toilets', 'Water'],
+      sched: [{ d: 4, t: '20:00', type: 'Lesson and social', len: 180, note: 'All levels', place: 'Marina hotel ballroom, level 1', cap: 70 }],
+      top: [['Lucia M.', 12], ['Sami K.', 9], ['Tara J.', 8]], active: 64 },
+    { id: 'jbb', name: 'JVC Bachata Beginners', sport: 'dance', area: 'JVC', levels: ['new'], price: 70, priceFor: 'class with a teacher', level: 'Complete beginners', photos: 0, confirmed: 3, venue: 'Indoor', pay: 'ziina',
+      desc: 'A four-week beginner course that repeats each month. Join any week; the teacher catches you up.', bring: 'Water and comfortable shoes.',
+      amen: ['Parking', 'Changing room', 'Water'],
+      sched: [{ d: 1, t: '19:30', type: 'Beginner class', note: 'No experience', place: 'JVC dance studio, Circle Mall level 2', cap: 24 }],
+      top: [['Joelle P.', 6], ['Imran D.', 5]], active: 22 },
+    { id: 'jld', name: 'Jumeirah Ladies Dance Workout', sport: 'dance', area: 'Jumeirah', levels: ['new', 'some'], ladies: true, price: 45, priceFor: 'the class', level: 'All fitness levels', photos: 0, confirmed: 4, venue: 'Indoor',
+      desc: 'An hour of easy-to-follow routines to Arabic pop, Afrobeats and Latin music. A women-only studio with the blinds down.', bring: 'Trainers and water.',
+      amen: ['Parking', 'Changing room', 'Lockers', 'Showers'],
+      sched: [{ d: 0, t: '10:00', type: 'Dance workout', note: 'All levels', place: 'Jumeirah ladies studio, Al Wasl Road', cap: 25 }, { d: 3, t: '18:30', type: 'Dance workout', note: 'All levels', place: 'Jumeirah ladies studio, Al Wasl Road', cap: 25 }],
+      top: [['Hala S.', 10], ['Dina R.', 8]], active: 31 },
+    { id: 'dsq', name: 'Dubai Hills Squash Ladder', sport: 'squash', area: 'Dubai Hills', levels: ['some', 'regular'], price: 40, priceFor: 'court share', level: 'You can rally', photos: 0, confirmed: 3, venue: 'Indoor', pay: 'ziina',
+      desc: 'A weekly ladder: play three short matches against people near your level and move up or down. New players start in the middle.', bring: 'Non-marking shoes and eye protection. Rackets to borrow.',
+      amen: ['Parking', 'Changing room', 'Showers', 'Lockers'],
+      sched: [{ d: 2, t: '19:30', type: 'Ladder night', note: 'Some experience', place: 'Dubai Hills squash courts', cap: 16 }],
+      top: [['Hannah P.', 9], ['Imran D.', 6]], active: 20 }
   ];
   // Indoor or outdoor. Padel venues vary; everything else listed before these sports meets outdoors.
   const VENUE = { jps: 'Indoor', jpm: 'Outdoor', mpb: 'Indoor and outdoor' };
@@ -230,7 +321,7 @@
   ];
 
   const fresh = () => ({ user: null, quiz: {}, rsvps: [], follows: [], att: {}, streak: 0, longest: 0, total: 0, weekDone: false, prot: true, sinceProt: 0, badges: [], posts: {}, untag: {}, offset: 0, clubWeeks: {}, set: { standings: true, tagging: true, email: true, wa: false }, note: '',
-    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '', thanks: {}, nudged: {} });
+    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '', thanks: {}, nudged: {}, ev: {}, myEvents: [], evRate: {}, reviews: {}, replies: {}, joinReq: {}, clubReqs: {}, games: [], gameSt: {} });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
   // Drop saved references to clubs and sports that have since been removed from the prototype.
@@ -252,7 +343,7 @@
   let toastTimer = null;
   let proDraft = null; // what was typed in Edit profile when the sheet was dismissed without saving
   let offline = typeof navigator !== 'undefined' && navigator.onLine === false;
-  let filt = { pillar: '', sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' };
+  let filt = { pillar: '', sport: '', area: '', day: '', time: '', level: '', price: '', venue: '', who: '' };
 
   // ---------- helpers ----------
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -315,6 +406,15 @@
     meditation: '<circle cx="12" cy="5.5" r="2"/><path d="M12 8v5M5 18.5c1.5-3.5 4-5.5 7-5.5s5.5 2 7 5.5M8.5 13.5 6 11M15.5 13.5 18 11M4 20.5h16"/>',
     painting: '<path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.3 0 1.8-1 1.4-2-.5-1.3.4-2.5 1.8-2.5H18a2.5 2.5 0 0 0 2.5-2.5c0-5.5-3.8-10-8.5-10z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7.5" r="1.2"/><circle cx="15" cy="8" r="1.2"/>',
     pottery: '<path d="M9 3.5h6M10 3.5c0 2-3.5 3-3.5 7.5 0 4.5 2.5 8.5 5.5 9.5 3-1 5.5-5 5.5-9.5 0-4.5-3.5-5.5-3.5-7.5M7 12h10"/>',
+    squash: '<ellipse cx="9" cy="8.5" rx="4.5" ry="5.5"/><path d="m12 12.6 6.5 7.9M6.5 6.5l5 4M6 9.5l5.5-2"/><circle cx="18.5" cy="5.5" r="1.6"/>',
+    star: '<path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/>',
+    dance: '<circle cx="13.5" cy="4.5" r="2"/><path d="m13 7.5-2.5 5.5 3 3.5v4.5M10.5 13l-4.5 1.5-1.5-2M13 8.5l3.5 3 3.5-2M10.5 13l-2 7.5"/>',
+    language: '<path d="M3.5 5h10v7H8l-3.5 3v-3h-1z"/><path d="M16.5 9h4v7h-1v3l-3.5-3H11v-1.5"/>',
+    writing: '<path d="M4.5 19.5h3.8L19 8.8a2.2 2.2 0 0 0-3.1-3.1L5.2 16.4z"/><path d="m14.3 7.3 3.1 3.1M12.5 19.5h7"/>',
+    games: '<rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="8.6" cy="8.6" r=".9"/><circle cx="15.4" cy="8.6" r=".9"/><circle cx="12" cy="12" r=".9"/><circle cx="8.6" cy="15.4" r=".9"/><circle cx="15.4" cy="15.4" r=".9"/>',
+    photo: '<path d="M3.5 8h3.3l1.7-2.5h7L17.2 8h3.3v11h-17z"/><circle cx="12" cy="13.3" r="3.4"/>',
+    music: '<path d="M9 17.5V6l10-2v11.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="15.5" r="2.5"/>',
+    calligraphy: '<path d="M3.5 18.5c2.8-.6 4.6-3.5 7.6-3.5 2.6 0 2.9 2.5 5 2.5 1.6 0 2.8-.9 3.9-1.9"/><path d="m14.5 3.5 4 4-6 6-3.2-.8-.8-3.2z"/>',
     // sports
     running: '<path d="M3 16.5h15.5a2.5 2.5 0 0 0 2.5-2.5c0-1-.9-1.6-2-1.8l-4.6-1-2.4-4.2H8L6.5 9.5 3 10z"/><path d="M3 19.5h18"/>',
     padel: '<ellipse cx="10" cy="9" rx="5.5" ry="6"/><path d="m13.6 13.6 5.4 6.4"/><circle cx="18.5" cy="5.5" r="1.6"/>',
@@ -406,6 +506,14 @@
     books: ['Half of us loved it, half did not. Great night.', 'Next month\'s pick was a close vote.', 'Four first-timers, all coming back.', 'We talked about the ending for an hour.'],
     meditation: ['The sea was the only sound.', 'Sunrise halfway through.', 'Tea and quiet chat after.', 'Eight first-timers today.'],
     painting: ['Everyone left with something they liked.', 'Ten very different sunsets.', 'Messy hands, calm heads.', 'First painting for half the room.'],
+    squash: ['Ladder moved up three places tonight.', 'Five-game thriller on court 2.', 'New players won their first rallies.', 'Cold water never tasted better.'],
+    dance: ['Beginners were dancing by the second song.', 'Swapped partners every few minutes.', 'Social ran until midnight.', 'Twenty new faces on the floor.'],
+    language: ['Arabic table was full all night.', 'Someone ordered dinner in Spanish. Success.', 'Twelve languages in one café.', 'Swapped tables every 20 minutes.'],
+    writing: ['Three people read their piece out for the first time.', 'Ten minutes, one prompt, very different stories.', 'Quiet pens, loud laughs after.', 'New faces brought poems.'],
+    games: ['Catan went past midnight.', 'Newcomers won the quiz round.', 'Six tables, nobody left early.', 'Someone finally beat the host.'],
+    photo: ['Golden hour lasted exactly 14 minutes.', 'Same street, twenty different photos.', 'Phones and cameras both welcome.', 'Best shots go on the club page.'],
+    music: ['Four-part harmony on the second try.', 'Two new voices in the altos.', 'Open mic ran long. Nobody minded.', 'Learned a new song start to finish.'],
+    calligraphy: ['First letters wobbly, last ones lovely.', 'Ink everywhere. Worth it.', 'Everyone wrote their own name by the end.', 'Thuluth is harder than it looks.'],
     pottery: ['Three bowls, one mug, many attempts.', 'Centring is harder than it looks.', 'Pieces from last week came out of the kiln.', 'Clay everywhere. Worth it.']
   };
   const captionFor = (s) => { const a = CAPS[s.club.sport] || CAPS.running; return a[hash(s.id) % a.length]; };
@@ -462,9 +570,41 @@
     const head = c.photos && lead ? `<span class="ph g${lead.g}"${im(lead.sp, lead.i)}></span>` : `<span class="fallback"><span class="cap">${SPORTS[c.sport]} · ${c.area}</span></span>`;
     return `<div class="card"><button class="card-main" data-act="club" data-id="${c.id}"><span class="card-head">${head}<span class="loc-chip">${ic('pin')}${esc(fullPlace(c))}</span></span><span class="body">
       <span class="disp" style="font-size:14px;font-weight:700">${esc(c.name)}</span>
-      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}</span>${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}`}
-      <span class="sm">${n ? `Next: ${dayWord(n.at)} · ${n.t} · ${going(n)} going` : 'No session scheduled'}</span>
-    </span><span class="card-go" aria-hidden="true">${ic('chev')}</span></button></div>`;
+      ${why ? `<span class="why sm">${why}</span>` : `<span class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${esc(c.venue)} · ${priceShort(c)}${LATER() && reviewsOf(c).n >= 3 ? ` · ★ ${reviewsOf(c).avg.toFixed(1)} (${reviewsOf(c).n})` : ''}</span>${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}${c.ask ? '<span class="tag">Ask to join</span>' : ''}`}
+      <span class="sm">${n ? (cardTimes(c) ? `${going(n)} going to the next one` : `Next: ${dayWord(n.at)} · ${n.t} · ${going(n)} going`) : 'No session scheduled'}</span>
+    </span><span class="card-go" aria-hidden="true">${ic('chev')}</span></button>${cardTimes(c)}</div>`;
+  }
+  // Up to three sessions in the next week as buttons, so a member can go straight to booking from a list.
+  function cardTimes(c) {
+    const list = future(c).filter((s) => !isCancelled(s) && s.at - now() < 7 * 864e5).slice(0, 3);
+    if (!list.length) return '';
+    return `<div class="ctimes" role="group" aria-label="Next sessions at ${esc(c.name)}">${list.map((s) => `<button class="ctime${has(s.id) ? ' go' : isFull(s) ? ' full' : ''}" data-act="session" data-id="${s.id}"><b>${whenShort(s.at)}</b> ${s.t}${has(s.id) ? ' · going' : isFull(s) ? ' · full' : ''}</button>`).join('')}</div>`;
+  }
+  // How long a session lasts. Hosts can set it per session; otherwise a typical length for the sport.
+  const AMEN = ['Parking', 'Toilets', 'Water', 'Shade', 'Changing room', 'Showers', 'Lockers', 'Bag drop', 'Prayer room'];
+  const LEN = { running: 60, padel: 90, yoga: 60, volleyball: 90, basketball: 90, football: 90, futsal: 60, boxing: 60, tennis: 90, cycling: 120, chess: 120, books: 90, meditation: 45, dance: 60, squash: 60, language: 90, writing: 90, games: 150, photo: 120, music: 90, calligraphy: 90, painting: 120, pottery: 120 };
+  const lenOf = (s) => Number(s.len) || LEN[s.club.sport] || 60;
+  const endTime = (s) => { const e = new Date(s.at.getTime() + lenOf(s) * 6e4); return `${String(e.getHours()).padStart(2, '0')}:${String(e.getMinutes()).padStart(2, '0')}`; };
+  // Club page schedule: a strip of the next 14 days, then the sessions grouped by day, each with start time and length.
+  // Today is always listed so a member can see there is nothing left today; other empty days are dimmed in the strip.
+  function schedule(c) {
+    const n = now(); const list = future(c);
+    const days = Array.from({ length: 14 }, (_, i) => { const d = new Date(n.getFullYear(), n.getMonth(), n.getDate() + i); const key = ymd(d); return { d, key, list: list.filter((s) => ymd(s.at) === key) }; });
+    const label = (x, i) => (i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : `${DAY[x.d.getDay()]} ${x.d.getDate()}`);
+    const first = days.findIndex((x) => x.list.length);
+    const tabs = days.map((x, i) => `<button class="sdtab${i === first ? ' on' : ''}" data-act="sday" data-val="${x.key}"${x.list.length ? '' : ' disabled'} aria-label="${i < 2 ? label(x, i) : DAYL[x.d.getDay()] + ' ' + x.d.getDate() + ' ' + MON[x.d.getMonth()]}${x.list.length ? '' : ', nothing on'}"><span>${i === 0 ? 'Today' : DAY[x.d.getDay()]}</span><b>${x.d.getDate()}</b></button>`).join('');
+    const row = (s) => {
+      let tag;
+      if (isCancelled(s)) tag = '<span class="tag warn">Cancelled</span>';
+      else if (has(s.id)) tag = `<span class="tag go">${ic('check')}Going</span>`;
+      else if (isFull(s)) tag = '<span class="tag">Full</span>';
+      else tag = needsAsk(c) ? '<span class="tag">Ask first</span>' : `<span class="tag cta">${c.price ? 'Book' : 'Join'}</span>`;
+      const left = s.cap && !isFull(s) && !has(s.id) && s.cap - going(s) <= 5 ? ` · ${plural(s.cap - going(s), 'spot')} left` : '';
+      return `<button class="srow" data-act="session" data-id="${s.id}"><span class="st"><b>${s.t}</b><span class="mut sm">${lenOf(s)} min</span></span>
+        <span class="grow"><b>${esc(s.type)}</b><span class="mut sm">${esc(s.note)} · ${going(s)} going${left}</span></span>${tag}</button>`;
+    };
+    const groups = days.filter((x, i) => i === 0 || x.list.length).map((x) => `<section class="sdgrp" id="sd-${x.key}"><h3>${label(x, days.indexOf(x))}</h3>${x.list.length ? x.list.map(row).join('') : '<p class="mut sm sdnone">Nothing left today</p>'}</section>`).join('');
+    return `<div class="stack tight"><h2>Schedule</h2><div class="sdtabs" role="group" aria-label="Jump to a day">${tabs}</div><div class="sdlist">${groups}</div></div>`;
   }
   const bookLabel = (c) => (c.price ? `Book · AED ${c.price}` : 'Join · Free');
   function sessionRow(s, showClub) {
@@ -472,7 +612,7 @@
     if (isCancelled(s)) tag = '<span class="tag warn">Cancelled</span>';
     else if (has(s.id)) tag = `<span class="tag go">${ic('check')}Going</span>`;
     else if (isFull(s)) tag = '<span class="tag">Full</span>';
-    else tag = `<span class="tag cta">${s.club.price ? 'Book' : 'Join'} ${ic('chev')}</span>`;
+    else tag = needsAsk(s.club) ? '<span class="tag">Ask first</span>' : `<span class="tag cta">${s.club.price ? 'Book' : 'Join'} ${ic('chev')}</span>`;
     return `<button class="item" data-act="session" data-id="${s.id}">
       <span class="when"><b>${whenShort(s.at)}</b><span class="mut sm">${s.t}</span></span>
       <span class="grow"><b>${showClub ? esc(s.club.name) : s.type}</b><br><span class="mut sm">${showClub ? s.type + ' · ' : ''}${s.note}</span></span>${tag}</button>`;
@@ -486,7 +626,7 @@
     const h = hash(name); const first = name.split(' ')[0].toLowerCase();
     return { name, area: AREAS[h % AREAS.length], level: Object.keys(LEVELS)[h % 3], work: WORK[h % WORK.length], hobbies: `${HOBBY[h % HOBBY.length]}, ${HOBBY[(h + 5) % HOBBY.length].toLowerCase()}`, ig: h % 4 === 0 ? '' : `${first}.${['runs', 'moves', 'dxb', 'outdoors'][h % 4]}` };
   };
-  const myPro = () => Object.assign({ photo: '', area: '', level: '', ig: '', work: '', hobbies: '' }, (S.user && S.user.pro) || {});
+  const myPro = () => Object.assign({ photo: '', area: '', level: '', ig: '', li: '', work: '', hobbies: '' }, (S.user && S.user.pro) || {});
   const face = (name, photo, big) => `<span class="av${big ? ' big' : ''}"${photo ? ` style="background-image:url('${photo}')"` : ''} aria-hidden="true">${photo ? '' : initials(name)}</span>`;
   const canSeeWho = (s) => has(s.id) || S.manage.includes(s.club.id);
 
@@ -608,7 +748,7 @@
   // "Book club" becomes "book clubs", "Running" becomes "running clubs".
   const seeAll = (sp) => { const l = SPORTS[sp].toLowerCase(); return / club$/.test(l) ? `${l}s` : `${l} clubs`; };
 
-  const browseList = () => CLUBS.filter((c) => matchQ(c) && (!filt.pillar || pillarOf(c.sport) === filt.pillar) && (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area || (filt.area.startsWith('Anywhere in ') && cityOf(c.area) === filt.area.slice(12))) && (!filt.level || c.levels.includes(filt.level)) && (filt.day === '' || c.sched.some((s) => String(s.d) === filt.day))
+  const browseList = () => CLUBS.filter((c) => matchQ(c) && (!filt.pillar || pillarOf(c.sport) === filt.pillar) && (!filt.sport || c.sport === filt.sport) && (!filt.area || c.area === filt.area || (filt.area.startsWith('Anywhere in ') && cityOf(c.area) === filt.area.slice(12))) && (!filt.level || c.levels.includes(filt.level)) && c.sched.some((s) => (filt.day === '' || String(s.d) === filt.day) && (!filt.time || partOf(s.t) === filt.time))
       && (!filt.who || c.ladies)
       && (!filt.venue || c.venue === filt.venue || c.venue === 'Indoor and outdoor')
       && (!filt.price || (filt.price === 'free' ? isFree(c) : isFree(c) || (aed(c) !== null && aed(c) <= Number(filt.price)))));
@@ -616,7 +756,9 @@
   const norm = (t) => String(t).toLowerCase().normalize('NFD').replace(/[^a-z0-9 ]/g, ' ');
   const matchQ = (c) => { const q = norm(filt.q || '').trim(); if (!q) return true; const hay = norm(`${c.name} ${SPORTS[c.sport]} ${c.sport} ${c.area} ${cityOf(c.area)} ${PILLARS[pillarOf(c.sport)].name}`); return q.split(/\s+/).every((w) => hay.includes(w) || (w.length > 3 && hay.includes(w.slice(0, -1)))); };
   // Filters other than sport: how many are set, for the Filters button badge.
-  const FKEYS = ['area', 'day', 'level', 'price', 'venue', 'who'];
+  const FKEYS = ['area', 'day', 'time', 'level', 'price', 'venue', 'who'];
+  // Morning before 11:00, daytime until 17:00, evening after.
+  const partOf = (t) => { const h = Number(t.slice(0, 2)); return h < 11 ? 'am' : h < 17 ? 'day' : 'pm'; };
   const filtCount = () => FKEYS.filter((k) => filt[k] !== '' && filt[k] != null).length;
   const DAYORDER = [1, 2, 3, 4, 5, 6, 0];
   V.browse = () => {
@@ -642,6 +784,7 @@
     return `<div class="sheet"><h2>Filters</h2>
       <div class="fgroup"><label class="flabel" for="f-area">${ic('pin')}Area</label><select id="f-area" data-filt="area">${opt('', 'Anywhere', filt.area)}${Object.entries(CITIES).map(([city, list]) => `<optgroup label="${city}">${opt(ANY(city), ANY(city), filt.area)}${list.map((a) => opt(a, a, filt.area)).join('')}</optgroup>`).join('')}</select></div>
       ${grp('Day', 'day', 'day', [['', 'Any']].concat(DAYORDER.map((d) => [String(d), DAY[d]])))}
+      ${grp('Time of day', 'sun', 'time', [['', 'Any'], ['am', 'Morning'], ['day', 'Daytime'], ['pm', 'Evening']])}
       ${grp('Level', 'sprout', 'level', [['', 'Any']].concat(Object.entries(LEVELS)))}
       ${grp('Price', 'tag', 'price', [['', 'Any'], ['free', 'Free'], ['50', 'Up to AED 50']])}
       ${grp('Indoor or outdoor', 'indoor', 'venue', [['', 'Either'], ['Indoor', 'Indoor'], ['Outdoor', 'Outdoor']])}
@@ -660,12 +803,11 @@
       : canSeeWho(n) ? whoBtn('who', `See who's going ${when}`, `${plural(going(n) - 1, 'other')} · tap to see their profiles`)
       : whoBtn('who', `See who's going ${when}`, `${people(n, 2).map((p) => p.split(' ')[0]).join(', ')} and ${going(n) - 2} others · say "I'm in" to see profiles`)) : '';
     const recapHtml = recaps.map((s, i) => recap(c, s, i)).join('');
-    // The bottom bar already sells the next session, so the list shows only the ones after it.
-    const later = fut.filter((s) => !n || s.id !== n.id);
     const top = c.top.length ? `<div class="stack tight"><span class="cap">Most consistent · last 12 weeks</span><p class="sm mut">${c.active} members showed up in the last 4 weeks.</p>
       ${S.user ? `<div>${c.top.map((r, i) => `<div class="rank"><b>${i + 1}</b><span>${r[0]}</span><span>${r[1]} weeks</span></div>`).join('')}${S.clubWeeks[c.id] ? `<div class="rank me"><b>·</b><span>You${S.set.standings ? '' : ' (hidden from others)'}</span><span>${plural(S.clubWeeks[c.id], 'week')}</span></div>` : ''}</div>` : '<p class="note">Sign in to see the standings.</p>'}</div>` : '';
     let bar;
-    if (!n) bar = `<div class="info"><b>No session scheduled</b><br><span class="mut sm">Follow to hear when one is added</span></div><button class="btn" data-act="follow" data-id="${c.id}">${following ? 'Following' : 'Follow'}</button>`;
+    if (n && needsAsk(c)) bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">New members ask first</span><span class="det">Session details ${ic('chev')}</span></button>${askBtn(c)}`;
+    else     if (!n) bar = `<div class="info"><b>No session scheduled</b><br><span class="mut sm">Follow to hear when one is added</span></div><button class="btn" data-act="follow" data-id="${c.id}">${following ? 'Following' : 'Follow'}</button>`;
     else if (has(n.id)) bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn quiet" data-act="session" data-id="${n.id}">${ic('check')}You're going</button>`;
     else if (isFull(n)) { const after = future(c).find((s) => s.id !== n.id && !isCancelled(s)); bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">Full · ${n.cap} of ${n.cap}</span><span class="det">Session details ${ic('chev')}</span></button>${after ? `<button class="btn ghost" data-act="session" data-id="${after.id}">See next session</button>` : ''}`; }
     else bar = `<button class="info" data-act="session" data-id="${n.id}"><b>${dayWord(n.at)} · ${n.t}</b><br><span class="mut sm">${n.place}</span><span class="det">Session details ${ic('chev')}</span></button><button class="btn big" data-act="rsvp" data-id="${n.id}">${bookLabel(c)}</button>`;
@@ -673,14 +815,16 @@
     const invite = route.invited && !following ? `<section class="invited"><p class="cap">You're invited</p><h2>Join ${esc(c.name)}</h2><p class="sm">See every session, RSVP in one tap and get a reminder before each one.${n ? ` Next: ${dayWord(n.at)} · ${n.t}.` : ''}</p><button class="btn block big" data-act="follow" data-id="${c.id}">${ic('plus')}Join the club</button></section>` : '';
     return `<main class="flush pad-bar">${invite}${head}
       <div class="stack tight"><h1 style="font-size:21px">${esc(c.name)}</h1><p class="mut sm">${SPORTS[c.sport]} · ${placeOf(c)} · ${priceLong(c)}</p>
-        ${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}
+        ${c.ladies || c.ask ? `<div class="wrap">${c.ladies ? '<span class="tag ladies">Ladies only</span>' : ''}${c.ask ? '<span class="tag">Ask to join</span>' : ''}</div>` : ''}
         <p class="sm runby">${runBy(c)} · ${thanksFor(c)} thanks</p>
         ${(() => { const w = (n || { place: c.sched[0].place }).place; return `<a class="locline" href="${mapsUrl(w, c)}" target="_blank" rel="noopener">${ic('pin')}<span class="grow"><b>${esc(w)}</b><br><span class="mut sm">${esc(fullPlace(c))} · Open in Maps</span></span>${ic('chev', 'chev')}</a>`; })()}
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
+      ${askNote(c)}
       ${who}
       <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
-      <div class="stack tight"><p>${esc(c.desc)}</p><p class="sm mut">${esc(c.level)}. Bring: ${esc(c.bring)}</p></div>
-      ${later.length ? `<div class="stack tight"><h2>Later sessions</h2><div>${later.map((s) => sessionRow(s)).join('')}</div></div>` : ''}
+      <div class="stack tight"><p>${esc(c.desc)}</p><p class="sm mut">${esc(c.level)}. Bring: ${esc(c.bring)}</p>${(c.amen || []).length ? `<p class="amen sm"><b>At the venue</b> ${c.amen.map((a) => `<span class="tag">${esc(a)}</span>`).join('')}</p>` : ''}</div>
+      ${fut.length ? schedule(c) : ''}
+      ${LATER() ? reviewBlock(c) : ''}
       ${LATER() && recapHtml ? `<div class="stack"><h2>Recent sessions</h2>${recapHtml}</div>` : ''}
       ${LATER() ? top : ''}
       <details class="about"><summary>About this club ${ic('chev')}</summary><div class="stack tight sm">
@@ -691,11 +835,229 @@
     </main><div class="bar">${bar}</div>`;
   };
 
+  // ---------- shared-cost games and events (later phase, decisions D40 and D47 to D49) ----------
+  // A member plans something private (a 5-a-side, a yacht day, a games night at home), shares a link, and guests pay
+  // their share into the host's Ziina plus Ryze's flat fee. Two ways to run the money:
+  //   fronted: the host has already paid the venue; guests pay them back.
+  //   collect: the host collects first and books only when the minimum has paid by the pay-by date; otherwise nobody is charged.
+  // Paid means committed: a guest who drops out gets their share back only if someone takes their spot.
+  const EVFEE = 3;
+  const PILLAR_NAMES = { mind: 'Mind', body: 'Body', soul: 'Soul' };
+  const dayIn = (dow, weeks = 0) => { const n = now(); const d = new Date(n.getFullYear(), n.getMonth(), n.getDate()); d.setDate(d.getDate() + ((dow - d.getDay() + 7) % 7 || 7) + weeks * 7); return d; };
+  const minus = (d, days) => { const x = new Date(d); x.setDate(x.getDate() - days); return x; };
+  const ymdToDate = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+  function seedEvents() {
+    const fri = dayIn(5); const sat = dayIn(6, 1); const thu = dayIn(4);
+    return [
+      { id: 'ev5s', title: 'Friday night 5-a-side', pillar: 'body', sport: 'futsal', host: 'Omar S.', date: ymd(fri), t: '20:00', place: 'JVC sports hall, pitch 2', total: 400, people: 10, mode: 'fronted', ask: false,
+        going: ['Jonas P.', 'Ravi T.', 'Karim A.', 'Ben W.', 'Sami K.', 'Imran D.', 'Tom H.'], about: 'Same pitch every Friday. Mixed ability, bibs provided. Omar has booked and paid for the pitch.' },
+      { id: 'evyacht', title: 'Yacht day from Dubai Marina', pillar: 'soul', sport: 'social', host: 'Layla H.', date: ymd(sat), t: '11:00', place: 'Dubai Marina Yacht Club, pier C', total: 3000, people: 12, mode: 'collect', min: 10, payBy: ymd(minus(sat, 4)), ask: true,
+        going: ['Sana K.', 'Mei L.', 'Hannah P.', 'Grace O.', 'Lucia M.', 'Claire B.', 'Yuki O.'], about: 'Four hours on a 60-foot yacht with lunch on board. Layla books it once 10 people have paid. Friends of friends welcome; ask to join.' },
+      { id: 'evgames', title: 'Board games at mine', pillar: 'mind', sport: 'games', host: 'Ravi T.', date: ymd(thu), t: '19:30', place: 'Ravi’s flat, Marina (address sent once you’re in)', total: 160, people: 8, mode: 'fronted', ask: true,
+        going: ['Ben W.', 'Priya N.', 'Ahmed F.'], about: 'Snacks and drinks covered by the share. Catan, Codenames and whatever you bring.' },
+    ];
+  }
+  const allEvents = () => seedEvents().concat(S.myEvents || []);
+  const ev = (id) => allEvents().find((e) => e.id === id);
+  const evMine = (e) => !!e.mine;
+  const evShare = (e) => Math.ceil(e.total / e.people);
+  const evState = (e) => ((S.ev || {})[e.id] || {}).st || '';
+  const evSet = (e, st) => { S.ev = S.ev || {}; S.ev[e.id] = Object.assign({}, S.ev[e.id], { st }); save(); };
+  const evPaid = (e) => e.going.length + (['paid', 'offered'].includes(evState(e)) ? 1 : 0);
+  const evSpots = (e) => e.people - 1; // the host is one of the people
+  const evAt = (e) => { const d = ymdToDate(e.date); const [h, m] = e.t.split(':').map(Number); d.setHours(h, m); return d; };
+
+  // What a host sees about someone before letting them in. Private to hosts: members never see their own or others' ratings.
+  function reliability(name) {
+    const mine = S.user && name === S.user.name;
+    if (mine) { const n = S.total || 0; return { booked: n, came: n, yes: 0, no: 0, reports: 0, isNew: n === 0 }; }
+    const h = hash(name); const booked = 6 + (h % 18);
+    if (name === 'Jonas P.') return { booked: 9, came: 5, yes: 1, no: 2, reports: 0 };
+    return { booked, came: booked - (h % 9 === 0 ? 2 : h % 4 === 0 ? 1 : 0), yes: 1 + (h % 5), no: 0, reports: 0 };
+  }
+  const relLine = (r) => (r.isNew ? 'New to Ryze Club' : `Came to ${r.came} of ${r.booked} booked · ${plural(r.yes, 'host')} would host again${r.no ? ` · ${r.no} would not` : ''}${r.reports ? ` · ${plural(r.reports, 'report')}` : ''}`);
+  const relFlag = (r) => !r.isNew && (r.no > 0 || r.came / r.booked < 0.75);
+
+  function evCard(e) {
+    const st = evState(e); const at = evAt(e);
+    const tag = evMine(e) ? '<span class="tag go">You’re hosting</span>' : st === 'paid' ? `<span class="tag go">${ic('check')}Paid</span>` : st === 'offered' ? '<span class="tag">Spot offered</span>' : st === 'requested' ? '<span class="tag">Asked to join</span>' : st === 'approved' ? '<span class="tag cta">Approved · pay</span>' : `<span class="tag cta">AED ${evShare(e) + EVFEE}</span>`;
+    return `<button class="mrow evrow" data-act="evopen" data-id="${e.id}"><span class="orgcta-ic">${ic(PILLARS[e.pillar] ? e.pillar : 'body')}</span><span class="grow"><b>${esc(e.title)}</b><br><span class="sm mut">${dayWord(at)} · ${e.t} · ${evPaid(e)} of ${evSpots(e)} paid${evMine(e) ? '' : ` · by ${esc(e.host)}`}</span></span>${tag}</button>`;
+  }
+  const evSection = () => { if (!LATER() || !S.user) return ''; const list = allEvents().filter((e) => evAt(e) > now()).sort((a, b) => evAt(a) - evAt(b));
+    return `<div class="stack tight"><span class="cap">Games and events with friends</span><p class="sm mut">Split the cost of a pitch, a table or a boat. Everyone pays their share before it happens.</p>${list.map(evCard).join('')}<button class="btn ghost block" data-act="evplan">${ic('plus')}Plan a game or event</button></div>`; };
+
+  V.event = () => {
+    const e = ev(route.id); if (!e) return V.me();
+    const at = evAt(e); const share = evShare(e); const st = evState(e); const paid = evPaid(e); const spots = evSpots(e); const full = paid >= spots && !['paid', 'offered'].includes(st);
+    const payBy = e.payBy ? ymdToDate(e.payBy) : null;
+    const money = e.mode === 'collect'
+      ? `${esc(e.host.split(' ')[0])} books it once ${e.min} people have paid by ${DAYL[payBy.getDay()]} ${payBy.getDate()} ${MON[payBy.getMonth()]}. If not, nobody is charged.`
+      : `${evMine(e) ? 'You have' : esc(e.host.split(' ')[0]) + ' has'} already paid AED ${e.total.toLocaleString('en')}. Guests pay their share back.`;
+    const pct = Math.min(100, Math.round((paid / spots) * 100));
+    const head = `<div class="stack tight"><span class="cap">${PILLAR_NAMES[e.pillar]} · ${evMine(e) ? 'You’re hosting' : 'Hosted by ' + esc(e.host)}</span>${evMine(e) ? '' : (() => { const hs = hostStats(e.host); return `<p class="sm">${stars(Math.round(hs.avg), `${hs.avg.toFixed(1)} out of 5 stars`)} <b>${hs.avg.toFixed(1)}</b> <span class="mut">from ${plural(hs.n, 'guest')} · has hosted ${plural(hs.events, 'event')}</span></p>`; })()}<h1 style="font-size:26px">${esc(e.title)}</h1>
+      <p class="mut">${DAYL[at.getDay()]} ${at.getDate()} ${MON[at.getMonth()]} · ${e.t}</p><p class="sm">${esc(e.place)}</p>${e.about ? `<p class="sm mut">${esc(e.about)}</p>` : ''}</div>
+      <div class="evmoney"><div class="row sp"><span><b>AED ${share}</b> each <span class="mut sm">+ AED ${EVFEE} Ryze fee</span></span><span class="mut sm">AED ${e.total.toLocaleString('en')} ÷ ${e.people} people</span></div>
+        <div class="evbar" role="img" aria-label="${paid} of ${spots} spots paid"><span style="width:${pct}%"></span>${e.min ? `<i style="left:${Math.round(((e.min - 1) / spots) * 100)}%" title="Minimum"></i>` : ''}</div>
+        <p class="sm"><b>${paid} of ${spots} spots paid</b>${e.min ? (paid >= e.min - 1 ? ' · minimum reached' : ` · ${e.min - 1 - paid} more to go ahead`) : ''}</p><p class="sm mut">${money}</p></div>`;
+    if (evMine(e)) return `<main class="pad-nav">${head}${evHostView(e)}</main>`;
+    let act;
+    if (!S.user) act = `<button class="btn block big" data-act="signin">Sign in to join</button>`;
+    else if (st === 'paid') act = `<p class="okline">${ic('check')}<span class="grow">You’re in. Paid AED ${share + EVFEE} to ${esc(e.host.split(' ')[0])}.</span></p>
+      <button class="btn ghost block" data-act="evoffer" data-id="${e.id}">Can’t go? Offer your spot</button>
+      ${(S.reviews || {})['ev:' + e.id] ? `<p class="sm mut">You reviewed ${esc(e.host.split(' ')[0])}. Thanks.</p>` : `<button class="link sm center-link" data-act="review" data-id="ev:${e.id}">Demo: the event happened. Review ${esc(e.host.split(' ')[0])} as a host</button>`}`;
+    else if (st === 'offered') act = `<p class="note">Your spot is offered to others. If someone takes it, you get AED ${share} back. Until then you’re still going, and still paid.</p>
+      <button class="btn ghost block" data-act="evkeep" data-id="${e.id}">I can go after all</button><button class="link sm center-link" data-act="evtaken" data-id="${e.id}">Demo: someone takes my spot</button>`;
+    else if (st === 'refunded') act = `<p class="note">Someone took your spot. AED ${share} is on its way back to you.</p>`;
+    else if (full) act = '<p class="notice">All spots are paid. Ask the host to tell you if one comes free.</p>';
+    else if (e.ask && st === 'requested') act = `<p class="note">You asked to join. ${esc(e.host.split(' ')[0])} sees your profile and decides, usually within a day. You only pay once you’re approved.</p>
+      <button class="link sm center-link" data-act="evapprove-demo" data-id="${e.id}">Demo: ${esc(e.host.split(' ')[0])} approves</button>`;
+    else if (e.ask && st !== 'approved') act = `<button class="btn block big" data-act="evask" data-id="${e.id}">Ask to join</button><p class="mut sm center">${esc(e.host.split(' ')[0])} sees your profile before saying yes.</p>`;
+    else act = `${st === 'approved' ? `<p class="okline">${ic('check')}<span class="grow">${esc(e.host.split(' ')[0])} approved you. Pay to hold your spot.</span></p>` : ''}<button class="btn block big" data-act="evpay" data-id="${e.id}">Pay AED ${share + EVFEE}</button>`;
+    return `<main class="pad-nav">${head}
+      <div class="stack tight"><span class="cap">Who’s in</span><div class="row">${avatars([e.host].concat(e.going).slice(0, 6))}<span class="sm mut">${esc(e.host.split(' ')[0])} and ${plural(paid, 'guest')}</span></div></div>
+      ${act}
+      <ul class="evrules sm"><li><b>Paid means committed.</b> If you can’t go, your share comes back only if someone takes your spot.</li>${e.mode === 'collect' ? `<li>If fewer than ${e.min} people have paid by the pay-by date, everyone gets their money back.</li>` : ''}<li>If the host cancels, everyone gets everything back, Ryze’s fee included.</li><li>Ryze’s AED ${EVFEE} fee is kept if you drop out.</li></ul>
+      <button class="btn quiet block" data-act="me">${ic('left')}Back to my week</button></main>`;
+  };
+
+  function evHostView(e) {
+    const reqs = (e.requests || []).filter((r) => !r.done);
+    const collected = evShare(e) * e.going.length;
+    const reqHtml = reqs.length ? reqs.map((r) => { const rel = reliability(r.name); const m = memberPro(r.name);
+      return `<div class="evreq"><div class="row">${face(r.name, '')}<div class="grow"><b>${esc(r.name)}</b><br><span class="sm mut">${esc(m.work)} · ${esc(m.area)}</span></div></div>
+        <p class="sm ${relFlag(rel) ? 'warnline' : 'mut'}">${relFlag(rel) ? ic('flag') : ''}${relLine(rel)}</p>
+        <p class="sm">${m.ig ? `<a href="https://instagram.com/${encodeURIComponent(m.ig)}" target="_blank" rel="noopener">@${esc(m.ig)}</a>` : '<span class="mut">No Instagram</span>'}${r.li ? ` · <a href="https://${esc(r.li)}" target="_blank" rel="noopener">LinkedIn</a>` : ''}</p>
+        ${r.note ? `<p class="sm">“${esc(r.note)}”</p>` : ''}
+        <div class="row"><button class="btn small grow" data-act="evreqok" data-id="${e.id}" data-name="${esc(r.name)}">Approve</button><button class="btn small ghost grow" data-act="evreqno" data-id="${e.id}" data-name="${esc(r.name)}">Decline</button></div></div>`; }).join('')
+      : '<p class="sm mut">No requests waiting. Share your link to invite people.</p>';
+    const rated = (S.evRate || {})[e.id] || {};
+    const target = (evShare(e) * evSpots(e)).toLocaleString('en');
+    const moneyLine = e.mode === 'collect'
+      ? `Guests have paid <b>AED ${collected.toLocaleString('en')}</b> of AED ${target}. Book once ${e.min} people, you included, have paid. If that hasn\u2019t happened by the pay-by date, everyone is refunded and you book nothing.`
+      : `You paid <b>AED ${e.total.toLocaleString('en')}</b>. Guests have paid you back <b>AED ${collected.toLocaleString('en')}</b> of AED ${target}. Your own share is AED ${evShare(e)}.`;
+    return `<div class="stack tight"><span class="cap">Money</span><p class="sm">${moneyLine}</p>
+        <p class="sm mut">Money goes straight to your Ziina. Ryze adds its AED ${EVFEE} fee on top of each guest’s share, so you get your full share back.</p></div>
+      <div class="row"><button class="btn grow" data-act="soon" data-what="This would open WhatsApp with your event link.">Share link</button><button class="btn ghost grow" data-act="evcancel" data-id="${e.id}">Cancel event</button></div>
+      <p class="sm mut">After the event, guests are asked to review you as a host. Your rating shows on every event you host.</p>
+      ${e.ask ? `<div class="stack tight"><span class="cap">Asking to join · ${reqs.length}</span><p class="sm mut">You see their profile and how reliable they’ve been. They pay only once you approve.</p>${reqHtml}</div>` : ''}
+      <div class="stack tight"><span class="cap">Paid · ${e.going.length}</span>${e.going.length ? `<div>${e.going.map((n) => `<div class="item"><span class="row grow">${face(n, '')}<span>${esc(n)}</span></span><span class="tag go">${ic('check')}AED ${evShare(e)}</span></div>`).join('')}</div>` : '<p class="sm mut">Nobody has paid yet.</p>'}</div>
+      <div class="stack tight"><span class="cap">After the event</span><p class="sm mut">Would you host each guest again? Only hosts see these answers, added up, when that person asks to join something. In the real product this opens once the event has happened.</p>
+        ${e.going.length ? e.going.map((n) => `<div class="item"><span class="grow">${esc(n)}</span><span class="seg small" role="group" aria-label="Would you host ${esc(n)} again?">${[['y', 'Yes'], ['n', 'No']].map(([k, l]) => `<button class="${rated[n] === k ? 'on' : ''}" data-act="evrate" data-id="${e.id}" data-name="${esc(n)}" data-val="${k}" aria-pressed="${rated[n] === k}">${l}</button>`).join('')}</span></div>`).join('') : '<p class="sm mut">Guests appear here once they’ve paid.</p>'}
+        <button class="link sm" data-act="soon" data-what="This would let you report a guest to the Ryze team, privately.">Report a guest</button></div>
+      <button class="btn quiet block" data-act="me">${ic('left')}Back to my week</button>`;
+  }
+
+  // ---------- levels and players wanted (later phases, D55 and D56) ----------
+  // Each member can keep a level per activity in their profile, in the unit that activity uses: a rating for chess, a usual
+  // pace for running, and a level plus years playing for everything else. Hosts see it on requests, and posts for players
+  // say what level they want, so both sides can tell at a glance whether it's a fit.
+  const LV5 = ['Beginner', 'Improver', 'Intermediate', 'Advanced', 'Competitive'];
+  const skillKind = (sp) => ({ chess: 'rating', running: 'pace' }[sp] || 'level');
+  const paceTxt = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+  const parsePace = (t) => { const m = /^(\d{1,2}):([0-5]\d)$/.exec(String(t || '').trim()); return m ? Number(m[1]) * 60 + Number(m[2]) : null; };
+  const mySkills = () => ((S.user && S.user.pro && S.user.pro.skills) || {});
+  // Example members get a believable level per activity so hosts have something to compare.
+  function skillFor(name, sp) {
+    if (S.user && name === S.user.name) return mySkills()[sp] || null;
+    const h = hash(`${name}|${sp}`); const kind = skillKind(sp);
+    if (kind === 'rating') return { rating: 900 + (h % 1100) };
+    if (kind === 'pace') return { pace: 270 + (h % 180) };
+    return { level: h % 5, years: 1 + (h % 12) };
+  }
+  function skillTxt(sp, k) {
+    if (!k) return '';
+    const kind = skillKind(sp);
+    if (kind === 'rating') return k.rating ? `Rating ${k.rating}` : 'Unrated';
+    if (kind === 'pace') return k.pace ? `Usual pace ${paceTxt(k.pace)} per km` : '';
+    return `${LV5[k.level] || LV5[0]}${k.years ? ` · ${plural(k.years, 'year')} playing` : ''}`;
+  }
+  const skillVal = (sp, k) => { if (!k) return null; const kind = skillKind(sp); return kind === 'rating' ? (k.rating || null) : kind === 'pace' ? (k.pace || null) : (k.level == null ? null : k.level); };
+  const fits = (sp, want, k) => { const v = skillVal(sp, k); if (v == null || !want) return null; return v >= want.min && v <= want.max; };
+  function wantTxt(sp, w) {
+    const kind = skillKind(sp);
+    if (kind === 'rating') return `Rating ${w.min} to ${w.max}`;
+    if (kind === 'pace') return `${paceTxt(w.min)} to ${paceTxt(w.max)} per km`;
+    return w.min === w.max ? LV5[w.min] : `${LV5[w.min]} to ${LV5[w.max]}`;
+  }
+  const fitTag = (f) => (f === true ? `<span class="tag go">${ic('check')}Your level</span>` : f === false ? '<span class="tag">Outside their range</span>' : '<span class="tag">Add your level</span>');
+
+  // Posts looking for players. "need" is how many people the host wants, not counting themselves.
+  function seedGames() {
+    const thu = dayIn(4); const sat = dayIn(6); const sun = dayIn(0); const fri = dayIn(5);
+    return [
+      { id: 'gchess', sport: 'chess', need: 1, host: 'Ravi T.', date: ymd(thu), t: '19:00', place: 'Marina Walk café, upstairs room', cost: 0, want: { min: 1200, max: 1600 }, going: [], note: 'Rapid, 15 minutes plus 10 seconds. Two or three games, then coffee.' },
+      { id: 'gsquash', sport: 'squash', need: 1, host: 'Hannah P.', date: ymd(sat), t: '08:00', place: 'Dubai Hills squash courts, court 2', cost: 120, want: { min: 2, max: 3 }, going: [], note: 'Friendly but competitive. Court is booked.' },
+      { id: 'gtennis', sport: 'tennis', need: 3, host: 'Karim A.', date: ymd(sun), t: '17:30', place: 'Jumeirah tennis courts, court 4', cost: 200, want: { min: 1, max: 2 }, going: ['Ben W.'], note: 'Doubles, then switch partners. Balls provided.' },
+      { id: 'grun', sport: 'running', need: 2, host: 'Sofia R.', date: ymd(fri), t: '06:00', place: 'Kite Beach, by the lifeguard tower', cost: 0, want: { min: 345, max: 390 }, going: [], note: 'Easy 10 km at chatting pace.' },
+    ];
+  }
+  const allGames = () => seedGames().concat(S.games || []);
+  const game = (id) => allGames().find((g) => g.id === id);
+  const gSt = (g) => (S.gameSt || {})[g.id] || '';
+  const gSet = (g, st) => { S.gameSt = S.gameSt || {}; S.gameSt[g.id] = st; save(); };
+  const gIn = (g) => ['in', 'paid', 'offered'].includes(gSt(g));
+  const gFilled = (g) => g.going.length + (gIn(g) ? 1 : 0);
+  const gShare = (g) => (g.cost ? Math.ceil(g.cost / (g.need + 1)) : 0);
+  const gFee = (g) => (g.cost ? EVFEE : 0);
+  const gAt = (g) => { const d = ymdToDate(g.date); const [h, m] = g.t.split(':').map(Number); d.setHours(h, m); return d; };
+  const gTitle = (g) => (g.need === 1 ? `${SPORTS[g.sport]}: one-on-one` : `${SPORTS[g.sport]}: ${g.need} players wanted`);
+
+  function gCard(g) {
+    const st = gSt(g); const f = fits(g.sport, g.want, mySkills()[g.sport]);
+    const tag = g.mine ? '<span class="tag go">Your post</span>' : gIn(g) ? `<span class="tag go">${ic('check')}Playing</span>` : st === 'requested' ? '<span class="tag">Asked</span>' : st === 'approved' ? '<span class="tag cta">Accepted · pay</span>' : fitTag(f);
+    const left = g.need - gFilled(g);
+    return `<button class="mrow evrow" data-act="gopen" data-id="${g.id}"><span class="orgcta-ic">${ic(ICONS[g.sport] ? g.sport : 'body')}</span><span class="grow"><b>${esc(gTitle(g))}</b><br><span class="sm mut">${dayWord(gAt(g))} · ${g.t} · ${esc(wantTxt(g.sport, g.want))}${g.mine ? '' : ` · by ${esc(g.host)}`} · ${left > 0 ? `${left} open` : 'full'}</span></span>${tag}</button>`;
+  }
+  const gSection = () => { if (!LATER() || !S.user) return ''; const list = allGames().filter((g) => gAt(g) > now()).sort((a, b) => gAt(a) - gAt(b));
+    return `<div class="stack tight"><span class="cap">Players wanted</span><p class="sm mut">One-on-one games and small groups: a chess opponent, a squash partner, a fourth for doubles.</p>${list.map(gCard).join('')}<button class="btn ghost block" data-act="lfp">${ic('plus')}Find a player or partner</button></div>`; };
+
+  V.game = () => {
+    const g = game(route.id); if (!g) return V.me();
+    const at = gAt(g); const st = gSt(g); const me = mySkills()[g.sport]; const f = fits(g.sport, g.want, me); const left = g.need - gFilled(g);
+    const hs = hostStats(g.host);
+    const head = `<div class="stack tight"><span class="cap">${esc(SPORTS[g.sport])} · ${g.mine ? 'Your post' : 'Posted by ' + esc(g.host)}</span>${g.mine ? '' : `<p class="sm">${stars(Math.round(hs.avg), `${hs.avg.toFixed(1)} out of 5 stars`)} <b>${hs.avg.toFixed(1)}</b> <span class="mut">from ${plural(hs.n, 'player')} they’ve played with</span></p>`}
+      <h1 style="font-size:26px">${esc(gTitle(g))}</h1><p class="mut">${DAYL[at.getDay()]} ${at.getDate()} ${MON[at.getMonth()]} · ${g.t} · ${lenOf({ club: { sport: g.sport } })} min</p><p class="sm">${esc(g.place)}</p>${g.note ? `<p class="sm mut">${esc(g.note)}</p>` : ''}</div>
+      <div class="evmoney"><div class="row sp"><span class="sm mut">Level wanted</span><b class="sm">${esc(wantTxt(g.sport, g.want))}</b></div>
+        ${g.mine ? '' : `<div class="row sp"><span class="sm mut">Your level</span><span class="sm">${me && skillVal(g.sport, me) != null ? `<b>${esc(skillTxt(g.sport, me))}</b> ${fitTag(f)}` : '<button class="link sm" data-act="editpro">Add your level</button>'}</span></div>`}
+        <div class="row sp"><span class="sm mut">Places</span><b class="sm">${left > 0 ? `${left} of ${g.need} open` : 'All taken'}</b></div>
+        <div class="row sp"><span class="sm mut">Cost</span><b class="sm">${g.cost ? `AED ${gShare(g)} each + AED ${EVFEE} Ryze fee` : 'Free'}</b></div>
+        ${g.cost ? `<p class="sm mut">The court costs AED ${g.cost}, split ${g.need + 1} ways. You pay only once you’re accepted.</p>` : ''}</div>`;
+    if (g.mine) return `<main class="pad-nav">${head}${gHostView(g)}</main>`;
+    let act;
+    if (st === 'paid' || st === 'in') act = `<p class="okline">${ic('check')}<span class="grow">You’re playing${st === 'paid' ? `. Paid AED ${gShare(g) + gFee(g)} to ${esc(g.host.split(' ')[0])}` : ''}.</span></p>
+      <button class="btn ghost block" data-act="gdrop" data-id="${g.id}">Can’t make it</button>
+      ${(S.reviews || {})['g:' + g.id] ? '' : `<button class="link sm center-link" data-act="review" data-id="g:${g.id}">Demo: the game happened. Review ${esc(g.host.split(' ')[0])}</button>`}`;
+    else if (st === 'offered') act = `<p class="note">Your place is offered. If someone takes it, you get AED ${gShare(g)} back. Until then you’re still playing.</p>`;
+    else if (left <= 0) act = '<p class="notice">All places are taken.</p>';
+    else if (st === 'requested') act = `<p class="note">You asked to play. ${esc(g.host.split(' ')[0])} sees your level and decides.</p><button class="link sm center-link" data-act="gaccept-demo" data-id="${g.id}">Demo: ${esc(g.host.split(' ')[0])} accepts</button>`;
+    else if (st === 'approved') act = `<p class="okline">${ic('check')}<span class="grow">${esc(g.host.split(' ')[0])} accepted you.</span></p><button class="btn block big" data-act="gpay" data-id="${g.id}">Pay AED ${gShare(g) + gFee(g)} to confirm</button>`;
+    else if (st === 'declined') act = `<p class="note">${esc(g.host.split(' ')[0])} went with someone else this time.</p>`;
+    else act = `<button class="btn block big" data-act="gask" data-id="${g.id}">Ask to play</button>${f === false ? '<p class="mut sm center">Your level is outside what they asked for. You can still ask.</p>' : ''}`;
+    return `<main class="pad-nav">${head}
+      ${g.going.length ? `<div class="stack tight"><span class="cap">Playing</span><div class="row">${avatars([g.host].concat(g.going))}<span class="sm mut">${esc(g.host.split(' ')[0])} and ${plural(g.going.length, 'other')}</span></div></div>` : ''}
+      ${act}
+      ${g.cost ? '<ul class="evrules sm"><li><b>Paid means committed.</b> If you can’t make it, your share comes back only if someone takes your place.</li><li>If the host cancels, you get everything back.</li></ul>' : '<p class="sm mut">Free game. If you can’t make it, say so here so they can find someone else.</p>'}
+      <button class="btn quiet block" data-act="me">${ic('left')}Back to my week</button></main>`;
+  };
+  function gHostView(g) {
+    const reqs = (g.requests || []).filter((r) => !r.done); const left = g.need - g.going.length;
+    const kOf = (n) => ((g.requests || []).find((x) => x.name === n) || {}).k || skillFor(n, g.sport);
+    const card = (r) => { const k = kOf(r.name); const f = fits(g.sport, g.want, k); const rel = reliability(r.name);
+      return `<div class="evreq"><div class="row">${face(r.name, '')}<div class="grow"><b>${esc(r.name)}</b><br><span class="sm">${esc(skillTxt(g.sport, k) || 'No level added')}</span></div>${fitTag(f).replace('Your level', 'In range').replace('Add your level', 'No level')}</div>
+        <p class="sm ${relFlag(rel) ? 'warnline' : 'mut'}">${relFlag(rel) ? ic('flag') : ''}${relLine(rel)}</p>${r.note ? `<p class="sm">“${esc(r.note)}”</p>` : ''}
+        ${left > 0 ? `<div class="row"><button class="btn small grow" data-act="gok" data-id="${g.id}" data-name="${esc(r.name)}">Accept</button><button class="btn small ghost grow" data-act="gno" data-id="${g.id}" data-name="${esc(r.name)}">Not this time</button></div>` : ''}</div>`; };
+    return `${left <= 0 ? `<p class="okline">${ic('check')}<span class="grow">Game on. Everyone’s been told${g.cost ? ' and asked to pay their share' : ''}.</span></p>` : ''}
+      <div class="stack tight"><span class="cap">Playing · ${g.going.length} of ${g.need}</span>${g.going.length ? `<div>${g.going.map((n) => `<div class="item"><span class="row grow">${face(n, '')}<span>${esc(n)}<br><span class="sm mut">${esc(skillTxt(g.sport, kOf(n)))}</span></span></span></div>`).join('')}</div>` : '<p class="sm mut">Nobody yet.</p>'}</div>
+      <div class="stack tight"><span class="cap">Asking to play · ${reqs.length}</span><p class="sm mut">Sorted with the closest level first. You see each person’s level and how reliable they’ve been.</p>${reqs.length ? reqs.sort((a, b) => (fits(g.sport, g.want, kOf(b.name)) ? 1 : 0) - (fits(g.sport, g.want, kOf(a.name)) ? 1 : 0)).map(card).join('') : '<p class="sm mut">No requests waiting.</p>'}</div>
+      <div class="row"><button class="btn grow" data-act="soon" data-what="This would open WhatsApp with a link to your post.">Share link</button><button class="btn ghost grow" data-act="gcancel" data-id="${g.id}">Cancel game</button></div>
+      <button class="btn quiet block" data-act="me">${ic('left')}Back to my week</button>`;
+  }
+
   V.confirm = () => {
     const s = byId(route.id); const ppl = people(s, 4); const others = going(s) - 1;
     return `<main class="${S.user ? 'pad-nav' : ''}"><div class="stack tight"><h1>You're in.</h1><p class="mut">${esc(s.club.name)} · ${dayWord(s.at)} at ${s.t}${route.paid ? ` · paid AED ${route.paid}` : ''}</p></div>
       <div class="payfaces">${avatars(ppl)}<span>${esc(ppl.slice(0, 2).map((x) => x.split(' ')[0]).join(' and '))}${others > 2 ? ` and ${plural(others - 2, 'other')}` : ''} will be there</span></div>
-      <dl class="facts"><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type} · ${s.note}</dd></dl>
+      <dl class="facts"><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type} · ${s.note}</dd>${s.club.find ? `<dt>Find us</dt><dd>${esc(s.club.find)}</dd>` : ''}</dl>
       <p class="note">We'll remind you ${s.at.getHours() < 10 ? 'at 19:00 the evening before' : 'three hours before'}. First time? Arrive 10 minutes early and say hi to the organiser.</p>
       <div class="stack"><button class="btn block big" data-act="me">Go to my week ${ic('right')}</button><button class="btn ghost block" data-act="soon" data-what="This would add the session to your phone's calendar.">Add to calendar</button></div></main>`;
   };
@@ -734,6 +1096,8 @@
       ${org}
       ${nextCard(up.find((s) => has(s.id) && !isCancelled(s)))}
       ${up.length || S.follows.length ? weekPlan(up.find((s) => has(s.id) && !isCancelled(s))) : `<div class="stack tight"><span class="cap">Coming up</span><p class="mut">Nothing yet. Pick Mind, Body or Soul, or try one of these.</p>${pillarNav()}<span class="cap">Popular this week</span><div class="stack">${['mdr', 'mcc', 'dos'].map((id) => clubCard(club(id))).join('')}</div><button class="btn" data-act="quiz">Find my club ${ic('right')}</button></div>`}
+      ${gSection()}
+      ${evSection()}
       ${S.follows.length ? `<div class="stack tight"><span class="cap">From your clubs</span><div class="strip">${S.follows.slice(0, 3).map((id) => { const c = club(id); const p = leadPhotos(c)[0] || { g: 1, sp: c.sport, i: 0 }; return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="club" data-id="${id}">${esc(c.name.split(' ')[0])}</button>`; }).join('')}</div></div>` : ''}
     </main>`;
   };
@@ -781,6 +1145,7 @@
     return `<main class="pad-nav"><div class="stack tight"><h1>${route.weekJustDone ? `Week ${S.streak} done.` : 'Nice. That one counts too.'}</h1>
       <p class="mut">${esc(c.name)} · ${dateShort(s.at)}. ${plural(S.total, 'session')} in total.</p></div>
       ${newcomer ? offer + photos : photos + offer}
+      ${(S.reviews || {})[c.id] ? '' : `<button class="btn block" data-act="review" data-id="${c.id}">How was it? Review ${esc(c.name)}</button>`}
       ${(S.thanked || {})[s.id] ? `<p class="okline">${ic('check')}<span class="grow">You thanked ${esc(founderOf(c).split(' ')[0])}</span></p>` : `<button class="btn ghost block" data-act="thank" data-id="${c.id}" data-sid="${s.id}">Say thanks to ${esc(founderOf(c).split(' ')[0])}, who ran it</button>`}
       <button class="btn ghost block" data-act="me">${ic('left')}Back to my week</button></main>`;
   };
@@ -800,6 +1165,7 @@
   V.profile = () => { const m = myPro(); return `<main class="pad-nav"><div class="row">${face(S.user.name, m.photo, true)}<div class="stack tight"><h1>${esc(S.user.name)}</h1>
       <span class="mut sm">${[m.area, m.level && LEVELS[m.level], m.work].filter(Boolean).map(esc).join(' · ') || 'Add a photo and a few details so people know who to look for.'}</span>
       ${m.hobbies ? `<span class="sm">Into ${esc(m.hobbies)}</span>` : ''}${m.ig ? `<span class="sm">@${esc(m.ig)}</span>` : ''}</div></div>
+    ${LATER() && Object.keys(m.skills || {}).length ? `<div class="stack tight"><span class="cap">Your levels</span><dl class="facts">${Object.keys(m.skills).map((sp) => `<dt>${esc(SPORTS[sp])}</dt><dd>${esc(skillTxt(sp, m.skills[sp]) || 'Not set')}</dd>`).join('')}</dl></div>` : ''}
     <button class="btn ghost block" data-act="editpro">${LATER() ? (m.photo || m.work || m.hobbies || m.ig ? 'Edit profile' : 'Set up your profile') : m.photo ? 'Change photo' : 'Add a photo'}</button>
     ${LATER() ? `<p class="mut sm">${m.share ? 'People going to the same session as you, and those clubs\' organisers, can see your profile.' : 'Your profile is hidden: people at your sessions only see your first name. Turn sharing on in Edit profile.'} Only you can see your streak and history.</p>
     <dl class="facts"><dt>Current streak</dt><dd>${plural(S.streak, 'week')}</dd><dt>Longest streak</dt><dd>${plural(S.longest, 'week')}</dd><dt>Sessions</dt><dd>${S.total}</dd><dt>Rest week</dt><dd>${S.prot ? 'Available. Miss one week and your streak stays safe.' : `Used. You earn a new one after ${plural(Math.max(0, 4 - S.sinceProt), 'more week')} in a row.`}</dd></dl>
@@ -858,7 +1224,7 @@
   V.sched = () => {
     const c = club(route.id); const fut = future(c).slice(0, 6);
     const weekly = c.sched.map((x, i) => [x, i]).filter(([x]) => !x.date); const once = c.sched.map((x, i) => [x, i]).filter(([x]) => x.date && x.date >= ymd(now()));
-    const row = ([x, i]) => `<button class="item" data-act="editsess" data-idx="${i}"><span class="when"><b>${x.date ? dateShort(new Date(x.date + 'T00:00')) : DAY[x.d]}</b><span class="mut sm">${x.t}</span></span><span class="grow"><b>${esc(x.type)}</b><br><span class="mut sm">${esc(x.note)} · ${esc(x.place)}${x.cap ? ` · up to ${x.cap}` : ''}</span></span><span class="go">Edit ${ic('chev')}</span></button>`;
+    const row = ([x, i]) => `<button class="item" data-act="editsess" data-idx="${i}"><span class="when"><b>${x.date ? dateShort(new Date(x.date + 'T00:00')) : DAY[x.d]}</b><span class="mut sm">${x.t} · ${Number(x.len) || LEN[c.sport] || 60} min</span></span><span class="grow"><b>${esc(x.type)}</b><br><span class="mut sm">${esc(x.note)} · ${esc(x.place)}${x.cap ? ` · up to ${x.cap}` : ''}</span></span><span class="go">Edit ${ic('chev')}</span></button>`;
     return `<main class="pad-nav"><div class="stack tight"><h1>Schedule</h1><p class="mut sm">${esc(c.name)}</p><p class="mut sm">Changes show on your page straight away, and members who booked are told.</p></div>
       <button class="btn block" data-act="addsess">${ic('plus')}Add a session</button>
       <div class="stack tight"><h2>Every week</h2><div>${weekly.map(row).join('') || '<p class="mut sm">No weekly sessions yet.</p>'}</div></div>
@@ -956,12 +1322,12 @@
     const todoLeft = todo.filter((t) => !t[1]);
     const todoCard = todoLeft.length ? `<section class="todo"><div class="row sp"><h2>To do</h2><span class="sm mut">${todo.length - todoLeft.length} of ${todo.length} done</span></div>
       <div>${todoLeft.map(([t, , act, cta]) => `<div class="item"><span class="grow"><b>${t}</b></span><button class="btn small ghost" data-act="${act}" data-id="${c.id}">${cta}</button></div>`).join('')}</div></section>` : '';
-    if (!LATER()) return `<main class="pad-nav">${hero}${todoCard}
+    if (!LATER()) return `<main class="pad-nav">${reqBlock(c)}${hero}${todoCard}
       <section class="stack tight"><div class="row sp"><h2>This week</h2><span class="sm mut">${live.reduce((n, s) => n + going(s), 0)} booked</span></div>
         ${c.price && payOf(c) ? `<p class="okline">${ic('tag')}<span class="grow"><b>AED ${(live.reduce((n, s) => n + going(s), 0) * c.price).toLocaleString('en')} booked</b> · you receive AED ${Math.round(live.reduce((n, s) => n + going(s), 0) * c.price * 0.9).toLocaleString('en')}</span></p>` : ''}
         <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
         <div class="wrap"><button class="link sm" data-act="oshare">Post the week to WhatsApp</button><button class="link sm" data-act="osched">Change or cancel a session</button></div></section></main>`;
-    return `<main class="pad-nav">${hero}${driftLine}${grow}
+    return `<main class="pad-nav">${reqBlock(c)}${hero}${driftLine}${grow}
       <section class="stack tight"><div class="row sp"><h2>This week</h2><span class="sm mut">${live.reduce((n, s) => n + going(s), 0)} RSVPs · last week ${cameLast} came</span></div>
         ${c.price && payOf(c) ? `<p class="okline">${ic('tag')}<span class="grow"><b>AED ${(live.reduce((n, s) => n + going(s), 0) * c.price).toLocaleString('en')} booked</b> · you receive AED ${Math.round(live.reduce((n, s) => n + going(s), 0) * c.price * 0.9).toLocaleString('en')} after Ryze Club's 10%</span></p>` : c.price ? `<button class="osetup-line" data-act="opay"><span class="grow"><b>Get paid when members book</b> · connect Ziina or Stripe</span><span class="det">Set up ${ic('chev')}</span></button>` : ''}
         <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
@@ -1008,6 +1374,7 @@
         ${sec('editclub', 'How to find us', c.find ? `“${esc(c.find)}”` : 'Add a line for first-timers', 'flag')}`}
         ${sec('ocover', 'Cover photo', S.pin[c.id] ? 'Chosen by you · shown on your card and page' : 'Choose the photo members see first', 'photo')}
         ${sec('osched', 'Schedule', `${meetDays(c)} · change or cancel a session`, 'week')}
+        ${LATER() ? (() => { const r = reviewsOf(c); return sec('oreviews', 'Reviews', r.n ? `★ ${r.avg.toFixed(1)} from ${plural(r.n, 'review')} · reply to members` : 'None yet', 'star'); })() : ''}
         ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}
         ${sec('opay', 'Get paid', payOf(c) ? `Connected to ${PROVIDERS[payOf(c)]} · members pay when they book` : 'Connect Ziina or Stripe to take payments', 'tag')}</div>
       ${left ? '' : checklist}
@@ -1039,6 +1406,162 @@
 
   // ---------- overlays ----------
   const O = {};
+  // ---------- ask to join a club (D54) ----------
+  // The organiser chooses in Club details: open, where anyone can book, or ask first, where new members send a short
+  // request and book like anyone else once approved. People who joined from the organiser's invite link, people who have
+  // booked before, and the club's own organisers count as approved. Nobody pays before they're approved.
+  const joinSt = (c) => ((S.joinReq || {})[c.id] || {}).st || '';
+  const approvedFor = (c) => !c.ask || S.manage.includes(c.id) || joinSt(c) === 'approved' || ((S.joined || {})[c.id] || 0) > 0 || S.rsvps.some((id) => id.startsWith(`${c.id}|`));
+  const needsAsk = (c) => !approvedFor(c);
+  const clubReqs = (c) => ((S.clubReqs || {})[c.id] || []);
+  const hostFirst = (c) => founderOf(c).split(' ')[0];
+  function reqCard(c, r) {
+    const rel = reliability(r.name); const m = memberPro(r.name);
+    return `<div class="evreq"><div class="row">${face(r.name, '')}<div class="grow"><b>${esc(r.name)}</b>${LATER() ? `<br><span class="sm mut">${esc(m.work)} · ${esc(m.area)}</span>` : ''}</div></div>
+      ${LATER() ? `<p class="sm"><b>${esc(skillTxt(c.sport, skillFor(r.name, c.sport)))}</b></p>` : ''}
+      <p class="sm ${relFlag(rel) ? 'warnline' : 'mut'}">${relFlag(rel) ? ic('flag') : ''}${relLine(rel)}</p>
+      ${LATER() && m.ig ? `<p class="sm"><a href="https://instagram.com/${encodeURIComponent(m.ig)}" target="_blank" rel="noopener">@${esc(m.ig)}</a></p>` : ''}
+      ${c.askQ && r.ans ? `<p class="sm"><span class="mut">${esc(c.askQ)}</span><br>“${esc(r.ans)}”</p>` : ''}${r.note ? `<p class="sm">“${esc(r.note)}”</p>` : ''}
+      <div class="row"><button class="btn small grow" data-act="cjok" data-id="${c.id}" data-name="${esc(r.name)}">Approve</button><button class="btn small ghost grow" data-act="cjno" data-id="${c.id}" data-name="${esc(r.name)}">Decline</button></div></div>`;
+  }
+  // On the organiser's This week screen, above everything else while requests are waiting.
+  function reqBlock(c) {
+    if (!c.ask) return '';
+    const list = clubReqs(c).filter((r) => !r.done);
+    if (!list.length) return '';
+    return `<section class="stack tight"><h2>Asking to join · ${list.length}</h2><p class="sm mut">They can book once you say yes. People you invite by link skip this.</p>${list.map((r) => reqCard(c, r)).join('')}</section>`;
+  }
+  // On the member's club page: why they can't book yet, and where their request stands.
+  function askNote(c) {
+    if (!c.ask || approvedFor(c)) return '';
+    const st = joinSt(c);
+    if (st === 'pending') return `<p class="note">Request sent to ${esc(hostFirst(c))}. You’ll hear back here and by email, usually within a day. <button class="link sm" data-act="cjdemo" data-id="${c.id}">Demo: ${esc(hostFirst(c))} approves</button></p>`;
+    if (st === 'declined') return `<p class="note">${esc(hostFirst(c))} isn’t taking new members right now. <button class="link sm" data-act="browse" data-sport="${c.sport}">See other ${esc(seeAll(c.sport))}</button></p>`;
+    return `<p class="note">New members ask to join first. Once ${esc(hostFirst(c))} says yes, you book like anyone else.</p>`;
+  }
+  const askBtn = (c, cls = 'btn big') => (joinSt(c) === 'pending' ? `<button class="btn quiet" disabled>Request sent</button>` : joinSt(c) === 'declined' ? '' : `<button class="${cls}" data-act="askclub" data-id="${c.id}">Ask to join</button>`);
+  O.askclub = () => {
+    const c = club(overlay.id); const m = myPro(); const rel = reliability(S.user.name);
+    return `<div class="sheet"><div class="stack tight"><h2>Ask to join ${esc(c.name)}</h2><p class="mut sm">${esc(founderOf(c))} asks new members to say a bit about themselves first. Once they say yes, you book like anyone else${c.price ? `, at AED ${c.price} a session` : ''}. You don’t pay anything now.</p></div>
+      <span class="cap">${esc(hostFirst(c))} will see</span>
+      <div class="evreq"><div class="row">${face(S.user.name, m.photo)}<div class="grow"><b>${esc(S.user.name)}</b>${LATER() ? `<br><span class="sm mut">${esc(m.work || 'Work not added')} · ${esc(m.area || 'Area not added')}</span>` : ''}</div></div>
+        <p class="sm mut">${relLine(rel)}</p>${LATER() ? `<p class="sm">${(() => { const k = mySkills()[c.sport]; return k && skillVal(c.sport, k) != null ? `<b>${esc(skillTxt(c.sport, k))}</b> · ` : `<button class="link sm" data-act="editpro">Add your ${esc(SPORTS[c.sport].toLowerCase())} level</button> · `; })()}${m.ig ? '@' + esc(m.ig) : '<span class="mut">No Instagram added</span>'}</p>` : ''}</div>
+      ${c.askQ ? `<label for="cj-ans">${esc(c.askQ)}</label><input type="text" id="cj-ans" maxlength="120"${overlay.err ? ' aria-invalid="true" aria-describedby="cj-err"' : ''}>${overlay.err ? `<p class="err" id="cj-err" role="alert">Answer ${esc(hostFirst(c))}’s question so they can say yes.</p>` : ''}` : ''}
+      <label for="cj-note">Anything else? (optional)</label><input type="text" id="cj-note" maxlength="120" placeholder="For example: Just moved to ${esc(c.area)}">
+      <button class="btn block" data-act="cjsend" data-id="${c.id}">Send request</button><button class="btn quiet block" data-act="close">Cancel</button></div>`;
+  };
+  // Ask to play: what the host will see, including your level for this activity.
+  O.gask = () => { const g = game(overlay.id); const m = myPro(); const k = mySkills()[g.sport]; const rel = reliability(S.user.name);
+    return `<div class="sheet"><div class="stack tight"><h2>Ask to play</h2><p class="mut sm">${esc(gTitle(g))} · ${esc(g.host)}</p></div>
+      <span class="cap">${esc(g.host.split(' ')[0])} will see</span>
+      <div class="evreq"><div class="row">${face(S.user.name, m.photo)}<div class="grow"><b>${esc(S.user.name)}</b><br><span class="sm">${k && skillVal(g.sport, k) != null ? esc(skillTxt(g.sport, k)) : '<span class="mut">No level added</span>'}</span></div></div><p class="sm mut">${relLine(rel)}</p></div>
+      ${k && skillVal(g.sport, k) != null ? '' : `<p class="note">Hosts pick players by level. <button class="link sm" data-act="editpro">Add your ${esc(SPORTS[g.sport].toLowerCase())} level</button> first.</p>`}
+      <label for="ga-note">A line to ${esc(g.host.split(' ')[0])} (optional)</label><input type="text" id="ga-note" maxlength="120" placeholder="For example: I play most weekends">
+      <button class="btn block" data-act="gsend" data-id="${g.id}">Send request</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+  // Post for players: activity, how many, the level wanted in that activity's own unit, when, where and any court cost.
+  const LFP_SPORTS = ['chess', 'tennis', 'squash', 'padel', 'running', 'cycling', 'basketball', 'football', 'futsal', 'volleyball', 'boxing', 'games'];
+  function wantFields(sp, v, err) {
+    const kind = skillKind(sp);
+    if (kind === 'rating') return `<div class="row"><div class="grow"><label for="lf-min">Rating from</label><input type="number" id="lf-min" min="100" max="3000" inputmode="numeric" value="${esc(v.min || '')}"></div><div class="grow"><label for="lf-max">to</label><input type="number" id="lf-max" min="100" max="3000" inputmode="numeric" value="${esc(v.max || '')}"></div></div>${err}`;
+    if (kind === 'pace') return `<div class="row"><div class="grow"><label for="lf-min">Pace from (per km)</label><input type="text" id="lf-min" placeholder="5:30" inputmode="numeric" value="${esc(v.min || '')}"></div><div class="grow"><label for="lf-max">to</label><input type="text" id="lf-max" placeholder="6:30" inputmode="numeric" value="${esc(v.max || '')}"></div></div>${err}`;
+    const opt = (sel) => LV5.map((l, i) => `<option value="${i}" ${String(sel) === String(i) ? 'selected' : ''}>${l}</option>`).join('');
+    return `<div class="row"><div class="grow"><label for="lf-min">Level from</label><select id="lf-min">${opt(v.min == null || v.min === '' ? 1 : v.min)}</select></div><div class="grow"><label for="lf-max">to</label><select id="lf-max">${opt(v.max == null || v.max === '' ? 2 : v.max)}</select></div></div>${err}`;
+  }
+  O.lfp = () => { const v = overlay.v; const e = overlay.err || {}; const err = (k) => (e[k] ? `<p class="err" role="alert">${e[k]}</p>` : '');
+    return `<div class="sheet"><div class="stack tight"><h2>Find a player or partner</h2><p class="mut sm">Say what you’re playing, how many people you need and at what level. People ask to play and you choose.</p></div>
+      <label for="lf-sport">Activity</label><select id="lf-sport" data-lfpsport="1">${LFP_SPORTS.map((sp) => `<option value="${sp}" ${v.sport === sp ? 'selected' : ''}>${esc(SPORTS[sp])}</option>`).join('')}</select>
+      <span class="flabel">Players you need, not counting you</span>
+      <div class="seg" role="group" aria-label="Players you need">${[1, 2, 3, 5].map((n) => `<button class="${Number(v.need) === n ? 'on' : ''}" data-act="lfneed" data-val="${n}" aria-pressed="${Number(v.need) === n}">${n === 1 ? '1 · one-on-one' : n}</button>`).join('')}</div>
+      <span class="flabel">Level you’re looking for</span>${wantFields(v.sport, v, err('want'))}
+      <label for="lf-date">Date</label><input type="date" id="lf-date" min="${ymd(now())}" value="${esc(v.date || '')}"${e.date ? ' aria-invalid="true"' : ''}>${err('date')}
+      <label for="lf-time">Start time</label><input type="time" id="lf-time" value="${esc(v.t || '')}"${e.t ? ' aria-invalid="true"' : ''}>${err('t')}
+      <label for="lf-place">Where</label><input type="text" id="lf-place" maxlength="80" placeholder="For example: Dubai Hills squash courts, court 2" value="${esc(v.place || '')}"${e.place ? ' aria-invalid="true"' : ''}>${err('place')}
+      <label for="lf-cost">Court or table cost, AED (optional)<br><span class="mut sm">Leave empty if it’s free. Otherwise it’s split between everyone, you included.</span></label><input type="number" id="lf-cost" min="0" max="5000" inputmode="numeric" value="${esc(v.cost || '')}">
+      <label for="lf-note">Anything else? (optional)</label><input type="text" id="lf-note" maxlength="120" placeholder="For example: Rapid games, 15 minutes each" value="${esc(v.note || '')}">
+      <button class="btn block" data-act="lfcreate">Post it</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+  const readLfp = () => { const v = overlay.v; const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; };
+    [['sport', 'lf-sport'], ['min', 'lf-min'], ['max', 'lf-max'], ['date', 'lf-date'], ['t', 'lf-time'], ['place', 'lf-place'], ['cost', 'lf-cost'], ['note', 'lf-note']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; }); };
+  O.gcancel = () => { const g = game(overlay.id); return `<div class="sheet"><h2>Cancel this game?</h2><p>${g.going.length ? `${plural(g.going.length, 'player')} will be told${g.cost ? ' and refunded in full' : ''}.` : 'Nobody has joined yet.'}</p>
+    <button class="btn danger block" data-act="gdocancel" data-id="${g.id}">Cancel game</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
+  // ---------- reviews of hosts (later phases, D53) ----------
+  // Only members who went can review: one review per club, which they can change. Hosts reply once and can report a
+  // review to the Ryze team, but can't delete it. Event guests review the person who hosted.
+  const RTAGS = ['Welcoming to beginners', 'Well organised', 'Started on time', 'Good value', 'Great host', 'Felt safe'];
+  const RTEXT = [
+    [5, 'Came alone and left with people to come back with. The host learned my name in the first five minutes.', [0, 4]],
+    [5, 'Exactly what the page said: on time, right place, friendly crowd.', [1, 2]],
+    [4, 'Really good session. It got a bit crowded, so arrive early.', [1, 3]],
+    [5, 'Best thing I have done since moving to Dubai.', [0, 5]],
+    [4, 'Good group and a fair price. Parking took a while to find.', [3]],
+    [5, 'The host checks on newcomers and pairs you up. Felt welcome from the start.', [0, 4, 5]],
+    [3, 'Fun, but it started 15 minutes late both times I went.', []],
+  ];
+  const AGO = ['3 days ago', 'last week', '2 weeks ago', '3 weeks ago', 'last month'];
+  const evLike = (id) => { if (id.startsWith('g:')) { const g = game(id.slice(2)); return { host: g.host, title: gTitle(g) }; } return ev(id.slice(3)); };
+  const starStr = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+  const stars = (n, label) => `<span class="stars" role="img" aria-label="${label || `${n} out of 5 stars`}">${starStr(n)}</span>`;
+  function reviewsOf(c) {
+    const h = hash(c.id); const seedN = c.photos ? 6 + (h % 34) : h % 5;
+    let n = seedN; let sum = seedN * Math.min(5, 4.3 + (h % 8) / 10);
+    const list = Array.from({ length: Math.min(seedN, 3) }, (_, i) => { const r = RTEXT[(h + i * 3) % RTEXT.length]; const key = `${c.id}:s${i}`;
+      return { key, by: PEOPLE[(h + i * 7) % PEOPLE.length], stars: r[0], text: r[1], tags: r[2].map((t) => RTAGS[t]), ago: AGO[i % AGO.length],
+        reply: (S.replies || {})[key] || (r[0] <= 3 ? 'Fair point, thank you. We now start at the time on the page, and I post in the group if we’re running late.' : '') }; });
+    const tags = RTAGS.map((t, i) => [t, Math.round((seedN * ((h >> i) % 5)) / 6)]).filter((x) => x[1] > 0);
+    const mine = (S.reviews || {})[c.id];
+    if (mine) {
+      n += 1; sum += mine.stars;
+      list.unshift({ key: `${c.id}:me`, mine: true, by: S.user ? S.user.name : 'You', stars: mine.stars, text: mine.text, tags: mine.tags, ago: 'Just now', reply: (S.replies || {})[`${c.id}:me`] || '' });
+      mine.tags.forEach((t) => { const x = tags.find((y) => y[0] === t); if (x) x[1] += 1; else tags.push([t, 1]); });
+    }
+    tags.sort((a, b) => b[1] - a[1]);
+    return { n, avg: n ? sum / n : 0, list, tags };
+  }
+  const canReview = (c) => !!S.user && (Object.keys(S.att).some((id) => id.startsWith(`${c.id}|`) && S.att[id] === 'went') || (S.clubWeeks[c.id] || 0) > 0);
+  const rvItem = (r, host) => `<div class="rv"><div class="row sp"><span class="row">${face(r.by, r.mine ? myPro().photo : '')}<span><b>${r.mine ? 'You' : esc(r.by)}</b><br><span class="xs mut">${r.ago}</span></span></span>${stars(r.stars)}</div>
+    ${r.text ? `<p class="sm">${esc(r.text)}</p>` : ''}${r.tags.length ? `<p class="xs mut">${r.tags.map(esc).join(' · ')}</p>` : ''}
+    ${r.reply ? `<div class="rvreply"><b class="sm">Reply from ${esc(host)}</b><p class="sm">${esc(r.reply)}</p></div>` : ''}
+    ${r.mine ? '' : '<button class="link xs" data-act="soon" data-what="Thanks. The Ryze team checks reported reviews within 2 days.">Report this review</button>'}</div>`;
+  function reviewBlock(c) {
+    const r = reviewsOf(c); const mine = (S.reviews || {})[c.id];
+    const cta = canReview(c) ? `<button class="btn ghost block" data-act="review" data-id="${c.id}">${mine ? 'Edit your review' : 'Review this club'}</button>` : '<p class="sm mut">Only members who went can review this club.</p>';
+    if (!r.n) return `<div class="stack tight"><h2>Reviews</h2><p class="sm mut">No reviews yet. Members can review a club once they’ve been.</p>${canReview(c) ? cta : ''}</div>`;
+    return `<div class="stack tight"><h2>Reviews</h2>
+      <div class="rvsum"><span class="rvbig">${r.avg.toFixed(1)}</span><span>${stars(Math.round(r.avg), `${r.avg.toFixed(1)} out of 5 stars`)}<br><span class="sm mut">${plural(r.n, 'review')} from members who went</span></span></div>
+      ${r.tags.length ? `<div class="wrap">${r.tags.slice(0, 4).map(([t, k]) => `<span class="tag">${esc(t)} · ${k}</span>`).join('')}</div>` : ''}
+      <div>${r.list.map((x) => rvItem(x, founderOf(c))).join('')}</div>${cta}</div>`;
+  }
+  // Event hosts: what guests said about them as a host.
+  function hostStats(name) {
+    const h = hash(name); let n = 8 + (h % 30); let sum = n * Math.min(5, 4.5 + (h % 6) / 10); const events = 2 + (h % 9);
+    const mine = Object.entries(S.reviews || {}).filter(([k, v]) => /^(ev|g):/.test(k) && v.host === name).map(([, v]) => v);
+    mine.forEach((v) => { n += 1; sum += v.stars; });
+    return { n, avg: sum / n, events };
+  }
+
+  O.review = () => {
+    const v = overlay.v; const isEv = /^(ev|g):/.test(overlay.id); const e = isEv ? evLike(overlay.id) : null; const c = isEv ? null : club(overlay.id);
+    const who = isEv ? e.host : c.name;
+    return `<div class="sheet"><div class="stack tight"><h2>${isEv ? `How was ${esc(e.host.split(' ')[0])} as a host?` : `Review ${esc(c.name)}`}</h2><p class="mut sm">${isEv ? esc(e.title) : `Run by ${esc(founderOf(c).replace(/\.$/, ''))}`}. Your first name and photo show with your review.</p></div>
+      <div class="rvstars" role="radiogroup" aria-label="Stars">${[1, 2, 3, 4, 5].map((k) => `<button role="radio" aria-checked="${v.stars === k}" aria-label="${k} star${k > 1 ? 's' : ''}" class="${v.stars >= k ? 'on' : ''}" data-act="rvstar" data-val="${k}">★</button>`).join('')}</div>
+      ${overlay.err ? '<p class="err" role="alert">Tap a star to rate it.</p>' : ''}
+      <span class="flabel">What stood out? (optional)</span>
+      <div class="wrap">${RTAGS.map((t) => `<button class="chip ${v.tags.includes(t) ? 'on' : ''}" data-act="rvtag" data-val="${esc(t)}" aria-pressed="${v.tags.includes(t)}">${esc(t)}</button>`).join('')}</div>
+      <label for="rv-text">A few words for the next newcomer (optional)</label><textarea id="rv-text" rows="3" maxlength="300" placeholder="What should someone know before they go?">${esc(v.text || '')}</textarea>
+      ${v.stars && v.stars <= 2 ? `<p class="note">Sorry it wasn’t good. ${esc(who.split(' ')[0])} can reply, and if something felt unsafe, <button class="link sm" data-act="soon" data-what="This would open a private report to the Ryze team.">tell the Ryze team privately</button>.</p>` : ''}
+      <button class="btn block" data-act="rvsave">${overlay.edit ? 'Update review' : 'Post review'}</button><button class="btn quiet block" data-act="close">Cancel</button></div>`;
+  };
+  const readRv = () => { const el = document.getElementById('rv-text'); if (el && overlay && overlay.v) overlay.v.text = el.value.trim(); };
+  O.reply = () => `<div class="sheet"><div class="stack tight"><h2>Reply to ${esc(overlay.by.split(' ')[0])}</h2><p class="mut sm">Your reply shows under their review on your public page. You can reply once.</p></div>
+    <blockquote class="sm">${stars(overlay.stars)} ${esc(overlay.text || '')}</blockquote>
+    <label for="rp-text">Your reply</label><textarea id="rp-text" rows="3" maxlength="300" placeholder="Thank them, or say what you’ve changed"></textarea>
+    <button class="btn block" data-act="savereply">Post reply</button><button class="btn quiet block" data-act="close">Cancel</button></div>`;
+  OV['o-reviews'] = () => {
+    const c = orgClub(); const r = reviewsOf(c);
+    return `<main class="pad-nav"><div class="stack tight"><h1 style="font-size:22px">Reviews</h1><p class="mut sm">${esc(c.name)} · ${r.n ? `${r.avg.toFixed(1)} from ${plural(r.n, 'review')}` : 'No reviews yet'}</p></div>
+      <p class="note">Only members who went can review. You can reply once to each review and report one that breaks the rules, but you can’t delete reviews. Members trust them because of that.</p>
+      ${r.tags.length ? `<div class="stack tight"><span class="cap">What members mention most</span><div class="wrap">${r.tags.slice(0, 6).map(([t, k]) => `<span class="tag">${esc(t)} · ${k}</span>`).join('')}</div></div>` : ''}
+      <div>${r.list.map((x) => `${rvItem(x, 'you')}${x.reply ? '' : `<button class="btn small ghost" data-act="reply" data-key="${x.key}" data-by="${esc(x.mine ? (S.user ? S.user.name : 'You') : x.by)}" data-stars="${x.stars}" data-text="${esc(x.text || '')}">Reply</button>`}`).join('') || '<p class="mut sm">Reviews appear here once members who came leave one.</p>'}</div></main>`;
+  };
   O.filters = filtersSheet;
   O.signin = () => `<div class="sheet"><h2>${overlay.then && (overlay.then.act === 'claim' || overlay.then.act === 'org') ? 'Sign in to manage your club' : overlay.then && overlay.then.act === 'who' ? 'Sign in to see who\'s going' : 'Sign in to save your spot'}</h2><p class="mut sm">In the real product this is Google sign-in. Here, type any first name.</p>
     <label for="si-name">First name</label><input type="text" id="si-name" value="${esc(overlay.name == null ? 'Alex' : overlay.name)}" maxlength="20" autocomplete="given-name"${overlay.err === 'name' ? ' aria-invalid="true" aria-describedby="si-err"' : ''}>
@@ -1058,7 +1581,7 @@
       else if (ended(s)) tag = has(s.id) ? '<span class="tag">Not confirmed</span>' : '<span class="tag">Finished</span>';
       else if (has(s.id)) tag = `<span class="tag go">${ic('check')}Going</span>`;
       else if (isFull(s)) tag = '<span class="tag">Full</span>';
-      else tag = `<span class="tag cta">${s.club.price ? 'Book' : 'Join'} ${ic('chev')}</span>`;
+      else tag = needsAsk(s.club) ? '<span class="tag">Ask first</span>' : `<span class="tag cta">${s.club.price ? 'Book' : 'Join'} ${ic('chev')}</span>`;
       const ph = S.att[s.id] === 'went' ? myPhotos(s).concat(exPhotos(s.club, s, 0)).slice(0, 3) : [];
       return `<div class="stack tight"><button class="item" data-act="session" data-id="${s.id}"><span class="when"><b>${s.t}</b><span class="mut sm">${s.type}</span></span><span class="grow"><b>${esc(s.club.name)}</b><br><span class="mut sm">${esc(s.place)}</span></span>${tag}</button>
         ${ph.length ? `<div class="strip">${ph.map((p) => tile(p, p.mine ? 'yours' : '')).join('')}</div><button class="btn small ghost" data-act="post" data-id="${s.id}">${ic('plus')}Add your photos</button>` : ''}</div>`;
@@ -1078,9 +1601,10 @@
     else if (cancelled) act = '<p class="notice">This session is cancelled.</p>';
     else if (mine) act = `${(S.paid || {})[s.id] ? `<p class="okline">${ic('check')}<span class="grow">Paid AED ${S.paid[s.id]} to ${esc(founderOf(s.club))}</span></p>` : ''}<p class="note">You're going. Reminder ${s.at.getHours() < 10 ? 'at 19:00 the evening before' : 'three hours before'}.</p><button class="btn ghost block" data-act="unrsvp" data-id="${s.id}">Can't make it</button><button class="btn quiet block" data-act="soon" data-what="This would add the session to your phone's calendar.">Add to calendar</button>`;
     else if (full) act = `<p class="notice">Full · ${s.cap} of ${s.cap}. There is no waiting list.</p>`;
+    else if (needsAsk(s.club)) act = `${askNote(s.club)}${askBtn(s.club, 'btn block')}`;
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">${bookLabel(s.club)}</button>`;
     return `<div class="sheet"><div class="stack tight"><h2>${dayWord(s.at)} · ${s.t}</h2><p class="mut sm">${esc(s.club.name)}</p></div>
-      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
+      <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type}</dd><dt>How long</dt><dd>${lenOf(s)} min · until ${endTime(s)}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}
       ${who(s, over)}
       ${overlay.from ? `<button class="btn quiet block" data-act="day" data-date="${overlay.from}">${ic('left')}Back to ${DAYL[s.at.getDay()]}</button>` : '<button class="btn quiet block" data-act="close">Close</button>'}</div>`;
@@ -1132,6 +1656,46 @@
       <p class="note">Prototype: connecting is simulated. Provider fees are from their published rates.</p>
       ${cur ? '<button class="btn quiet block" data-act="opayset" data-val="">Disconnect: members pay at the session</button>' : '<button class="btn quiet block" data-act="opaystep" data-val="1">Back</button>'}<button class="btn quiet block" data-act="close">Close</button></div>`;
   };
+  // Ask to join: shows exactly what the host will see before it is sent.
+  O.evask = () => { const e = ev(overlay.id); const m = myPro(); const rel = reliability(S.user.name);
+    return `<div class="sheet"><div class="stack tight"><h2>Ask to join</h2><p class="mut sm">${esc(e.title)} · hosted by ${esc(e.host)}</p></div>
+      <span class="cap">${esc(e.host.split(' ')[0])} will see</span>
+      <div class="evreq"><div class="row">${face(S.user.name, m.photo)}<div class="grow"><b>${esc(S.user.name)}</b><br><span class="sm mut">${esc(m.work || 'Work not added')} · ${esc(m.area || 'Area not added')}</span></div></div>
+        <p class="sm mut">${relLine(rel)}</p><p class="sm">${m.ig ? '@' + esc(m.ig) : '<span class="mut">No Instagram added</span>'}${m.li ? ' · LinkedIn' : ''}</p></div>
+      ${m.ig ? '' : '<p class="note">Hosts are more likely to say yes when they can see your Instagram. <button class="link sm" data-act="editpro">Add it to your profile</button></p>'}
+      <label for="ev-note">A line to ${esc(e.host.split(' ')[0])} (optional)</label><input type="text" id="ev-note" maxlength="120" placeholder="For example: Sana’s friend from padel">
+      <button class="btn block" data-act="evsendask" data-id="${e.id}">Send request</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+  O.evpay = () => { const e = ev(overlay.id); const share = evShare(e);
+    return `<div class="sheet"><div class="stack tight"><h2>Pay your share</h2><p class="mut sm">${esc(e.title)}</p></div>
+      <dl class="facts"><dt>Your share</dt><dd>AED ${share}</dd><dt>Ryze fee</dt><dd>AED ${EVFEE}</dd><dt>Total</dt><dd><b>AED ${share + EVFEE}</b></dd></dl>
+      <p class="notice"><b>Paid means committed.</b> If you can’t go, your share comes back only if someone takes your spot.${e.mode === 'collect' ? ` If ${e.min} people haven’t paid by the pay-by date, you get everything back.` : ''}</p>
+      <button class="btn block big" data-act="evdopay" data-id="${e.id}">Pay AED ${share + EVFEE}</button>
+      <p class="mut sm">Apple Pay, Google Pay or card, on Ziina’s secure page. Your share goes to ${esc(e.host)}.</p></div>`; };
+  O.evcancel = () => { const e = ev(overlay.id); return `<div class="sheet"><h2>Cancel ${esc(e.title)}?</h2><p>${plural(e.going.length, 'guest')} who paid get everything back, Ryze’s fee included. They’ll be told straight away.</p>
+    <button class="btn danger block" data-act="evdocancel" data-id="${e.id}">Cancel event and refund</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
+  // Plan a game or event: what it is, when, where, what it costs, and how the money is collected.
+  O.evplan = () => { const v = overlay.v || {}; const e = overlay.err || {}; const err = (k) => (e[k] ? `<p class="err" role="alert">${e[k]}</p>` : '');
+    return `<div class="sheet"><div class="stack tight"><h2>Plan a game or event</h2><p class="mut sm">Split the cost with friends. Each guest pays their share plus a AED ${EVFEE} Ryze fee, straight to your Ziina.</p></div>
+      <label for="pl-title">What is it?</label><input type="text" id="pl-title" maxlength="50" placeholder="For example: Friday 5-a-side, or Yacht day" value="${esc(v.title || '')}"${e.title ? ' aria-invalid="true"' : ''}>${err('title')}
+      <div class="seg" role="group" aria-label="Mind, Body or Soul">${Object.keys(PILLAR_NAMES).map((k) => `<button class="${(v.pillar || 'body') === k ? 'on' : ''}" data-act="plpillar" data-val="${k}" aria-pressed="${(v.pillar || 'body') === k}">${PILLAR_NAMES[k]}</button>`).join('')}</div>
+      <label for="pl-date">Date</label><input type="date" id="pl-date" min="${ymd(now())}" value="${esc(v.date || '')}"${e.date ? ' aria-invalid="true"' : ''}>${err('date')}
+      <label for="pl-time">Start time</label><input type="time" id="pl-time" value="${esc(v.t || '')}"${e.t ? ' aria-invalid="true"' : ''}>${err('t')}
+      <label for="pl-place">Where</label><input type="text" id="pl-place" maxlength="80" placeholder="For example: JVC sports hall, pitch 2" value="${esc(v.place || '')}"${e.place ? ' aria-invalid="true"' : ''}>${err('place')}
+      <label for="pl-total">Total cost, AED<br><span class="mut sm">The pitch, table, boat or food</span></label><input type="number" id="pl-total" min="1" max="100000" inputmode="numeric" value="${esc(v.total || '')}"${e.total ? ' aria-invalid="true"' : ''}>${err('total')}
+      <label for="pl-people">People, including you</label><input type="number" id="pl-people" min="2" max="100" inputmode="numeric" value="${esc(v.people || '')}"${e.people ? ' aria-invalid="true"' : ''}>${err('people')}
+      <span class="flabel">How you’ll pay for it</span>
+      <div class="seg" role="group" aria-label="How you'll pay for it">${[['fronted', 'I’ve already paid'], ['collect', 'Collect first, then book']].map(([k, l]) => `<button class="${(v.mode || 'fronted') === k ? 'on' : ''}" data-act="plmode" data-val="${k}" aria-pressed="${(v.mode || 'fronted') === k}">${l}</button>`).join('')}</div>
+      ${(v.mode || 'fronted') === 'collect' ? `<label for="pl-min">Minimum people to go ahead, including you</label><input type="number" id="pl-min" min="2" max="100" inputmode="numeric" value="${esc(v.min || '')}"${e.min ? ' aria-invalid="true"' : ''}>${err('min')}
+      <label for="pl-payby">Pay-by date<br><span class="mut sm">Before you have to book. If the minimum isn’t reached, nobody is charged.</span></label><input type="date" id="pl-payby" min="${ymd(now())}" value="${esc(v.payBy || '')}"${e.payBy ? ' aria-invalid="true"' : ''}>${err('payBy')}` : '<p class="sm mut">Guests pay you back. Paid means committed: someone who drops out gets their share back only if another person takes the spot.</p>'}
+      <label class="switch" for="pl-ask"><span>Ask to join<br><span class="mut sm">People send you their profile first and pay only once you approve</span></span><input type="checkbox" id="pl-ask" ${v.ask ? 'checked' : ''}></label>
+      <button class="btn block" data-act="evcreate">Create and get a link</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+  const readPlan = () => { const v = overlay.v = overlay.v || {}; const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; };
+    [['title', 'pl-title'], ['date', 'pl-date'], ['t', 'pl-time'], ['place', 'pl-place'], ['total', 'pl-total'], ['people', 'pl-people'], ['min', 'pl-min'], ['payBy', 'pl-payby']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; });
+    const a = document.getElementById('pl-ask'); if (a) v.ask = a.checked; };
+  // After following: suggest booking one session this week, the moment interest is highest.
+  O.nudge = () => { const c = club(overlay.id); const list = future(c).filter((x) => !has(x.id) && !isCancelled(x)).slice(0, 3);
+    return `<div class="sheet"><div class="stack tight"><h2>You're following ${esc(c.name)}</h2><p class="mut sm">People who book a first session in their first week are the ones who keep coming. Pick one?</p></div>
+      <div>${list.map((x) => sessionRow(x)).join('')}</div><button class="btn quiet block" data-act="close">Not now</button></div>`; };
   O.delacct = () => `<div class="sheet"><h2>Delete your account?</h2>
     <p>This deletes your profile, photo, bookings, streak and settings. Organisers will no longer see you. It can't be undone.</p>
     <p class="mut sm">Paid bookings stay on record with the payment provider, as the law requires.</p>
@@ -1152,15 +1716,29 @@
       ${LATER() ? `<label for="ep-area">Area</label><select id="ep-area"><option value="">Choose</option>${AREAS.map((a) => `<option ${d.area === a ? 'selected' : ''}>${a}</option>`).join('')}</select>
       <label for="ep-level">Your level</label><select id="ep-level"><option value="">Choose</option>${Object.entries(LEVELS).map(([k, l]) => `<option value="${k}" ${d.level === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
       <label for="ep-ig">Instagram</label><input type="text" id="ep-ig" maxlength="31" placeholder="@yourhandle" value="${d.ig ? '@' + esc(d.ig) : ''}" autocomplete="off" autocapitalize="off">
+      <label for="ep-li">LinkedIn (optional)<br><span class="mut sm">Some hosts of private events ask for it. Leave empty if you'd rather not.</span></label><input type="text" id="ep-li" maxlength="60" placeholder="linkedin.com/in/yourname" value="${esc(d.li || '')}" autocomplete="off" autocapitalize="off">
       <label for="ep-work">Work</label><input type="text" id="ep-work" maxlength="40" placeholder="For example: Nurse, or Works in marketing" value="${esc(d.work)}">
       <label for="ep-hob">Other things you're into</label><input type="text" id="ep-hob" maxlength="80" placeholder="For example: brunch spots, photography" value="${esc(d.hobbies)}">
+      <fieldset class="levels"><legend>Your levels<br><span class="mut sm">Hosts see your level for their activity when you ask to join or ask to play</span></legend>
+        ${Object.keys(d.skills || {}).map((sp) => skillRow(sp, d.skills[sp])).join('')}
+        <label for="ep-addsk">Add an activity</label><select id="ep-addsk" data-skilladd="1"><option value="">Choose</option>${Object.keys(SPORTS).filter((sp) => !(d.skills || {})[sp]).map((sp) => `<option value="${sp}">${esc(SPORTS[sp])}</option>`).join('')}</select></fieldset>
       <label class="switch" for="ep-share"><span>Show my profile to people at my sessions<br><span class="mut sm">And to those clubs' organisers. Off means they only see your first name.</span></span><input type="checkbox" id="ep-share" ${d.share ? 'checked' : ''}></label>` : '<p class="mut sm">A clear photo helps people find you at the meeting point.</p>'}
       <button class="btn block" data-act="savepro">Save</button><button class="btn quiet block" data-act="procancel">Cancel</button></div>`;
   };
+  function skillRow(sp, k) {
+    const kind = skillKind(sp); const rm = `<button class="link sm" data-act="skillrm" data-sp="${sp}">Remove</button>`;
+    if (kind === 'rating') return `<div class="skrow"><div class="row sp"><b>${esc(SPORTS[sp])}</b>${rm}</div><label for="sk-${sp}-r">Rating, online or club<br><span class="mut sm">Leave empty if you\u2019re unrated</span></label><input type="number" id="sk-${sp}-r" min="100" max="3000" inputmode="numeric" value="${k.rating || ''}"></div>`;
+    if (kind === 'pace') return `<div class="skrow"><div class="row sp"><b>${esc(SPORTS[sp])}</b>${rm}</div><label for="sk-${sp}-p">Usual pace per km</label><input type="text" id="sk-${sp}-p" placeholder="6:00" inputmode="numeric" value="${esc(k.raw != null ? k.raw : k.pace ? paceTxt(k.pace) : '')}"></div>`;
+    return `<div class="skrow"><div class="row sp"><b>${esc(SPORTS[sp])}</b>${rm}</div><div class="row"><div class="grow"><label for="sk-${sp}-l">Level</label><select id="sk-${sp}-l">${LV5.map((l, i) => `<option value="${i}" ${Number(k.level || 0) === i ? 'selected' : ''}>${l}</option>`).join('')}</select></div><div class="grow"><label for="sk-${sp}-y">Years playing</label><input type="number" id="sk-${sp}-y" min="0" max="80" inputmode="numeric" value="${k.years || ''}"></div></div></div>`;
+  }
   // Keep what has been typed when the sheet re-renders (for example after picking a photo).
   const readPro = () => { const v = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; }; const d = overlay.d;
-    [['area', 'ep-area'], ['level', 'ep-level'], ['ig', 'ep-ig'], ['work', 'ep-work'], ['hobbies', 'ep-hob']].forEach(([k, id]) => { const x = v(id); if (x !== undefined) d[k] = k === 'ig' ? x.replace(/^@/, '') : x; });
-    const sh = document.getElementById('ep-share'); if (sh) d.share = sh.checked; };
+    [['area', 'ep-area'], ['level', 'ep-level'], ['ig', 'ep-ig'], ['li', 'ep-li'], ['work', 'ep-work'], ['hobbies', 'ep-hob']].forEach(([k, id]) => { const x = v(id); if (x !== undefined) d[k] = k === 'ig' ? x.replace(/^@/, '') : x; });
+    const sh = document.getElementById('ep-share'); if (sh) d.share = sh.checked;
+    Object.keys(d.skills || {}).forEach((sp) => { const kind = skillKind(sp);
+      if (kind === 'rating') { const x = v(`sk-${sp}-r`); if (x !== undefined) d.skills[sp] = { rating: x ? Number(x) : null }; }
+      else if (kind === 'pace') { const x = v(`sk-${sp}-p`); if (x !== undefined) d.skills[sp] = { pace: parsePace(x), raw: x }; }
+      else { const l = v(`sk-${sp}-l`); const y = v(`sk-${sp}-y`); if (l !== undefined) d.skills[sp] = { level: Number(l), years: y ? Number(y) : null }; } }); };
   O.milestone = () => { const m = MS.find((x) => x.id === overlay.id); return `<div class="sheet full" style="justify-content:center;text-align:center;align-items:center">
     <span class="badge on" style="width:120px;font-size:26px">${m.b}</span><h1>${m.t}</h1><p>${m.line}</p><p class="mut sm">with ${esc(overlay.club)}</p>
     <div class="stack" style="width:100%"><button class="btn block" data-act="share">Share</button><button class="btn quiet block" data-act="close">Done</button></div></div>`; };
@@ -1190,12 +1768,16 @@
     <label for="ed-area">Area</label><select id="ed-area">${Object.entries(CITIES).map(([city, list]) => `<optgroup label="${city}">${list.map((a) => `<option ${c.area === a ? 'selected' : ''}>${a}</option>`).join('')}</optgroup>`).join('')}</select>
     <fieldset class="levels"><legend>Who is it for?<br><span class="mut sm">Members filter by this</span></legend>${Object.entries(LEVELS).map(([k, l]) => `<label class="switch" for="ed-lv-${k}"><span>${l}</span><input type="checkbox" id="ed-lv-${k}" data-lv="${k}" ${c.levels.includes(k) ? 'checked' : ''}></label>`).join('')}
       <label class="switch" for="ed-ladies"><span>Ladies only</span><input type="checkbox" id="ed-ladies" ${c.ladies ? 'checked' : ''}></label></fieldset>
+    <fieldset class="levels"><legend>Who can book</legend>
+      <label class="switch" for="ed-ask"><span>New members ask to join first<br><span class="mut sm">They send a short request with their profile and book once you approve. People you invite by link skip this.</span></span><input type="checkbox" id="ed-ask" ${c.ask ? 'checked' : ''}></label>
+      <label for="ed-askq">A question for new members (optional)</label><input type="text" id="ed-askq" maxlength="80" placeholder="For example: What's your usual 5 km time?" value="${esc(c.askQ || '')}"></fieldset>
     <label for="ed-desc">Description</label><textarea id="ed-desc" rows="4" maxlength="300">${esc(c.desc)}</textarea>
     <label for="ed-level">Level or pace</label><input type="text" id="ed-level" maxlength="80" value="${esc(c.level)}">
     <label for="ed-venue">Indoor or outdoor</label><select id="ed-venue">${VENUES.map((v) => `<option ${c.venue === v ? 'selected' : ''}>${v}</option>`).join('')}</select>
     <label for="ed-price">Price per session (AED)<br><span class="mut sm">Members see exactly this. Use 0 for free.</span></label><input type="number" id="ed-price" min="0" max="1000" step="5" inputmode="numeric" value="${c.price || 0}">
     <label for="ed-pfor">What the price covers (optional)</label><input type="text" id="ed-pfor" maxlength="40" placeholder="For example: court share, or towards the coach" value="${esc(c.priceFor || '')}">
     <label for="ed-bring">What to bring</label><input type="text" id="ed-bring" maxlength="80" value="${esc(c.bring)}">
+    <fieldset class="levels"><legend>At the venue<br><span class="mut sm">Members see these on your page</span></legend><div class="wrap">${AMEN.map((a, i) => `<label class="chk" for="ed-am-${i}"><input type="checkbox" id="ed-am-${i}" data-am="${esc(a)}" ${(c.amen || []).includes(a) ? 'checked' : ''}>${esc(a)}</label>`).join('')}</div></fieldset>
     <label for="ed-find">How to find us<br><span class="mut sm">One line for first-timers, added to their reminder</span></label><input type="text" id="ed-find" maxlength="80" placeholder="For example: Look for the orange flag by Pier 7" value="${esc(c.find || '')}">
     <p class="mut xs">Changes show on your public page straight away.</p>
     <button class="btn block" data-act="saveclub" data-id="${c.id}">Save</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
@@ -1212,6 +1794,7 @@
       ${v.once ? `<label for="ss-date">Date</label><input type="date" id="ss-date" min="${ymd(now())}" value="${esc(v.date || '')}"${e.date ? ' aria-invalid="true"' : ''}>${err('date')}`
         : `<label for="ss-day">Day</label><select id="ss-day">${days.map((d) => `<option value="${d}" ${Number(v.d) === d ? 'selected' : ''}>${DAYL[d]}</option>`).join('')}</select>`}
       <label for="ss-time">Start time</label><input type="time" id="ss-time" value="${esc(v.t || '')}"${e.t ? ' aria-invalid="true"' : ''}>${err('t')}
+      <label for="ss-len">How long</label><select id="ss-len">${[30, 45, 60, 75, 90, 120, 150, 180].map((m) => `<option value="${m}" ${Number(v.len || LEN[c.sport] || 60) === m ? 'selected' : ''}>${m < 60 || m % 60 ? m + ' min' : plural(m / 60, 'hour')}</option>`).join('')}</select>
       <label for="ss-type">Session name</label><input type="text" id="ss-type" maxlength="40" placeholder="For example: Long run, or Beginner night" value="${esc(v.type || '')}"${e.type ? ' aria-invalid="true"' : ''}>${err('type')}
       <label for="ss-note">Level or pace</label><input type="text" id="ss-note" maxlength="60" placeholder="For example: All levels" value="${esc(v.note || '')}">
       <label for="ss-place">Meeting point</label><input type="text" id="ss-place" maxlength="80" placeholder="For example: Marina Walk, by Pier 7" value="${esc(v.place || '')}"${e.place ? ' aria-invalid="true"' : ''}>${err('place')}
@@ -1220,7 +1803,7 @@
       ${editing ? '<button class="link danger-link center-link" data-act="delsess">Remove this session</button>' : ''}</div>`;
   };
   const readSess = () => { const v = overlay.v; const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; };
-    [['d', 'ss-day'], ['date', 'ss-date'], ['t', 'ss-time'], ['type', 'ss-type'], ['note', 'ss-note'], ['place', 'ss-place'], ['cap', 'ss-cap']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; }); };
+    [['d', 'ss-day'], ['date', 'ss-date'], ['t', 'ss-time'], ['len', 'ss-len'], ['type', 'ss-type'], ['note', 'ss-note'], ['place', 'ss-place'], ['cap', 'ss-cap']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; }); };
   O.cover = () => { const c = orgClub(); const list = leadPhotos(c, true).concat(past(c).slice(0, 2).flatMap((x, i) => exPhotos(c, x, i, true))).slice(0, 9); const cur = (S.pin[c.id] || leadPhotos(c)[0] || {}).key;
     return `<div class="sheet"><h2>Cover photo</h2><p class="mut sm">The first photo members see on your card in Find and at the top of your page. Only use photos of people who agreed to be in them.</p>
       <div class="covers">${list.map((ph) => `<button class="ph g${ph.g}${ph.key === cur ? ' on' : ''}"${im(ph.sp, ph.i)} data-act="setcover" data-key="${ph.key}" data-i="${ph.i}" data-g="${ph.g}" data-by="${esc(ph.by)}" aria-pressed="${ph.key === cur}" aria-label="Photo by ${esc(ph.by)}${ph.key === cur ? ', current cover' : ''}">${ph.key === cur ? `<span class="tag ok">${ic('check')}Cover</span>` : ''}</button>`).join('')}</div>
@@ -1283,11 +1866,12 @@
     qpillar: (d) => { route.qp = d.val; haptic('tap'); render(); },
     quizback: () => { if (route.step) route.step -= 1; else route.qp = ''; render(); },
     q: (d) => { S.quiz[d.k] = d.val; save(); if ((route.step || 0) < 2) { route.step = (route.step || 0) + 1; render(); window.scrollTo(0, 0); } else go('results', {}, true); },
-    browse: (d) => { if (d.sport) filt = { pillar: pillarOf(d.sport), sport: d.sport, area: '', day: '', level: '', price: '', venue: '', who: '' }; else if (d.pillar !== undefined) filt = { pillar: d.pillar, sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; go('browse'); },
+    browse: (d) => { if (d.sport) filt = { pillar: pillarOf(d.sport), sport: d.sport, area: '', day: '', time: '', level: '', price: '', venue: '', who: '' }; else if (d.pillar !== undefined) filt = { pillar: d.pillar, sport: '', area: '', day: '', time: '', level: '', price: '', venue: '', who: '' }; go('browse'); },
     filt: (d) => { filt[d.k] = d.val; if (d.k === 'pillar') filt.sport = ''; render(); },
     ftog: (d) => { filt[d.k] = filt[d.k] === d.val ? '' : d.val; haptic('tap'); render(); },
+    sday: (d) => { document.querySelectorAll('.sdtab').forEach((b) => b.classList.toggle('on', b.dataset.val === d.val)); const g = document.getElementById(`sd-${d.val}`); if (g) g.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); },
     fset: (d) => { filt[d.k] = d.val; render(); },
-    filters: () => { overlay = { t: 'filters' }; render(); }, clearfilt: () => { filt = { pillar: filt.pillar, sport: '', area: '', day: '', level: '', price: '', venue: '', who: '', q: '' }; render(); },
+    filters: () => { overlay = { t: 'filters' }; render(); }, clearfilt: () => { filt = { pillar: filt.pillar, sport: '', area: '', day: '', time: '', level: '', price: '', venue: '', who: '', q: '' }; render(); },
     photook: (d) => {
       const then = overlay.then; S.set.photoOk = d.val === '1'; if (!S.set.photoOk) S.set.tagging = false; save(); overlay = null;
       if (needsPay(then.id)) { overlay = { t: 'pay', id: then.id, confirm: then.confirm }; render(); return; }
@@ -1315,6 +1899,8 @@
     savepro: () => {
       readPro(); proDraft = null; const d = overlay.d;
       if (d.ig && !/^[A-Za-z0-9._]{1,30}$/.test(d.ig)) { say('Instagram handles use letters, numbers, dots and underscores only.'); render(); return; }
+      const badPace = Object.keys(d.skills || {}).find((sp) => skillKind(sp) === 'pace' && d.skills[sp].raw && d.skills[sp].pace == null);
+      if (badPace) { say('Write your pace like 6:00, minutes and seconds per km.'); render(); return; }
       S.user.pro = d; save(); const sid = overlay.sid; overlay = sid ? { t: 'session', id: sid } : null; say('Profile saved.'); render();
     },
     club: (d) => go('club', { id: d.id }), clubs: () => go('clubs'), profile: () => go('profile'),
@@ -1333,6 +1919,7 @@
     demo: () => { overlay = { t: 'demo' }; render(); },
     rsvp: (d) => {
       if (!S.user) { overlay = { t: 'signin', then: { act: 'rsvp', id: d.id } }; render(); return; }
+      { const sc = byId(d.id); if (sc && needsAsk(sc.club)) { overlay = { t: 'askclub', id: sc.club.id }; render(); return; } }
       if (LATER() && S.set.photoOk == null) { overlay = { t: 'photook', then: { id: d.id } }; render(); return; }
       if (needsPay(d.id)) { overlay = { t: 'pay', id: d.id }; render(); return; }
       doRsvp(d.id); overlay = null; haptic('success'); cue('main h1', 'fx-rise'); go('confirm', { id: d.id });
@@ -1340,9 +1927,78 @@
     follow: (d) => {
       if (!S.user) { overlay = { t: 'signin', then: { act: 'follow', id: d.id } }; render(); return; }
       const i = S.follows.indexOf(d.id); if (i < 0) { haptic('success'); cue(`[data-act="follow"][data-id="${d.id}"]`); }
-      if (i >= 0) { S.follows.splice(i, 1); say('Unfollowed. Your history is kept.'); } else { S.follows.push(d.id); if (route.invited) { S.joined = S.joined || {}; S.joined[d.id] = (S.joined[d.id] || 0) + 1; say(`You've joined ${club(d.id).name}.`); } else say('Following.'); }
+      if (i >= 0) { S.follows.splice(i, 1); say('Unfollowed. Your history is kept.'); } else { S.follows.push(d.id); if (route.invited) { S.joined = S.joined || {}; S.joined[d.id] = (S.joined[d.id] || 0) + 1; say(`You've joined ${club(d.id).name}.`); } else if (future(club(d.id)).some((x) => !has(x.id) && !isCancelled(x))) overlay = { t: 'nudge', id: d.id }; else say('Following.'); }
       save(); render();
     },
+    evopen: (d) => go('event', { id: d.id }),
+    evplan: needUser(() => { overlay = { t: 'evplan', v: { pillar: 'body', mode: 'fronted', ask: false } }; render(); }),
+    plpillar: (d) => { readPlan(); overlay.v.pillar = d.val; render(); },
+    plmode: (d) => { readPlan(); overlay.v.mode = d.val; render(); },
+    evcreate: () => {
+      readPlan(); const v = overlay.v; const e = {}; const num = (x) => (/^\d{1,6}$/.test(x || '') ? Number(x) : NaN);
+      if (!v.title) e.title = 'Give it a name, like "Friday 5-a-side".';
+      if (!v.date || v.date < ymd(now())) e.date = 'Pick a date from today on.';
+      if (!/^\d{2}:\d{2}$/.test(v.t || '')) e.t = 'Pick a start time.';
+      if (!v.place) e.place = 'Say where, so guests can find it.';
+      if (!(num(v.total) >= 1)) e.total = 'Enter the total cost in AED.';
+      if (!(num(v.people) >= 2)) e.people = 'At least 2 people, including you.';
+      if (v.mode === 'collect') {
+        if (!(num(v.min) >= 2 && num(v.min) <= num(v.people))) e.min = 'Use a number from 2 up to the number of people.';
+        if (!v.payBy || v.payBy < ymd(now()) || (v.date && v.payBy > v.date)) e.payBy = 'Pick a date between today and the event.';
+      }
+      if (Object.keys(e).length) { overlay.err = e; render(); const f = document.querySelector('.sheet [aria-invalid="true"]'); if (f) f.focus(); return; }
+      const id = `my${Date.now().toString(36)}`;
+      // In the prototype, two example requests arrive so the host can try approving.
+      const requests = v.ask ? [{ name: 'Sana K.', note: 'Layla’s friend from padel', li: '' }, { name: 'Jonas P.', note: '', li: 'linkedin.com/in/example' }] : [];
+      S.myEvents = (S.myEvents || []).concat([{ id, mine: true, title: v.title, pillar: v.pillar || 'body', sport: 'social', host: S.user.name, date: v.date, t: v.t, place: v.place, total: num(v.total), people: num(v.people), mode: v.mode || 'fronted', min: v.mode === 'collect' ? num(v.min) : 0, payBy: v.mode === 'collect' ? v.payBy : '', ask: !!v.ask, going: v.ask ? [] : ['Mei L.'], requests }]);
+      save(); overlay = null; haptic('success'); say(v.ask ? 'Created. In this demo, two people have asked to join.' : 'Created. Share the link with your friends.'); go('event', { id });
+    },
+    evask: needUser((d) => { overlay = { t: 'evask', id: d.id }; render(); }),
+    evsendask: (d) => { const n = document.getElementById('ev-note'); S.ev = S.ev || {}; S.ev[d.id] = { st: 'requested', note: n ? n.value.trim() : '' }; save(); overlay = null; say('Request sent.'); render(); },
+    'evapprove-demo': (d) => { evSet(ev(d.id), 'approved'); say('Approved. You can pay now.'); render(); },
+    evpay: needUser((d) => { overlay = { t: 'evpay', id: d.id }; render(); }),
+    evdopay: (d) => { evSet(ev(d.id), 'paid'); overlay = null; haptic('success'); say('Paid. You’re in.'); render(); },
+    evoffer: (d) => { evSet(ev(d.id), 'offered'); say('Your spot is offered. You’re still in until someone takes it.'); render(); },
+    evkeep: (d) => { evSet(ev(d.id), 'paid'); say('Great, you’re still in.'); render(); },
+    evtaken: (d) => { evSet(ev(d.id), 'refunded'); say(`Someone took your spot. AED ${evShare(ev(d.id))} is on its way back.`); render(); },
+    evreqok: (d) => { const e = (S.myEvents || []).find((x) => x.id === d.id); const r = e.requests.find((x) => x.name === d.name); r.done = 'ok'; e.going.push(d.name); save(); say(`${d.name.split(' ')[0]} is approved and has paid, in this demo.`); render(); },
+    evreqno: (d) => { const e = (S.myEvents || []).find((x) => x.id === d.id); const r = e.requests.find((x) => x.name === d.name); r.done = 'no'; save(); say(`Declined. ${d.name.split(' ')[0]} is told the spots are taken.`); render(); },
+    evrate: (d) => { S.evRate = S.evRate || {}; S.evRate[d.id] = Object.assign({}, S.evRate[d.id], { [d.name]: d.val }); save(); render(); },
+    evcancel: (d) => { overlay = { t: 'evcancel', id: d.id }; render(); },
+    evdocancel: (d) => { S.myEvents = (S.myEvents || []).filter((x) => x.id !== d.id); save(); overlay = null; say('Cancelled. Everyone who paid is refunded in full.'); go('me', {}, true); },
+    gopen: (d) => go('game', { id: d.id }),
+    lfp: needUser(() => { overlay = { t: 'lfp', v: { sport: 'chess', need: 1 } }; render(); }),
+    lfneed: (d) => { readLfp(); overlay.v.need = Number(d.val); render(); },
+    lfcreate: () => {
+      readLfp(); const v = overlay.v; const e = {}; const kind = skillKind(v.sport);
+      let min; let max;
+      if (kind === 'rating') { min = Number(v.min); max = Number(v.max); if (!(min >= 100 && max >= min && max <= 3000)) e.want = 'Enter a rating range, for example 1200 to 1600.'; }
+      else if (kind === 'pace') { min = parsePace(v.min); max = parsePace(v.max); if (min == null || max == null || max < min) e.want = 'Enter paces like 5:30 and 6:30, faster first.'; }
+      else { min = Number(v.min); max = Number(v.max); if (max < min) e.want = 'The second level should be the same or higher.'; }
+      if (!v.date || v.date < ymd(now())) e.date = 'Pick a date from today on.';
+      if (!/^\d{2}:\d{2}$/.test(v.t || '')) e.t = 'Pick a start time.';
+      if (!v.place) e.place = 'Say where, so players can find you.';
+      if (Object.keys(e).length) { overlay.err = e; render(); return; }
+      const id = `g${Date.now().toString(36)}`;
+      // In the prototype, three example requests arrive: one in range, one outside it, and one with a weak record.
+      const mid = Math.round((min + max) / 2);
+      const ks = kind === 'rating' ? [{ rating: mid }, { rating: Math.max(100, min - 150) }, { rating: min + 20 }]
+        : kind === 'pace' ? [{ pace: mid }, { pace: max + 40 }, { pace: min }]
+        : [{ level: min, years: 4 }, { level: Math.max(0, min - 1), years: 1 }, { level: max, years: 6 }];
+      const requests = [{ name: 'Sana K.', note: 'Free most evenings', k: ks[0] }, { name: 'Yuki O.', note: '', k: ks[1] }, { name: 'Jonas P.', note: 'Keen to improve', k: ks[2] }];
+      S.games = (S.games || []).concat([{ id, mine: true, sport: v.sport, need: Number(v.need) || 1, host: S.user.name, date: v.date, t: v.t, place: v.place, cost: Number(v.cost) || 0, want: { min, max }, note: v.note || '', going: [], requests }]);
+      save(); overlay = null; haptic('success'); say('Posted. In this demo, three people have asked to play.'); go('game', { id });
+    },
+    gask: needUser((d) => { overlay = { t: 'gask', id: d.id }; render(); }),
+    gsend: (d) => { gSet(game(d.id), 'requested'); overlay = null; say('Request sent.'); render(); },
+    'gaccept-demo': (d) => { const g = game(d.id); gSet(g, g.cost ? 'approved' : 'in'); say(g.cost ? 'Accepted. Pay your share to confirm.' : 'Accepted. You’re playing.'); render(); },
+    gpay: (d) => { gSet(game(d.id), 'paid'); haptic('success'); say('Paid. You’re playing.'); render(); },
+    gdrop: (d) => { const g = game(d.id); if (gSt(g) === 'paid') { gSet(g, 'offered'); say('Your place is offered. You get your share back if someone takes it.'); } else { gSet(g, ''); say(`${g.host.split(' ')[0]} has been told, so they can find someone else.`); } render(); },
+    gok: (d) => { const g = (S.games || []).find((x) => x.id === d.id); const r = g.requests.find((x) => x.name === d.name); r.done = 'ok'; g.going.push(d.name); if (g.going.length >= g.need) g.requests.forEach((x) => { if (!x.done) x.done = 'full'; }); save(); say(g.going.length >= g.need ? 'Game on. Everyone has been told.' : `${d.name.split(' ')[0]} is in.`); render(); },
+    gno: (d) => { const g = (S.games || []).find((x) => x.id === d.id); const r = g.requests.find((x) => x.name === d.name); r.done = 'no'; save(); say(`${d.name.split(' ')[0]} is told you went with someone else.`); render(); },
+    gcancel: (d) => { overlay = { t: 'gcancel', id: d.id }; render(); },
+    gdocancel: (d) => { S.games = (S.games || []).filter((x) => x.id !== d.id); save(); overlay = null; say('Cancelled. Everyone has been told.'); go('me', {}, true); },
+    skillrm: (d) => { readPro(); delete overlay.d.skills[d.sp]; render(); },
     dosignin: () => {
       const el = document.getElementById('si-name'); const name = el ? el.value.trim() : ''; const then = overlay.then;
       const age = document.getElementById('si-age'); overlay.name = name; overlay.age = !!(age && age.checked);
@@ -1353,6 +2009,7 @@
       if (then && then.act === 'rsvp' && needsPay(then.id)) { overlay = { t: 'pay', id: then.id, confirm: true }; render(); return; }
       if (then && then.act === 'rsvp') { haptic('success'); cue('main h1', 'fx-rise'); doRsvp(then.id); stack = []; go('confirm', { id: then.id }); }
       else if (then && then.act === 'follow') { haptic('success'); cue(`[data-act="follow"][data-id="${then.id}"]`); if (!S.follows.includes(then.id)) { S.follows.push(then.id); if (route.invited) { S.joined = S.joined || {}; S.joined[then.id] = (S.joined[then.id] || 0) + 1; } } save(); say(route.invited ? `You've joined ${club(then.id).name}.` : 'Following.'); render(); }
+      else if (then && then.act === 'askclub') { overlay = needsAsk(club(then.id)) ? { t: 'askclub', id: then.id } : null; render(); }
       else if (then && then.act === 'claim') { overlay = { t: 'claim', id: then.id }; render(); }
       else if (then && then.act === 'who') { A.who({ id: then.id }); }
       else if (then && then.act === 'org') { go('o-week', {}, true); }
@@ -1388,6 +2045,29 @@
     onudge: (d) => { const c = orgClub(); (S.nudged[c.id] = S.nudged[c.id] || {})[d.name] = true; save(); say(`Sent to ${d.name.split(' ')[0]}, from you, with your next session.`); render(); },
     onudgeall: () => { const c = orgClub(); const n = (S.nudged[c.id] = S.nudged[c.id] || {}); health(c).drifting.forEach((m) => { n[m.name] = true; }); save(); say('Sent to everyone who hasn\'t been back.'); render(); },
     thank: (d) => { S.thanks[d.id] = (S.thanks[d.id] || 0) + 1; (S.thanked = S.thanked || {})[d.sid] = true; save(); say(`Thanks sent to ${founderOf(club(d.id)).split(' ')[0]}.`); render(); },
+    review: needUser((d) => { const old = (S.reviews || {})[d.id]; overlay = { t: 'review', id: d.id, edit: !!old, v: old ? { stars: old.stars, tags: old.tags.slice(), text: old.text } : { stars: 0, tags: [], text: '' } }; render(); }),
+    rvstar: (d) => { readRv(); overlay.v.stars = Number(d.val); overlay.err = false; haptic('tap'); render(); },
+    rvtag: (d) => { readRv(); const t = overlay.v.tags; const i = t.indexOf(d.val); if (i < 0) t.push(d.val); else t.splice(i, 1); render(); },
+    rvsave: () => {
+      readRv(); const v = overlay.v; if (!v.stars) { overlay.err = true; render(); return; }
+      const isEv = /^(ev|g):/.test(overlay.id); S.reviews = S.reviews || {};
+      S.reviews[overlay.id] = { stars: v.stars, tags: v.tags, text: v.text, host: isEv ? evLike(overlay.id).host : founderOf(club(overlay.id)), at: now().getTime() };
+      save(); overlay = null; haptic('success'); say(isEv ? 'Thanks. Your review adds to their host rating.' : 'Thanks. Your review is on the club page.'); render();
+    },
+    reply: (d) => { overlay = { t: 'reply', key: d.key, by: d.by, stars: Number(d.stars), text: d.text }; render(); },
+    savereply: () => { const el = document.getElementById('rp-text'); const t = el ? el.value.trim() : ''; if (!t) { say('Write a reply first.'); render(); return; } S.replies = S.replies || {}; S.replies[overlay.key] = t; save(); overlay = null; say('Reply posted on your page.'); render(); },
+    oreviews: () => go('o-reviews'),
+    askclub: (d) => { overlay = S.user ? { t: 'askclub', id: d.id } : { t: 'signin', then: { act: 'askclub', id: d.id } }; render(); },
+    cjsend: (d) => {
+      const c = club(d.id); const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      if (c.askQ && !g('cj-ans')) { overlay.err = true; render(); const f = document.getElementById('cj-ans'); if (f) f.focus(); return; }
+      S.joinReq = S.joinReq || {}; S.joinReq[c.id] = { st: 'pending', ans: g('cj-ans'), note: g('cj-note'), at: now().getTime() };
+      if (!S.follows.includes(c.id)) S.follows.push(c.id);
+      save(); overlay = null; haptic('success'); say(`Request sent. You're following ${c.name} meanwhile.`); render();
+    },
+    cjdemo: (d) => { S.joinReq[d.id].st = 'approved'; save(); haptic('success'); say(`${hostFirst(club(d.id))} said yes. You can book now.`); render(); },
+    cjok: (d) => { const r = clubReqs(club(d.id)).find((x) => x.name === d.name); r.done = 'ok'; save(); say(`${d.name.split(' ')[0]} can book now. They’ve been told.`); render(); },
+    cjno: (d) => { const r = clubReqs(club(d.id)).find((x) => x.name === d.name); r.done = 'no'; save(); say(`Declined. ${d.name.split(' ')[0]} is told you’re not taking new members right now.`); render(); },
     oweek: () => { stack = []; go('o-week', {}, true); }, ochecks: () => { stack = []; go('o-checks', {}, true); }, oclub: () => { stack = []; go('o-club', {}, true); },
     ophotos: () => { stack = []; go('o-photos', { id: orgClub().id }, true); },
     osched: () => go('o-sched', { id: orgClub().id }), osession: (d) => go('o-session', { id: d.id }), ocheck: (d) => go('o-checkin', { id: d.id }),
@@ -1409,9 +2089,12 @@
       const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; }; const c = club(d.id);
       const lv = Object.keys(LEVELS).filter((k) => { const el = document.getElementById(`ed-lv-${k}`); return el && el.checked; });
       if (!lv.length) { say('Tick at least one level, so members know who it is for.'); render(); return; }
-      const lad = document.getElementById('ed-ladies');
-      S.edits[d.id] = Object.assign({}, S.edits[d.id], { sport: val('ed-sport') || c.sport, area: val('ed-area') || c.area, levels: lv, ladies: !!(lad && lad.checked) }, { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, price: /^\d{1,4}$/.test(val('ed-price')) ? Number(val('ed-price')) : c.price, priceFor: val('ed-pfor'), bring: val('ed-bring') || c.bring, find: val('ed-find'), venue: val('ed-venue') || c.venue });
-      S.conf[d.id] = now().getTime(); const ck = (S.check[d.id] = S.check[d.id] || {}); ck.d = true; if (val('ed-find')) ck.f = true; save(); applyEdits(); overlay = null; say('Saved. Your public page is updated.'); render();
+      const lad = document.getElementById('ed-ladies'); const ask = document.getElementById('ed-ask'); const askOn = !!(ask && ask.checked); const askWasOn = !!c.ask;
+      S.edits[d.id] = Object.assign({}, S.edits[d.id], { sport: val('ed-sport') || c.sport, area: val('ed-area') || c.area, levels: lv, ladies: !!(lad && lad.checked) }, { desc: val('ed-desc') || c.desc, level: val('ed-level') || c.level, price: /^\d{1,4}$/.test(val('ed-price')) ? Number(val('ed-price')) : c.price, priceFor: val('ed-pfor'), bring: val('ed-bring') || c.bring, find: val('ed-find'), venue: val('ed-venue') || c.venue, ask: askOn, askQ: val('ed-askq'), amen: [...document.querySelectorAll('[data-am]')].filter((x) => x.checked).map((x) => x.dataset.am) });
+      S.conf[d.id] = now().getTime(); const ck = (S.check[d.id] = S.check[d.id] || {}); ck.d = true; if (val('ed-find')) ck.f = true; let msg = 'Saved. Your public page is updated.';
+      if (askOn && !askWasOn) { S.clubReqs = S.clubReqs || {}; if (!(S.clubReqs[d.id] || []).length) S.clubReqs[d.id] = [{ name: 'Sana K.', ans: val('ed-askq') ? 'About 32 minutes, but happy at the back' : '', note: 'Just moved to the Marina' }, { name: 'Jonas P.', ans: val('ed-askq') ? 'Not sure' : '', note: '' }]; msg = 'Saved. New members now ask to join. In this demo, two requests have arrived on This week.'; }
+      if (!askOn && askWasOn) msg = 'Saved. Anyone can book again.';
+      save(); applyEdits(); overlay = null; say(msg); render();
     },
     confirmclub: (d) => { S.conf[d.id] = now().getTime(); (S.check[d.id] = S.check[d.id] || {}).d = true; save(); say('Thanks. Marked as confirmed today.'); render(); },
     addsess: () => { const c = club(route.id) || orgClub(); const last = c.sched[c.sched.length - 1] || {}; overlay = { t: 'sess', cid: c.id, idx: -1, v: { once: false, d: 6, t: '', type: '', note: last.note || '', place: last.place || '', cap: '' } }; render(); },
@@ -1427,7 +2110,7 @@
       const day = v.once && v.date ? new Date(v.date + 'T00:00').getDay() : Number(v.d);
       if (!e.t && c.sched.some((x, i) => i !== overlay.idx && x.t === v.t && (v.once ? x.date === v.date : !x.date && x.d === day))) e.t = 'There is already a session at this time.';
       if (Object.keys(e).length) { overlay.err = e; render(); const f = document.querySelector('.sheet [aria-invalid="true"]'); if (f) f.focus(); return; }
-      const prevItem = overlay.idx >= 0 ? c.sched[overlay.idx] : null; const item = { d: day, t: v.t, type: v.type, note: v.note || 'All levels', place: v.place, added: prevItem ? !!prevItem.added : true }; if (v.cap) item.cap = Number(v.cap); if (v.once) item.date = v.date;
+      const prevItem = overlay.idx >= 0 ? c.sched[overlay.idx] : null; const item = { d: day, t: v.t, type: v.type, note: v.note || 'All levels', place: v.place, added: prevItem ? !!prevItem.added : true }; if (v.cap) item.cap = Number(v.cap); if (v.once) item.date = v.date; if (v.len) item.len = Number(v.len);
       const list = c.sched.slice(); if (overlay.idx >= 0) list[overlay.idx] = item; else list.push(item);
       list.sort((a, b) => ((a.date ? 1 : 0) - (b.date ? 1 : 0)) || (a.date || '').localeCompare(b.date || '') || ((a.d + 6) % 7) - ((b.d + 6) % 7) || a.t.localeCompare(b.t));
       (S.edits[c.id] = S.edits[c.id] || {}).sched = list; S.conf[c.id] = now().getTime(); save(); applyEdits();
@@ -1454,7 +2137,7 @@
     // Try the colour themes; the choice is kept on this device.
     dlater: (d) => { S.later = !!d.val; save(); haptic('tap'); render(); },
     theme: (d) => { if (d.val) document.documentElement.dataset.theme = d.val; else delete document.documentElement.dataset.theme; try { localStorage.setItem('ryze-theme-v2', d.val || 'lemon'); } catch (e) { /* ignore */ } haptic('tap'); render(); },
-    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { pillar: '', sport: '', area: '', day: '', level: '', price: '', venue: '', who: '' }; go('home', {}, true); }
+    'd-reset': () => { S = fresh(); save(); applyEdits(); stack = []; filt = { pillar: '', sport: '', area: '', day: '', time: '', level: '', price: '', venue: '', who: '' }; go('home', {}, true); }
   };
 
   // ---------- render ----------
@@ -1464,7 +2147,7 @@
     if (v !== route.v) route = { v };
     const reuse = { 'o-sched': V.sched, 'o-photos': V.mphotos, 'o-session': V.attend };
     const body = (OV[v] || reuse[v])();
-    const sub = ['o-sched', 'o-session', 'o-checkin'].includes(v);
+    const sub = ['o-sched', 'o-session', 'o-checkin', 'o-reviews'].includes(v);
     const top = `<header class="top otop"><div class="r">${sub ? `<button class="back" data-act="back">${ic('left')}${({ 'o-week': 'This week', 'o-club': 'Club', 'o-checks': 'Check-in', 'o-session': 'Session', 'o-sched': 'Schedule' }[(stack[stack.length - 1] || {}).v]) || 'Back'}</button>` : `<span class="ologo">ryze club <span class="obadge">Organiser</span></span>`}</div>
       <div class="r"><button class="pill" data-act="demo">Demo</button></div></header>`;
     const tab = (act, l, i, on) => `<button data-act="${act}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
@@ -1496,7 +2179,7 @@
       <div class="r"><button class="pill" data-act="demo">Demo</button>${S.user ? '' : '<button class="btn small ghost" data-act="signin">Sign in</button>'}</div></header>`;
     const showNav = S.user && route.v !== 'club' && route.v !== 'quiz';
     const tab = (v, l, i, on) => `<button data-act="${v}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
-    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('tohome', 'Home', 'home', route.v === 'home')}${tab('me', 'My week', 'week', ['me', 'result', 'missed', 'confirm'].includes(route.v))}${tab('browse', 'Find', 'find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', 'clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', 'me', route.v === 'profile')}</nav>` : '';
+    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('tohome', 'Home', 'home', route.v === 'home')}${tab('me', 'My week', 'week', ['me', 'result', 'missed', 'confirm', 'event', 'game'].includes(route.v))}${tab('browse', 'Find', 'find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', 'clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', 'me', route.v === 'profile')}</nav>` : '';
     const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace(/^(<div class="sheet[^>]*>)/, '$1<button class="sheet-x" data-act="close" aria-label="Close">' + ic('x') + '</button>').replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
     const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
     app.innerHTML = offBar() + top + (V[route.v] || V.home)() + nav + ov + ts;
@@ -1555,6 +2238,8 @@
     if (t.dataset.filt) { filt[t.dataset.filt] = t.value; render(); }
     else if (t.dataset.set) { S.set[t.dataset.set] = t.checked; save(); if (t.dataset.set === 'wa' && t.checked) { say('In the real product this asks for your phone number.'); render(); } }
     else if (t.dataset.agree && overlay) { overlay.agree = t.checked; }
+    else if (t.dataset.lfpsport && overlay && overlay.t === 'lfp') { readLfp(); overlay.v.sport = t.value; overlay.v.min = ''; overlay.v.max = ''; overlay.err = null; render(); }
+    else if (t.dataset.skilladd && overlay && overlay.t === 'editpro' && t.value) { readPro(); overlay.d.skills = Object.assign({}, overlay.d.skills, { [t.value]: {} }); render(); }
     else if (t.dataset.feat) { S.feat = t.value || null; save(); say(t.value ? `${club(t.value).name} is now the top club on Home.` : 'Home picks the top club again.'); render(); }
     else if (t.dataset.sharename) { overlay.hide = !t.checked; render(); }
     else if (t.dataset.photo && t.files && t.files[0]) {

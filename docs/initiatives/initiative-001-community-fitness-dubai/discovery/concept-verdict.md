@@ -2,7 +2,7 @@
 title: Concept verdict — Community fitness platform for Dubai
 status: draft
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-11-22
 parent: prfaq.md
 ---
 
@@ -12,6 +12,23 @@ parent: prfaq.md
 **Concept strength:** medium
 
 This is guidance for product authors, not a gate.
+
+## Update, 22 November 2026: the money model
+
+The original verdict left payments out and called Ryze Club free. Decisions D39 and D41 made paying per session the business model, and decisions D47 to D50 added private events with friends, ask to join, and host-only reliability records. The founder ran the money model through validate-concept on 22 November; the interview covered the shared-cost rules and is paused before the paying host's current workaround and stakes.
+
+| Part | Guidance | Why |
+|---|---|---|
+| 10% of the host's price on club sessions | `proceed`, as the MVP's model | Simple, one clean price for members, and Ryze never holds the money. Host acceptance is unproven: ask the 15 pilot hosts before launch |
+| How Ryze collects the 10% | `research-more` | Depends on whether Ziina can split a payment. The fallback, a monthly invoice, risks late payment |
+| Private games and events with friends (AED 3 per guest, paid means committed) | `prototype` | Built in the prototype under later phases. Test with 5 organisers who pay a venue up front today |
+| Ask to join with a profile, and host-only reliability records | `prototype` | Needed for strangers at private events. Needs a data protection check before launch: members must be able to see and correct their own record |
+| Coaching at 15% | `park` | Needs qualification and insurance checks, and clients tend to move off the app after a few sessions (parked idea 4) |
+| The three-year take-home figures | `research-more` | Every input is a guess. Replace hosts, prices and turnout with pilot numbers |
+
+**Concept strength for the money model:** medium-low until hosts confirm they will accept 10%.
+
+**Next interview question when validation resumes:** how do the 15 pilot hosts collect money today (cash, bank transfer, Ziina links), and what does chasing it cost them?
 
 ## Summary
 
@@ -32,7 +49,7 @@ This is guidance for product authors, not a gate.
 
 ## Not in V1
 
-Coaches, dietitians, 1:1 sessions, payments, supplements, ads, a general social feed, comments, messaging, a native app, credential or licence checks, medical or nutrition advice.
+Coaches, dietitians, 1:1 sessions, supplements, ads, a general social feed, comments, messaging, a native app, credential or licence checks, medical or nutrition advice.
 
 ## Success signals (pilot of about 8 weeks)
 

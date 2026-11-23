@@ -26,6 +26,10 @@ As an organiser, open **https://jed-byte.github.io/ryzeclub/#organiser**. This i
 
 "See your public page" in the Club tab switches back to the member app. Invite links open as `…/ryzeclub/#join/mdr` with a "Join the club" panel; try it on your phone with the QR code. From the member app, "Open organiser app" on a club you manage, or **Demo**, switches over.
 
+Also in the member app: tap a session time straight from a club card, filter by time of day, and see a club's schedule as a strip of days with each session's length. Following a club suggests a session to book this week. Some clubs ask new members to join first (Jumeirah Ladies Run Club, Corniche Chess Club, JVC Acoustic Jam): you send a short request, then book once the organiser approves. Organisers turn this on in Club → Club details → "New members ask to join first", and requests appear at the top of This week.
+
+With **Demo → With later phases**, My week also shows **Games and events with friends**: a 5-a-side, a yacht day and a games night to join, and "Plan a game or event" to host one. Hosts choose "I've already paid" or "Collect first, then book", can turn on "Ask to join", approve or decline requests while seeing each person's profile and reliability record, and answer "Would you host them again?" afterwards. Guests pay their share plus AED 3; paid means committed unless someone takes their spot. My week also has **Players wanted**: one-on-one games and small groups (a chess opponent, a squash partner, a fourth for doubles). Add your levels in Profile → Edit profile (a chess rating, a running pace, or a level and years playing), see which posts fit you, ask to play, or post your own with "Find a player or partner" and accept the closest match. Later phases also add reviews: after "I went", members review the club, and club pages show the rating and the host's replies. Hosts reply from Club → Reviews in the organiser app. Event pages show each host's rating from past guests.
+
 Use the **Demo** button at the top to skip ahead in time, become an organiser, switch colour theme (Lemon, Scarlet, Watermelon, Court, Kinetic, Seal), or reset. A theme can also be opened from a link, for example `?theme=court`.
 
 ### What is not real
@@ -47,6 +51,7 @@ Everything is under `docs/initiatives/initiative-001-community-fitness-dubai/`.
 |---|---|
 | `discovery/prfaq.md` | Press release and questions used to test the idea |
 | `discovery/concept-verdict.md` | The verdict and what the pilot must prove |
+| `discovery/research/competitor-review-classpass-mindbody.md` | What to take from ClassPass and Mindbody, and where they are weak |
 | `planning/prds/prd-001-club-discovery-v1/prd.md` | What V1 must do |
 | `planning/prds/prd-001-club-discovery-v1/decision-log.md` | Every decision and who made it |
 | `planning/prds/prd-001-club-discovery-v1/ux/ux-spec.md` | The six design flows and the visual direction |
