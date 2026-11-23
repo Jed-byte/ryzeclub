@@ -1,10 +1,10 @@
 /* Offline support for Ryze Club. Pages and files come from the network when there is one,
    and from the last saved copy when there isn't. Nothing here touches bookings or payments. */
-const CACHE = 'ryze-v51';
-const SHELL = ['./', 'index.html', 'styles.css?v=44', 'app.js?v=44', 'glass.js?v=2', 'privacy.html', 'terms.html', '404.html'];
+const CACHE = 'ryze-v52';
+const SHELL = ['./', 'index.html', 'styles.css?v=52', 'app.js?v=52', 'glass.js?v=2', 'privacy.html', 'terms.html', '404.html'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
@@ -15,7 +15,8 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
   e.respondWith(
-    fetch(req)
+    // Ask the server whether the file changed instead of trusting the browser's own short-term copy.
+    fetch(req, { cache: 'no-cache' })
       .then((res) => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return res; })
       .catch(() => caches.match(req).then((hit) => hit || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())))
   );
