@@ -19,9 +19,9 @@ The original verdict left payments out and called Ryze Club free. Decisions D39 
 
 | Part | Guidance | Why |
 |---|---|---|
-| 10% of the host's price on club sessions | `proceed`, as the MVP's model | Simple, one clean price for members, and Ryze never holds the money. Host acceptance is unproven: ask the 15 pilot hosts before launch |
+| 10% of the host's price on club sessions, 5% on members the organiser invited (D60) | `proceed`, as the MVP's model | Simple, one clean price for members, and Ryze never holds the money. Host acceptance is unproven: ask the 15 pilot hosts before launch |
 | How Ryze collects the 10% | `research-more` | Depends on whether Ziina can split a payment. The fallback, a monthly invoice, risks late payment |
-| Private games and events with friends (AED 3 per guest, paid means committed) | `prototype` | Built in the prototype under later phases. Test with 5 organisers who pay a venue up front today |
+| Plans: games and events with new people or just mates (free, or AED 3 per person when a cost is split) (D57) | `prototype` | Built in the prototype under later phases. Test with 5 organisers who pay a venue up front today |
 | Ask to join with a profile, and host-only reliability records | `prototype` | Needed for strangers at private events. Needs a data protection check before launch: members must be able to see and correct their own record |
 | Coaching at 15% | `park` | Needs qualification and insurance checks, and clients tend to move off the app after a few sessions (parked idea 4) |
 | The three-year take-home figures | `research-more` | Every input is a guess. Replace hosts, prices and turnout with pilot numbers |
