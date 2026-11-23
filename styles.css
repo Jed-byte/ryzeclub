@@ -829,3 +829,13 @@ fieldset.levels legend { padding: 0; margin-bottom: 4px; font-weight: 700; }
 /* Levels in the profile editor: one block per activity. */
 .skrow { display: flex; flex-direction: column; gap: 4px; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .skrow .row .grow { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+/* Find: Clubs and Plans tabs. Make a plan: the chosen answer is outlined. */
+.findtabs { margin-bottom: 4px; }
+.quiz-opt.on { border-color: var(--acc); box-shadow: inset 0 0 0 1px var(--acc); }
+.quiz-opt .ic { flex: none; color: var(--acc); }
+/* Organiser money: summary, then each session with what the organiser receives. */
+.money { border: 1.5px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-variant-numeric: tabular-nums; }
+.money .mtotal { border-top: 1px solid var(--line); padding-top: 8px; font-size: 18px; }
+.mright { text-align: right; flex: none; font-variant-numeric: tabular-nums; }
+.qrwrap svg { max-width: 220px; height: auto; }

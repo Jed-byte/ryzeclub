@@ -60,8 +60,8 @@ For a club session, cancel 12 hours or more before and you get a full refund. Fo
 **Who sees my profile when I ask to join something?**
 Some clubs, and some private events, ask new members to request a place first. Only that club's organisers, or that event's host, see your request. They see your name, photo, work, area, Instagram, LinkedIn if you added it, and your attendance record. They don't see what other hosts said about you individually.
 
-**Can I find one person to play with?**
-Yes. Post a game that needs one player, or three for doubles, with the level you want: a rating for chess, a pace for running, or a level for squash, tennis and the rest. People see whether they fit and ask to play, and you choose. If there's a court to pay for, the cost is split between everyone.
+**Can I find one person to play with, or plan something with friends?**
+Yes, with a plan. Choose whether it's for new people or just your mates, then whether you're playing something or doing something together. To find a partner, post a plan that needs one player, or three for doubles, with the level you want: a rating for chess, a pace for running, or a level for squash, tennis and the rest. People see whether they fit and ask to play, and you choose. If there's a court to pay for, the cost is split between everyone.
 
 **Can I see what other members thought of a club or a host?**
 Yes. Members who went can review a club or the host of an event. You see the average, how many people reviewed, what they mention most and the host's replies. Hosts can't delete reviews.
@@ -84,7 +84,7 @@ Low. A web application, a database, a reminder channel and photo storage. No nov
 About 30 hand-picked run and community padel clubs, Dubai-wide, on a mobile-first website, aimed at newcomers.
 
 **How does the money work?**
-Members pay through Ziina straight into the host's account. Ryze keeps 10% of a club's price and never holds session money. Private games and events with friends add a flat AED 3 per guest on top, so the organiser gets their full share back. How Ryze collects its 10% (a split at payment or a monthly invoice) is still open.
+Members pay through Ziina straight into the host's account. Ryze keeps 10% of a club's price for members who found the club through Ryze, and 5% for members who joined from the organiser's own invite link (D60). It never holds session money. Private games and events with friends add a flat AED 3 per guest on top, so the organiser gets their full share back. How Ryze collects its 10% (a split at payment or a monthly invoice) is still open.
 
 **What is explicitly not in V1?**
 Coaches, dietitians, 1:1 sessions, supplements, ads, a general social feed, comments, messaging, a native app, credential or licence checks, and medical or nutrition advice.
@@ -132,3 +132,5 @@ See the success signals in `concept-verdict.md`.
 | Reviews from members who went help newcomers choose and push hosts to stay reliable | Assumed | Compare bookings for clubs with and without reviews in the pilot |
 | People will find one-on-one partners through Ryze instead of existing groups and apps | Unproven | Count posts filled within 48 hours in the pilot |
 | Self-reported levels are honest enough to match on | Assumed | Watch "would play again" answers and reports after games |
+| A lower 5% fee on members organisers bring themselves stops them moving those members off Ryze | Assumed | Compare paid bookings per club before and after; watch check-ins without bookings |
+| Members will add friends and invite them to plans | Unproven | Share of plans with at least one friend invited in the pilot |

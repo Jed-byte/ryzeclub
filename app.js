@@ -321,7 +321,7 @@
   ];
 
   const fresh = () => ({ user: null, quiz: {}, rsvps: [], follows: [], att: {}, streak: 0, longest: 0, total: 0, weekDone: false, prot: true, sinceProt: 0, badges: [], posts: {}, untag: {}, offset: 0, clubWeeks: {}, set: { standings: true, tagging: true, email: true, wa: false }, note: '',
-    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '', thanks: {}, nudged: {}, ev: {}, myEvents: [], evRate: {}, reviews: {}, replies: {}, joinReq: {}, clubReqs: {}, games: [], gameSt: {} });
+    manage: [], claims: {}, edits: {}, conf: {}, cancelled: {}, orgAtt: {}, hidden: {}, pin: {}, check: {}, ci: {}, mode: 'member', orgClub: '', thanks: {}, nudged: {}, ev: {}, myEvents: [], evRate: {}, reviews: {}, replies: {}, joinReq: {}, clubReqs: {}, games: [], gameSt: {}, friends: [], friendSent: [], planInv: {} });
   let S = fresh();
   try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
   // Drop saved references to clubs and sports that have since been removed from the prototype.
@@ -709,6 +709,7 @@
     <div class="stack"><div class="stack tight"><h1>Find your people. Keep showing up.</h1><p class="mut">Community clubs in Dubai. Pick what you're into.</p></div>
       ${pillarNav()}
       <button class="btn block big" data-act="quiz">Find my club ${ic('right')}</button>
+      ${LATER() ? `<button class="btn ghost block" data-act="plans">${ic('plus')}Make or join a plan</button>` : ''}
       <button class="link center-link" data-act="browse">Or browse all ${CLUBS.length} clubs</button></div>
     <div class="stack"><h2>This week</h2>${featured().map((c) => clubCard(c)).join('')}</div>
     ${S.user ? '' : '<button class="link sm center-link" data-act="browse">Run a club? Find its page and claim it</button>'}
@@ -766,7 +767,7 @@
     const chip = (k, v, label, icon) => `<button class="chip ${filt[k] === v ? 'on' : ''}" data-act="ftog" data-k="${k}" data-val="${v}" aria-pressed="${filt[k] === v}">${ic(icon)}${label}</button>`;
     const n = filtCount();
     const sports = Object.entries(SPORTS).filter(([k]) => !filt.pillar || pillarOf(k) === filt.pillar);
-    return `<main class="browse ${S.user ? 'pad-nav' : ''}"><h1>${filt.pillar ? `${PILLARS[filt.pillar].name} clubs` : 'All clubs'}</h1>
+    return `<main class="browse ${S.user ? 'pad-nav' : ''}">${findTabs('browse')}<h1>${filt.pillar ? `${PILLARS[filt.pillar].name} clubs` : 'All clubs'}</h1>
       <div class="seg" role="group" aria-label="Mind, Body or Soul">${[['', 'All']].concat(Object.entries(PILLARS).map(([k, p]) => [k, p.name])).map(([k, l]) => `<button class="${filt.pillar === k ? 'on' : ''}" data-act="filt" data-k="pillar" data-val="${k}" aria-pressed="${filt.pillar === k}">${l}</button>`).join('')}</div>
       <label class="search"><span class="sr">Search clubs</span>${ic('find')}<input type="search" id="find-q" placeholder="Search clubs, sports or areas" value="${esc(filt.q || '')}" autocomplete="off"></label>
       ${filt.pillar ? `<div class="hscroll" role="group" aria-label="Category">${[['', 'All']].concat(sports).map(([k, l]) => `<button class="chip ${filt.sport === k ? 'on' : ''}" data-act="filt" data-k="sport" data-val="${k}" aria-pressed="${filt.sport === k}">${k === 'futsal' ? '5-a-side' : l}</button>`).join('')}</div>` : ''}
@@ -821,6 +822,7 @@
         ${stale(c) ? `<p class="notice">This page hasn't been confirmed since ${confirmedOn(c)}. Check with the club before you go.</p>` : ''}</div>
       ${askNote(c)}
       ${who}
+      ${n ? friendLine(n) : ''}
       <div class="wrap">${mine ? `<button class="btn small" data-act="manage" data-id="${c.id}">${ic('flag')}Open organiser app</button>` : ''}<button class="btn small ${following ? 'quiet' : 'ghost'}" data-act="follow" data-id="${c.id}" aria-pressed="${following}">${following ? `${ic('check')}Following` : `${ic('plus')}Follow this club`}</button></div>
       <div class="stack tight"><p>${esc(c.desc)}</p><p class="sm mut">${esc(c.level)}. Bring: ${esc(c.bring)}</p>${(c.amen || []).length ? `<p class="amen sm"><b>At the venue</b> ${c.amen.map((a) => `<span class="tag">${esc(a)}</span>`).join('')}</p>` : ''}</div>
       ${fut.length ? schedule(c) : ''}
@@ -849,11 +851,11 @@
   function seedEvents() {
     const fri = dayIn(5); const sat = dayIn(6, 1); const thu = dayIn(4);
     return [
-      { id: 'ev5s', title: 'Friday night 5-a-side', pillar: 'body', sport: 'futsal', host: 'Omar S.', date: ymd(fri), t: '20:00', place: 'JVC sports hall, pitch 2', total: 400, people: 10, mode: 'fronted', ask: false,
+      { id: 'ev5s', title: 'Friday night 5-a-side', pillar: 'body', sport: 'futsal', host: 'Omar S.', date: ymd(fri), t: '20:00', place: 'JVC sports hall, pitch 2', total: 400, people: 10, mode: 'fronted', ask: false, vis: 'mates',
         going: ['Jonas P.', 'Ravi T.', 'Karim A.', 'Ben W.', 'Sami K.', 'Imran D.', 'Tom H.'], about: 'Same pitch every Friday. Mixed ability, bibs provided. Omar has booked and paid for the pitch.' },
-      { id: 'evyacht', title: 'Yacht day from Dubai Marina', pillar: 'soul', sport: 'social', host: 'Layla H.', date: ymd(sat), t: '11:00', place: 'Dubai Marina Yacht Club, pier C', total: 3000, people: 12, mode: 'collect', min: 10, payBy: ymd(minus(sat, 4)), ask: true,
+      { id: 'evyacht', title: 'Yacht day from Dubai Marina', pillar: 'soul', sport: 'social', host: 'Layla H.', date: ymd(sat), t: '11:00', place: 'Dubai Marina Yacht Club, pier C', total: 3000, people: 12, mode: 'collect', min: 10, payBy: ymd(minus(sat, 4)), ask: true, vis: 'open',
         going: ['Sana K.', 'Mei L.', 'Hannah P.', 'Grace O.', 'Lucia M.', 'Claire B.', 'Yuki O.'], about: 'Four hours on a 60-foot yacht with lunch on board. Layla books it once 10 people have paid. Friends of friends welcome; ask to join.' },
-      { id: 'evgames', title: 'Board games at mine', pillar: 'mind', sport: 'games', host: 'Ravi T.', date: ymd(thu), t: '19:30', place: 'Ravi’s flat, Marina (address sent once you’re in)', total: 160, people: 8, mode: 'fronted', ask: true,
+      { id: 'evgames', title: 'Board games at mine', pillar: 'mind', sport: 'games', host: 'Ravi T.', date: ymd(thu), t: '19:30', place: 'Ravi’s flat, Marina (address sent once you’re in)', total: 160, people: 8, mode: 'fronted', ask: false, vis: 'mates',
         going: ['Ben W.', 'Priya N.', 'Ahmed F.'], about: 'Snacks and drinks covered by the share. Catan, Codenames and whatever you bring.' },
     ];
   }
@@ -881,10 +883,8 @@
   function evCard(e) {
     const st = evState(e); const at = evAt(e);
     const tag = evMine(e) ? '<span class="tag go">You’re hosting</span>' : st === 'paid' ? `<span class="tag go">${ic('check')}Paid</span>` : st === 'offered' ? '<span class="tag">Spot offered</span>' : st === 'requested' ? '<span class="tag">Asked to join</span>' : st === 'approved' ? '<span class="tag cta">Approved · pay</span>' : `<span class="tag cta">AED ${evShare(e) + EVFEE}</span>`;
-    return `<button class="mrow evrow" data-act="evopen" data-id="${e.id}"><span class="orgcta-ic">${ic(PILLARS[e.pillar] ? e.pillar : 'body')}</span><span class="grow"><b>${esc(e.title)}</b><br><span class="sm mut">${dayWord(at)} · ${e.t} · ${evPaid(e)} of ${evSpots(e)} paid${evMine(e) ? '' : ` · by ${esc(e.host)}`}</span></span>${tag}</button>`;
+    return `<button class="mrow evrow" data-act="evopen" data-id="${e.id}"><span class="orgcta-ic">${ic(PILLARS[e.pillar] ? e.pillar : 'body')}</span><span class="grow"><b>${esc(e.title)}</b><br><span class="sm mut">${dayWord(at)} · ${e.t} · ${evPaid(e)} of ${evSpots(e)} paid${evMine(e) ? '' : evVis(e) === 'mates' ? ` · invited by ${esc(e.host)}` : ` · by ${esc(e.host)}`}</span></span>${tag}</button>`;
   }
-  const evSection = () => { if (!LATER() || !S.user) return ''; const list = allEvents().filter((e) => evAt(e) > now()).sort((a, b) => evAt(a) - evAt(b));
-    return `<div class="stack tight"><span class="cap">Games and events with friends</span><p class="sm mut">Split the cost of a pitch, a table or a boat. Everyone pays their share before it happens.</p>${list.map(evCard).join('')}<button class="btn ghost block" data-act="evplan">${ic('plus')}Plan a game or event</button></div>`; };
 
   V.event = () => {
     const e = ev(route.id); if (!e) return V.me();
@@ -937,7 +937,7 @@
       : `You paid <b>AED ${e.total.toLocaleString('en')}</b>. Guests have paid you back <b>AED ${collected.toLocaleString('en')}</b> of AED ${target}. Your own share is AED ${evShare(e)}.`;
     return `<div class="stack tight"><span class="cap">Money</span><p class="sm">${moneyLine}</p>
         <p class="sm mut">Money goes straight to your Ziina. Ryze adds its AED ${EVFEE} fee on top of each guest’s share, so you get your full share back.</p></div>
-      <div class="row"><button class="btn grow" data-act="soon" data-what="This would open WhatsApp with your event link.">Share link</button><button class="btn ghost grow" data-act="evcancel" data-id="${e.id}">Cancel event</button></div>
+      <div class="row"><button class="btn grow" data-act="invite" data-k="e" data-id="${e.id}">${ic('share')}Invite people</button><button class="btn ghost grow" data-act="evcancel" data-id="${e.id}">Cancel event</button></div>
       <p class="sm mut">After the event, guests are asked to review you as a host. Your rating shows on every event you host.</p>
       ${e.ask ? `<div class="stack tight"><span class="cap">Asking to join · ${reqs.length}</span><p class="sm mut">You see their profile and how reliable they’ve been. They pay only once you approve.</p>${reqHtml}</div>` : ''}
       <div class="stack tight"><span class="cap">Paid · ${e.going.length}</span>${e.going.length ? `<div>${e.going.map((n) => `<div class="item"><span class="row grow">${face(n, '')}<span>${esc(n)}</span></span><span class="tag go">${ic('check')}AED ${evShare(e)}</span></div>`).join('')}</div>` : '<p class="sm mut">Nobody has paid yet.</p>'}</div>
@@ -952,7 +952,12 @@
   // pace for running, and a level plus years playing for everything else. Hosts see it on requests, and posts for players
   // say what level they want, so both sides can tell at a glance whether it's a fit.
   const LV5 = ['Beginner', 'Improver', 'Intermediate', 'Advanced', 'Competitive'];
-  const skillKind = (sp) => ({ chess: 'rating', running: 'pace' }[sp] || 'level');
+  const skillKind = (sp) => ({ chess: 'rating', running: 'pace', cycling: 'speed' }[sp] || 'level');
+  // Only activities where a level means something. Book clubs, meditation, crafts and the like have none.
+  const LEVELLED = ['chess', 'running', 'cycling', 'padel', 'tennis', 'squash', 'football', 'futsal', 'basketball', 'volleyball', 'boxing', 'yoga', 'dance'];
+  const hasLevel = (sp) => LEVELLED.includes(sp);
+  const yearsLabel = (sp) => ({ boxing: 'Years training', yoga: 'Years practising', dance: 'Years dancing' }[sp] || 'Years playing');
+  const yearsWord = (sp) => ({ boxing: 'training', yoga: 'practising', dance: 'dancing' }[sp] || 'playing');
   const paceTxt = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
   const parsePace = (t) => { const m = /^(\d{1,2}):([0-5]\d)$/.exec(String(t || '').trim()); return m ? Number(m[1]) * 60 + Number(m[2]) : null; };
   const mySkills = () => ((S.user && S.user.pro && S.user.pro.skills) || {});
@@ -962,6 +967,7 @@
     const h = hash(`${name}|${sp}`); const kind = skillKind(sp);
     if (kind === 'rating') return { rating: 900 + (h % 1100) };
     if (kind === 'pace') return { pace: 270 + (h % 180) };
+    if (kind === 'speed') return { speed: 22 + (h % 14) };
     return { level: h % 5, years: 1 + (h % 12) };
   }
   function skillTxt(sp, k) {
@@ -969,17 +975,19 @@
     const kind = skillKind(sp);
     if (kind === 'rating') return k.rating ? `Rating ${k.rating}` : 'Unrated';
     if (kind === 'pace') return k.pace ? `Usual pace ${paceTxt(k.pace)} per km` : '';
-    return `${LV5[k.level] || LV5[0]}${k.years ? ` · ${plural(k.years, 'year')} playing` : ''}`;
+    if (kind === 'speed') return k.speed ? `Usual speed ${k.speed} km/h` : '';
+    return `${LV5[k.level] || LV5[0]}${k.years ? ` · ${plural(k.years, 'year')} ${yearsWord(sp)}` : ''}`;
   }
-  const skillVal = (sp, k) => { if (!k) return null; const kind = skillKind(sp); return kind === 'rating' ? (k.rating || null) : kind === 'pace' ? (k.pace || null) : (k.level == null ? null : k.level); };
+  const skillVal = (sp, k) => { if (!k) return null; const kind = skillKind(sp); return kind === 'rating' ? (k.rating || null) : kind === 'pace' ? (k.pace || null) : kind === 'speed' ? (k.speed || null) : (k.level == null ? null : k.level); };
   const fits = (sp, want, k) => { const v = skillVal(sp, k); if (v == null || !want) return null; return v >= want.min && v <= want.max; };
   function wantTxt(sp, w) {
     const kind = skillKind(sp);
     if (kind === 'rating') return `Rating ${w.min} to ${w.max}`;
     if (kind === 'pace') return `${paceTxt(w.min)} to ${paceTxt(w.max)} per km`;
+    if (kind === 'speed') return `${w.min} to ${w.max} km/h`;
     return w.min === w.max ? LV5[w.min] : `${LV5[w.min]} to ${LV5[w.max]}`;
   }
-  const fitTag = (f) => (f === true ? `<span class="tag go">${ic('check')}Your level</span>` : f === false ? '<span class="tag">Outside their range</span>' : '<span class="tag">Add your level</span>');
+  const fitTag = (f, sp, k) => (f === true ? `<span class="tag go">${ic('check')}Your level</span>` : f === false ? '<span class="tag">Outside their range</span>' : k && skillKind(sp) === 'rating' ? '<span class="tag">Unrated</span>' : '<span class="tag">Add your level</span>');
 
   // Posts looking for players. "need" is how many people the host wants, not counting themselves.
   function seedGames() {
@@ -1000,57 +1008,95 @@
   const gShare = (g) => (g.cost ? Math.ceil(g.cost / (g.need + 1)) : 0);
   const gFee = (g) => (g.cost ? EVFEE : 0);
   const gAt = (g) => { const d = ymdToDate(g.date); const [h, m] = g.t.split(':').map(Number); d.setHours(h, m); return d; };
-  const gTitle = (g) => (g.need === 1 ? `${SPORTS[g.sport]}: one-on-one` : `${SPORTS[g.sport]}: ${g.need} players wanted`);
+  const gTitle = (g) => g.title || (g.need === 1 ? `${actLabel(g.sport)}: one-on-one` : `${actLabel(g.sport)}: ${g.need} players wanted`);
 
+  // ---------- plans (later phases, D57) ----------
+  // One idea for everything that isn't a club: a plan. Two questions shape it. Who's it for: new people (listed in Plans,
+  // people ask to join and the poster chooses) or just my mates (not listed; joined by invite link or from friends).
+  // What kind: play something (players, and a level where the activity has one) or do something together (people, no level).
+  // Plans with a cost split it between everyone; free plans cost nothing and carry no Ryze fee.
+  const actLabel = (sp) => SPORTS[sp] || PILLAR_NAMES[sp] || 'Plan';
+  const gVis = (g) => g.vis || 'open';
+  const gKind = (g) => g.kind || 'play';
+  const gWho = (g) => (gKind(g) === 'play' ? 'player' : 'person');
+  const gInvolved = (g) => !!g.mine || !!gSt(g) || gVis(g) === 'mates';
+  const evVis = (e) => e.vis || (e.ask ? 'open' : 'mates');
+  const evInvolved = (e) => evMine(e) || !!evState(e) || evVis(e) === 'mates';
   function gCard(g) {
-    const st = gSt(g); const f = fits(g.sport, g.want, mySkills()[g.sport]);
-    const tag = g.mine ? '<span class="tag go">Your post</span>' : gIn(g) ? `<span class="tag go">${ic('check')}Playing</span>` : st === 'requested' ? '<span class="tag">Asked</span>' : st === 'approved' ? '<span class="tag cta">Accepted · pay</span>' : fitTag(f);
+    const st = gSt(g); const k = mySkills()[g.sport]; const f = g.want ? fits(g.sport, g.want, k) : null;
+    const tag = g.mine ? '<span class="tag go">Your plan</span>' : gIn(g) ? `<span class="tag go">${ic('check')}You’re in</span>` : st === 'requested' ? '<span class="tag">Asked</span>' : st === 'approved' ? '<span class="tag cta">Accepted · pay</span>'
+      : gVis(g) === 'mates' ? '<span class="tag cta">Invited</span>' : g.want ? fitTag(f, g.sport, k) : '<span class="tag">Ask to join</span>';
     const left = g.need - gFilled(g);
-    return `<button class="mrow evrow" data-act="gopen" data-id="${g.id}"><span class="orgcta-ic">${ic(ICONS[g.sport] ? g.sport : 'body')}</span><span class="grow"><b>${esc(gTitle(g))}</b><br><span class="sm mut">${dayWord(gAt(g))} · ${g.t} · ${esc(wantTxt(g.sport, g.want))}${g.mine ? '' : ` · by ${esc(g.host)}`} · ${left > 0 ? `${left} open` : 'full'}</span></span>${tag}</button>`;
+    const by = g.mine ? '' : gVis(g) === 'mates' ? ` · invited by ${esc(g.host)}` : ` · by ${esc(g.host)}`;
+    return `<button class="mrow evrow" data-act="gopen" data-id="${g.id}"><span class="orgcta-ic">${ic(ICONS[g.sport] ? g.sport : 'body')}</span><span class="grow"><b>${esc(gTitle(g))}</b><br><span class="sm mut">${dayWord(gAt(g))} · ${g.t}${g.want ? ` · ${esc(wantTxt(g.sport, g.want))}` : ''}${by} · ${left > 0 ? `${left} open` : 'full'}${g.cost ? ` · AED ${gShare(g) + gFee(g)}` : ' · free'}</span></span>${tag}</button>`;
   }
-  const gSection = () => { if (!LATER() || !S.user) return ''; const list = allGames().filter((g) => gAt(g) > now()).sort((a, b) => gAt(a) - gAt(b));
-    return `<div class="stack tight"><span class="cap">Players wanted</span><p class="sm mut">One-on-one games and small groups: a chess opponent, a squash partner, a fourth for doubles.</p>${list.map(gCard).join('')}<button class="btn ghost block" data-act="lfp">${ic('plus')}Find a player or partner</button></div>`; };
+  // Find has two tabs once later phases are on: clubs, and plans.
+  const findTabs = (cur) => (LATER() ? `<div class="seg findtabs" role="tablist" aria-label="Find">${[['browse', 'Clubs'], ['plans', 'Plans']].map(([k, l]) => `<button role="tab" aria-selected="${cur === k}" class="${cur === k ? 'on' : ''}" data-act="${k === 'browse' ? 'toclubs' : 'plans'}">${l}</button>`).join('')}</div>` : '');
+  const planItems = (filter) => {
+    const n0 = now();
+    return allGames().filter((g) => gAt(g) > n0 && filter.g(g)).map((g) => ({ at: gAt(g), html: gCard(g) }))
+      .concat(allEvents().filter((e) => evAt(e) > n0 && filter.e(e)).map((e) => ({ at: evAt(e), html: evCard(e) })))
+      .sort((a, b) => a.at - b.at);
+  };
+  V.plans = () => {
+    const pf = route.pf || '';
+    const yours = S.user ? planItems({ g: gInvolved, e: evInvolved }) : [];
+    const open = planItems({ g: (g) => !gInvolved(g) && gVis(g) === 'open' && (!pf || (pf === 'play') === (gKind(g) === 'play')), e: (e) => !evInvolved(e) && evVis(e) === 'open' && pf !== 'play' });
+    return `<main class="browse ${S.user ? 'pad-nav' : ''}">${findTabs('plans')}<h1>Plans</h1>
+      <p class="mut">Play something or do something together. Find new people, or invite your mates.</p>
+      <button class="btn block big" data-act="planstart">${ic('plus')}Make a plan</button>
+      ${yours.length ? `<div class="stack tight"><h2>Your plans</h2>${yours.map((x) => x.html).join('')}</div>` : ''}
+      <div class="stack tight"><h2>Open to new people</h2>
+        <div class="seg" role="group" aria-label="Kind of plan">${[['', 'All'], ['play', 'Play'], ['together', 'Together']].map(([k, l]) => `<button class="${pf === k ? 'on' : ''}" data-act="pfilt" data-val="${k}" aria-pressed="${pf === k}">${l}</button>`).join('')}</div>
+        ${open.length ? open.map((x) => x.html).join('') : '<p class="mut sm">Nothing open right now. Make the first plan.</p>'}</div></main>`;
+  };
+  // My week lists only the plans you're part of; finding new ones happens in Find, Plans.
+  const myPlansSection = () => { if (!LATER() || !S.user) return ''; const yours = planItems({ g: gInvolved, e: evInvolved });
+    return `<div class="stack tight"><span class="cap">Your plans</span>${yours.length ? yours.map((x) => x.html).join('') : '<p class="sm mut">No plans yet.</p>'}<button class="btn ghost block" data-act="plans">See open plans or make one</button></div>`; };
 
   V.game = () => {
-    const g = game(route.id); if (!g) return V.me();
-    const at = gAt(g); const st = gSt(g); const me = mySkills()[g.sport]; const f = fits(g.sport, g.want, me); const left = g.need - gFilled(g);
-    const hs = hostStats(g.host);
-    const head = `<div class="stack tight"><span class="cap">${esc(SPORTS[g.sport])} · ${g.mine ? 'Your post' : 'Posted by ' + esc(g.host)}</span>${g.mine ? '' : `<p class="sm">${stars(Math.round(hs.avg), `${hs.avg.toFixed(1)} out of 5 stars`)} <b>${hs.avg.toFixed(1)}</b> <span class="mut">from ${plural(hs.n, 'player')} they’ve played with</span></p>`}
-      <h1 style="font-size:26px">${esc(gTitle(g))}</h1><p class="mut">${DAYL[at.getDay()]} ${at.getDate()} ${MON[at.getMonth()]} · ${g.t} · ${lenOf({ club: { sport: g.sport } })} min</p><p class="sm">${esc(g.place)}</p>${g.note ? `<p class="sm mut">${esc(g.note)}</p>` : ''}</div>
-      <div class="evmoney"><div class="row sp"><span class="sm mut">Level wanted</span><b class="sm">${esc(wantTxt(g.sport, g.want))}</b></div>
-        ${g.mine ? '' : `<div class="row sp"><span class="sm mut">Your level</span><span class="sm">${me && skillVal(g.sport, me) != null ? `<b>${esc(skillTxt(g.sport, me))}</b> ${fitTag(f)}` : '<button class="link sm" data-act="editpro">Add your level</button>'}</span></div>`}
+    const g = game(route.id); if (!g) return V.plans();
+    const at = gAt(g); const st = gSt(g); const me = mySkills()[g.sport]; const f = g.want ? fits(g.sport, g.want, me) : null; const left = g.need - gFilled(g);
+    const hs = hostStats(g.host); const host1 = esc(g.host.split(' ')[0]); const mates = gVis(g) === 'mates';
+    const head = `<div class="stack tight"><span class="cap">${esc(actLabel(g.sport))} · ${g.mine ? 'Your plan' : (mates ? 'Invited by ' : 'Posted by ') + esc(g.host)}${mates ? ' · mates only' : ''}</span>${g.mine ? '' : `<p class="sm">${stars(Math.round(hs.avg), `${hs.avg.toFixed(1)} out of 5 stars`)} <b>${hs.avg.toFixed(1)}</b> <span class="mut">from ${plural(hs.n, 'person')} who’ve joined their plans</span></p>`}
+      <h1 style="font-size:26px">${esc(gTitle(g))}</h1><p class="mut">${DAYL[at.getDay()]} ${at.getDate()} ${MON[at.getMonth()]} · ${g.t}${gKind(g) === 'play' ? ` · ${lenOf({ club: { sport: g.sport } })} min` : ''}</p><p class="sm">${esc(g.place)}</p>${g.note ? `<p class="sm mut">${esc(g.note)}</p>` : ''}</div>
+      <div class="evmoney">${g.want ? `<div class="row sp"><span class="sm mut">Level wanted</span><b class="sm">${esc(wantTxt(g.sport, g.want))}</b></div>
+        ${g.mine ? '' : `<div class="row sp"><span class="sm mut">Your level</span><span class="sm">${me && (skillVal(g.sport, me) != null || skillKind(g.sport) === 'rating') ? `<b>${esc(skillTxt(g.sport, me))}</b> ${fitTag(f, g.sport, me)}` : '<button class="link sm" data-act="editpro">Add your level</button>'}</span></div>`}` : ''}
         <div class="row sp"><span class="sm mut">Places</span><b class="sm">${left > 0 ? `${left} of ${g.need} open` : 'All taken'}</b></div>
         <div class="row sp"><span class="sm mut">Cost</span><b class="sm">${g.cost ? `AED ${gShare(g)} each + AED ${EVFEE} Ryze fee` : 'Free'}</b></div>
-        ${g.cost ? `<p class="sm mut">The court costs AED ${g.cost}, split ${g.need + 1} ways. You pay only once you’re accepted.</p>` : ''}</div>`;
+        ${g.cost ? `<p class="sm mut">AED ${g.cost} split ${g.need + 1} ways, ${g.mine ? 'you' : host1} included. ${mates ? 'You pay when you join.' : 'You pay only once you’re accepted.'}</p>` : ''}</div>`;
     if (g.mine) return `<main class="pad-nav">${head}${gHostView(g)}</main>`;
     let act;
-    if (st === 'paid' || st === 'in') act = `<p class="okline">${ic('check')}<span class="grow">You’re playing${st === 'paid' ? `. Paid AED ${gShare(g) + gFee(g)} to ${esc(g.host.split(' ')[0])}` : ''}.</span></p>
+    if (st === 'paid' || st === 'in') act = `<p class="okline">${ic('check')}<span class="grow">You’re in${st === 'paid' ? `. Paid AED ${gShare(g) + gFee(g)} to ${host1}` : ''}.</span></p>
       <button class="btn ghost block" data-act="gdrop" data-id="${g.id}">Can’t make it</button>
-      ${(S.reviews || {})['g:' + g.id] ? '' : `<button class="link sm center-link" data-act="review" data-id="g:${g.id}">Demo: the game happened. Review ${esc(g.host.split(' ')[0])}</button>`}`;
-    else if (st === 'offered') act = `<p class="note">Your place is offered. If someone takes it, you get AED ${gShare(g)} back. Until then you’re still playing.</p>`;
+      ${(S.reviews || {})['g:' + g.id] ? '' : `<button class="link sm center-link" data-act="review" data-id="g:${g.id}">Demo: it happened. Review ${host1}</button>`}`;
+    else if (st === 'offered') act = `<p class="note">Your place is offered. If someone takes it, you get AED ${gShare(g)} back. Until then you’re still in.</p>`;
     else if (left <= 0) act = '<p class="notice">All places are taken.</p>';
-    else if (st === 'requested') act = `<p class="note">You asked to play. ${esc(g.host.split(' ')[0])} sees your level and decides.</p><button class="link sm center-link" data-act="gaccept-demo" data-id="${g.id}">Demo: ${esc(g.host.split(' ')[0])} accepts</button>`;
-    else if (st === 'approved') act = `<p class="okline">${ic('check')}<span class="grow">${esc(g.host.split(' ')[0])} accepted you.</span></p><button class="btn block big" data-act="gpay" data-id="${g.id}">Pay AED ${gShare(g) + gFee(g)} to confirm</button>`;
-    else if (st === 'declined') act = `<p class="note">${esc(g.host.split(' ')[0])} went with someone else this time.</p>`;
-    else act = `<button class="btn block big" data-act="gask" data-id="${g.id}">Ask to play</button>${f === false ? '<p class="mut sm center">Your level is outside what they asked for. You can still ask.</p>' : ''}`;
+    else if (st === 'requested') act = `<p class="note">You asked to join. ${host1} sees your profile${g.want ? ' and level' : ''} and decides.</p><button class="link sm center-link" data-act="gaccept-demo" data-id="${g.id}">Demo: ${host1} accepts</button>`;
+    else if (st === 'approved') act = `<p class="okline">${ic('check')}<span class="grow">${host1} accepted you.</span></p><button class="btn block big" data-act="gpay" data-id="${g.id}">Pay AED ${gShare(g) + gFee(g)} to confirm</button>`;
+    else if (st === 'declined') act = `<p class="note">${host1} went with someone else this time.</p>`;
+    else if (mates) act = `<button class="btn block big" data-act="${g.cost ? 'gpay' : 'gjoin'}" data-id="${g.id}">${g.cost ? `Join · pay AED ${gShare(g) + gFee(g)}` : 'I’m in'}</button><p class="mut sm center">${host1} invited you, so there’s nothing to ask.</p>`;
+    else act = `<button class="btn block big" data-act="gask" data-id="${g.id}">${gKind(g) === 'play' ? 'Ask to play' : 'Ask to join'}</button>${f === false ? '<p class="mut sm center">Your level is outside what they asked for. You can still ask.</p>' : ''}`;
     return `<main class="pad-nav">${head}
-      ${g.going.length ? `<div class="stack tight"><span class="cap">Playing</span><div class="row">${avatars([g.host].concat(g.going))}<span class="sm mut">${esc(g.host.split(' ')[0])} and ${plural(g.going.length, 'other')}</span></div></div>` : ''}
+      ${g.going.length ? `<div class="stack tight"><span class="cap">Who’s in</span><div class="row">${avatars([g.host].concat(g.going))}<span class="sm mut">${host1} and ${plural(g.going.length, 'other')}${friendsIn([g.host].concat(g.going))}</span></div></div>` : ''}
       ${act}
-      ${g.cost ? '<ul class="evrules sm"><li><b>Paid means committed.</b> If you can’t make it, your share comes back only if someone takes your place.</li><li>If the host cancels, you get everything back.</li></ul>' : '<p class="sm mut">Free game. If you can’t make it, say so here so they can find someone else.</p>'}
-      <button class="btn quiet block" data-act="me">${ic('left')}Back to my week</button></main>`;
+      ${g.cost ? '<ul class="evrules sm"><li><b>Paid means committed.</b> If you can’t make it, your share comes back only if someone takes your place.</li><li>If the plan is cancelled, you get everything back.</li></ul>' : '<p class="sm mut">Free. If you can’t make it, say so here so someone else can come.</p>'}
+      <button class="btn quiet block" data-act="plans">${ic('left')}Back to plans</button></main>`;
   };
   function gHostView(g) {
-    const reqs = (g.requests || []).filter((r) => !r.done); const left = g.need - g.going.length;
+    const reqs = (g.requests || []).filter((r) => !r.done); const left = g.need - g.going.length; const mates = gVis(g) === 'mates';
     const kOf = (n) => ((g.requests || []).find((x) => x.name === n) || {}).k || skillFor(n, g.sport);
-    const card = (r) => { const k = kOf(r.name); const f = fits(g.sport, g.want, k); const rel = reliability(r.name);
-      return `<div class="evreq"><div class="row">${face(r.name, '')}<div class="grow"><b>${esc(r.name)}</b><br><span class="sm">${esc(skillTxt(g.sport, k) || 'No level added')}</span></div>${fitTag(f).replace('Your level', 'In range').replace('Add your level', 'No level')}</div>
-        <p class="sm ${relFlag(rel) ? 'warnline' : 'mut'}">${relFlag(rel) ? ic('flag') : ''}${relLine(rel)}</p>${r.note ? `<p class="sm">“${esc(r.note)}”</p>` : ''}
+    const card = (r) => { const k = kOf(r.name); const f = g.want ? fits(g.sport, g.want, k) : null; const rel = reliability(r.name); const m = memberPro(r.name);
+      return `<div class="evreq"><div class="row">${face(r.name, '')}<div class="grow"><b>${esc(r.name)}</b><br><span class="sm">${g.want ? esc(skillTxt(g.sport, k) || 'No level added') : `${esc(m.work)} · ${esc(m.area)}`}</span></div>${g.want ? fitTag(f, g.sport, k).replace('Your level', 'In range').replace('Add your level', 'No level') : ''}</div>
+        <p class="sm ${relFlag(rel) ? 'warnline' : 'mut'}">${relFlag(rel) ? ic('flag') : ''}${relLine(rel)}</p>${!g.want && m.ig ? `<p class="sm">@${esc(m.ig)}</p>` : ''}${r.note ? `<p class="sm">“${esc(r.note)}”</p>` : ''}
         ${left > 0 ? `<div class="row"><button class="btn small grow" data-act="gok" data-id="${g.id}" data-name="${esc(r.name)}">Accept</button><button class="btn small ghost grow" data-act="gno" data-id="${g.id}" data-name="${esc(r.name)}">Not this time</button></div>` : ''}</div>`; };
-    return `${left <= 0 ? `<p class="okline">${ic('check')}<span class="grow">Game on. Everyone’s been told${g.cost ? ' and asked to pay their share' : ''}.</span></p>` : ''}
-      <div class="stack tight"><span class="cap">Playing · ${g.going.length} of ${g.need}</span>${g.going.length ? `<div>${g.going.map((n) => `<div class="item"><span class="row grow">${face(n, '')}<span>${esc(n)}<br><span class="sm mut">${esc(skillTxt(g.sport, kOf(n)))}</span></span></span></div>`).join('')}</div>` : '<p class="sm mut">Nobody yet.</p>'}</div>
-      <div class="stack tight"><span class="cap">Asking to play · ${reqs.length}</span><p class="sm mut">Sorted with the closest level first. You see each person’s level and how reliable they’ve been.</p>${reqs.length ? reqs.sort((a, b) => (fits(g.sport, g.want, kOf(b.name)) ? 1 : 0) - (fits(g.sport, g.want, kOf(a.name)) ? 1 : 0)).map(card).join('') : '<p class="sm mut">No requests waiting.</p>'}</div>
-      <div class="row"><button class="btn grow" data-act="soon" data-what="This would open WhatsApp with a link to your post.">Share link</button><button class="btn ghost grow" data-act="gcancel" data-id="${g.id}">Cancel game</button></div>
-      <button class="btn quiet block" data-act="me">${ic('left')}Back to my week</button>`;
+    const sorted = reqs.slice().sort((a, b) => (g.want && fits(g.sport, g.want, kOf(b.name)) ? 1 : 0) - (g.want && fits(g.sport, g.want, kOf(a.name)) ? 1 : 0));
+    return `${left <= 0 ? `<p class="okline">${ic('check')}<span class="grow">It’s on. Everyone’s been told${g.cost ? ' and asked to pay their share' : ''}.</span></p>` : ''}
+      <button class="btn block" data-act="invite" data-k="g" data-id="${g.id}">${ic('share')}Invite people</button>
+      <div class="stack tight"><span class="cap">Who’s in · ${g.going.length} of ${g.need}</span>${g.going.length ? `<div>${g.going.map((n) => `<div class="item"><span class="row grow">${face(n, '')}<span>${esc(n)}${g.want ? `<br><span class="sm mut">${esc(skillTxt(g.sport, kOf(n)))}</span>` : ''}</span></span></div>`).join('')}</div>` : `<p class="sm mut">Nobody yet.${mates ? ' Invite your mates by WhatsApp, Instagram or from your friends.' : ''}</p>`}</div>
+      ${mates ? '<p class="sm mut">Mates only: this plan isn’t listed. Anyone with your link can join without asking.</p>' : `<div class="stack tight"><span class="cap">Asking to join · ${reqs.length}</span><p class="sm mut">${g.want ? 'Sorted with the closest level first. ' : ''}You see each person’s profile and how reliable they’ve been.</p>${sorted.length ? sorted.map(card).join('') : '<p class="sm mut">No requests waiting.</p>'}</div>`}
+      <button class="btn ghost block" data-act="gcancel" data-id="${g.id}">Cancel plan</button>
+      <button class="btn quiet block" data-act="plans">${ic('left')}Back to plans</button>`;
   }
 
   V.confirm = () => {
@@ -1096,8 +1142,7 @@
       ${org}
       ${nextCard(up.find((s) => has(s.id) && !isCancelled(s)))}
       ${up.length || S.follows.length ? weekPlan(up.find((s) => has(s.id) && !isCancelled(s))) : `<div class="stack tight"><span class="cap">Coming up</span><p class="mut">Nothing yet. Pick Mind, Body or Soul, or try one of these.</p>${pillarNav()}<span class="cap">Popular this week</span><div class="stack">${['mdr', 'mcc', 'dos'].map((id) => clubCard(club(id))).join('')}</div><button class="btn" data-act="quiz">Find my club ${ic('right')}</button></div>`}
-      ${gSection()}
-      ${evSection()}
+      ${myPlansSection()}
       ${S.follows.length ? `<div class="stack tight"><span class="cap">From your clubs</span><div class="strip">${S.follows.slice(0, 3).map((id) => { const c = club(id); const p = leadPhotos(c)[0] || { g: 1, sp: c.sport, i: 0 }; return `<button class="ph g${p.g}"${im(p.sp, p.i)} data-act="club" data-id="${id}">${esc(c.name.split(' ')[0])}</button>`; }).join('')}</div></div>` : ''}
     </main>`;
   };
@@ -1165,8 +1210,9 @@
   V.profile = () => { const m = myPro(); return `<main class="pad-nav"><div class="row">${face(S.user.name, m.photo, true)}<div class="stack tight"><h1>${esc(S.user.name)}</h1>
       <span class="mut sm">${[m.area, m.level && LEVELS[m.level], m.work].filter(Boolean).map(esc).join(' · ') || 'Add a photo and a few details so people know who to look for.'}</span>
       ${m.hobbies ? `<span class="sm">Into ${esc(m.hobbies)}</span>` : ''}${m.ig ? `<span class="sm">@${esc(m.ig)}</span>` : ''}</div></div>
-    ${LATER() && Object.keys(m.skills || {}).length ? `<div class="stack tight"><span class="cap">Your levels</span><dl class="facts">${Object.keys(m.skills).map((sp) => `<dt>${esc(SPORTS[sp])}</dt><dd>${esc(skillTxt(sp, m.skills[sp]) || 'Not set')}</dd>`).join('')}</dl></div>` : ''}
+    ${LATER() && Object.keys(m.skills || {}).filter(hasLevel).length ? `<div class="stack tight"><span class="cap">Your levels</span><dl class="facts">${Object.keys(m.skills).filter(hasLevel).map((sp) => `<dt>${esc(SPORTS[sp])}</dt><dd>${esc(skillTxt(sp, m.skills[sp]) || 'Not set')}</dd>`).join('')}</dl></div>` : ''}
     <button class="btn ghost block" data-act="editpro">${LATER() ? (m.photo || m.work || m.hobbies || m.ig ? 'Edit profile' : 'Set up your profile') : m.photo ? 'Change photo' : 'Add a photo'}</button>
+    ${LATER() ? `<button class="whobtn" data-act="friends"><span class="orgcta-ic">${ic('clubs')}</span><span class="grow"><b>Friends · ${friends().length}</b><br><span class="mut sm">${friendIn().length ? `${plural(friendIn().length, 'request')} waiting` : 'Add people you\u2019ve met'}</span></span>${ic('chev', 'chev')}</button>` : ''}
     ${LATER() ? `<p class="mut sm">${m.share ? 'People going to the same session as you, and those clubs\' organisers, can see your profile.' : 'Your profile is hidden: people at your sessions only see your first name. Turn sharing on in Edit profile.'} Only you can see your streak and history.</p>
     <dl class="facts"><dt>Current streak</dt><dd>${plural(S.streak, 'week')}</dd><dt>Longest streak</dt><dd>${plural(S.longest, 'week')}</dd><dt>Sessions</dt><dd>${S.total}</dd><dt>Rest week</dt><dd>${S.prot ? 'Available. Miss one week and your streak stays safe.' : `Used. You earn a new one after ${plural(Math.max(0, 4 - S.sinceProt), 'more week')} in a row.`}</dd></dl>
     <div class="stack"><span class="cap">Milestones</span><div class="badges">${MS.map((m) => `<span class="badge ${S.badges.includes(m.id) ? 'on' : ''}" title="${m.t}" aria-label="${m.t}${S.badges.includes(m.id) ? ', earned' : ', not yet earned'}">${m.b}</span>`).join('')}</div>
@@ -1324,12 +1370,12 @@
       <div>${todoLeft.map(([t, , act, cta]) => `<div class="item"><span class="grow"><b>${t}</b></span><button class="btn small ghost" data-act="${act}" data-id="${c.id}">${cta}</button></div>`).join('')}</div></section>` : '';
     if (!LATER()) return `<main class="pad-nav">${reqBlock(c)}${hero}${todoCard}
       <section class="stack tight"><div class="row sp"><h2>This week</h2><span class="sm mut">${live.reduce((n, s) => n + going(s), 0)} booked</span></div>
-        ${c.price && payOf(c) ? `<p class="okline">${ic('tag')}<span class="grow"><b>AED ${(live.reduce((n, s) => n + going(s), 0) * c.price).toLocaleString('en')} booked</b> · you receive AED ${Math.round(live.reduce((n, s) => n + going(s), 0) * c.price * 0.9).toLocaleString('en')}</span></p>` : ''}
+        ${c.price && payOf(c) ? `<p class="okline">${ic('tag')}<span class="grow"><b>AED ${(live.reduce((n, s) => n + going(s), 0) * c.price).toLocaleString('en')} booked</b> · you receive AED ${Math.round(live.reduce((n, s) => n + going(s), 0) * c.price - live.reduce((n, s) => n + feeFor(c, going(s), c.price).fee, 0)).toLocaleString('en')}</span></p>` : ''}
         <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
         <div class="wrap"><button class="link sm" data-act="oshare">Post the week to WhatsApp</button><button class="link sm" data-act="osched">Change or cancel a session</button></div></section></main>`;
     return `<main class="pad-nav">${reqBlock(c)}${hero}${driftLine}${grow}
       <section class="stack tight"><div class="row sp"><h2>This week</h2><span class="sm mut">${live.reduce((n, s) => n + going(s), 0)} RSVPs · last week ${cameLast} came</span></div>
-        ${c.price && payOf(c) ? `<p class="okline">${ic('tag')}<span class="grow"><b>AED ${(live.reduce((n, s) => n + going(s), 0) * c.price).toLocaleString('en')} booked</b> · you receive AED ${Math.round(live.reduce((n, s) => n + going(s), 0) * c.price * 0.9).toLocaleString('en')} after Ryze Club's 10%</span></p>` : c.price ? `<button class="osetup-line" data-act="opay"><span class="grow"><b>Get paid when members book</b> · connect Ziina or Stripe</span><span class="det">Set up ${ic('chev')}</span></button>` : ''}
+        ${c.price && payOf(c) ? `<p class="okline">${ic('tag')}<span class="grow"><b>AED ${(live.reduce((n, s) => n + going(s), 0) * c.price).toLocaleString('en')} booked</b> · you receive AED ${Math.round(live.reduce((n, s) => n + going(s), 0) * c.price - live.reduce((n, s) => n + feeFor(c, going(s), c.price).fee, 0)).toLocaleString('en')} after Ryze Club's 10%</span></p>` : c.price ? `<button class="osetup-line" data-act="opay"><span class="grow"><b>Get paid when members book</b> · connect Ziina or Stripe</span><span class="det">Set up ${ic('chev')}</span></button>` : ''}
         <div>${rows || '<p class="mut sm">No sessions in the next 7 days.</p>'}</div>
         <div class="wrap"><button class="btn small ghost" data-act="oshare">${ic('share')}Post the week to WhatsApp</button><button class="btn small quiet" data-act="osched">Change or cancel</button></div></section>
       ${confirmed ? `<p class="okline">${ic('check')}<span class="grow">Schedule confirmed ${confirmedOn(c)}</span><button class="link sm" data-act="ounconf">Undo</button></p>`
@@ -1374,6 +1420,7 @@
         ${sec('editclub', 'How to find us', c.find ? `“${esc(c.find)}”` : 'Add a line for first-timers', 'flag')}`}
         ${sec('ocover', 'Cover photo', S.pin[c.id] ? 'Chosen by you · shown on your card and page' : 'Choose the photo members see first', 'photo')}
         ${sec('osched', 'Schedule', `${meetDays(c)} · change or cancel a session`, 'week')}
+        ${sec('omoney', 'Money', c.price ? 'What members paid and what you receive' : 'Free club · nothing to collect', 'tag')}
         ${LATER() ? (() => { const r = reviewsOf(c); return sec('oreviews', 'Reviews', r.n ? `★ ${r.avg.toFixed(1)} from ${plural(r.n, 'review')} · reply to members` : 'None yet', 'star'); })() : ''}
         ${sec('oinvite', 'Organisers', 'Just you · invite a co-organiser', 'clubs')}
         ${sec('opay', 'Get paid', payOf(c) ? `Connected to ${PROVIDERS[payOf(c)]} · members pay when they book` : 'Connect Ziina or Stripe to take payments', 'tag')}</div>
@@ -1418,7 +1465,7 @@
   function reqCard(c, r) {
     const rel = reliability(r.name); const m = memberPro(r.name);
     return `<div class="evreq"><div class="row">${face(r.name, '')}<div class="grow"><b>${esc(r.name)}</b>${LATER() ? `<br><span class="sm mut">${esc(m.work)} · ${esc(m.area)}</span>` : ''}</div></div>
-      ${LATER() ? `<p class="sm"><b>${esc(skillTxt(c.sport, skillFor(r.name, c.sport)))}</b></p>` : ''}
+      ${LATER() && hasLevel(c.sport) ? `<p class="sm"><b>${esc(skillTxt(c.sport, skillFor(r.name, c.sport)))}</b></p>` : ''}
       <p class="sm ${relFlag(rel) ? 'warnline' : 'mut'}">${relFlag(rel) ? ic('flag') : ''}${relLine(rel)}</p>
       ${LATER() && m.ig ? `<p class="sm"><a href="https://instagram.com/${encodeURIComponent(m.ig)}" target="_blank" rel="noopener">@${esc(m.ig)}</a></p>` : ''}
       ${c.askQ && r.ans ? `<p class="sm"><span class="mut">${esc(c.askQ)}</span><br>“${esc(r.ans)}”</p>` : ''}${r.note ? `<p class="sm">“${esc(r.note)}”</p>` : ''}
@@ -1445,7 +1492,7 @@
     return `<div class="sheet"><div class="stack tight"><h2>Ask to join ${esc(c.name)}</h2><p class="mut sm">${esc(founderOf(c))} asks new members to say a bit about themselves first. Once they say yes, you book like anyone else${c.price ? `, at AED ${c.price} a session` : ''}. You don’t pay anything now.</p></div>
       <span class="cap">${esc(hostFirst(c))} will see</span>
       <div class="evreq"><div class="row">${face(S.user.name, m.photo)}<div class="grow"><b>${esc(S.user.name)}</b>${LATER() ? `<br><span class="sm mut">${esc(m.work || 'Work not added')} · ${esc(m.area || 'Area not added')}</span>` : ''}</div></div>
-        <p class="sm mut">${relLine(rel)}</p>${LATER() ? `<p class="sm">${(() => { const k = mySkills()[c.sport]; return k && skillVal(c.sport, k) != null ? `<b>${esc(skillTxt(c.sport, k))}</b> · ` : `<button class="link sm" data-act="editpro">Add your ${esc(SPORTS[c.sport].toLowerCase())} level</button> · `; })()}${m.ig ? '@' + esc(m.ig) : '<span class="mut">No Instagram added</span>'}</p>` : ''}</div>
+        <p class="sm mut">${relLine(rel)}</p>${LATER() ? `<p class="sm">${(() => { if (!hasLevel(c.sport)) return ''; const k = mySkills()[c.sport]; return k && skillVal(c.sport, k) != null ? `<b>${esc(skillTxt(c.sport, k))}</b> · ` : `<button class="link sm" data-act="editpro">Add your ${esc(SPORTS[c.sport].toLowerCase())} level</button> · `; })()}${m.ig ? '@' + esc(m.ig) : '<span class="mut">No Instagram added</span>'}</p>` : ''}</div>
       ${c.askQ ? `<label for="cj-ans">${esc(c.askQ)}</label><input type="text" id="cj-ans" maxlength="120"${overlay.err ? ' aria-invalid="true" aria-describedby="cj-err"' : ''}>${overlay.err ? `<p class="err" id="cj-err" role="alert">Answer ${esc(hostFirst(c))}’s question so they can say yes.</p>` : ''}` : ''}
       <label for="cj-note">Anything else? (optional)</label><input type="text" id="cj-note" maxlength="120" placeholder="For example: Just moved to ${esc(c.area)}">
       <button class="btn block" data-act="cjsend" data-id="${c.id}">Send request</button><button class="btn quiet block" data-act="close">Cancel</button></div>`;
@@ -1459,30 +1506,115 @@
       <label for="ga-note">A line to ${esc(g.host.split(' ')[0])} (optional)</label><input type="text" id="ga-note" maxlength="120" placeholder="For example: I play most weekends">
       <button class="btn block" data-act="gsend" data-id="${g.id}">Send request</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   // Post for players: activity, how many, the level wanted in that activity's own unit, when, where and any court cost.
-  const LFP_SPORTS = ['chess', 'tennis', 'squash', 'padel', 'running', 'cycling', 'basketball', 'football', 'futsal', 'volleyball', 'boxing', 'games'];
+  const LFP_SPORTS = LEVELLED.concat(['games']);
   function wantFields(sp, v, err) {
     const kind = skillKind(sp);
     if (kind === 'rating') return `<div class="row"><div class="grow"><label for="lf-min">Rating from</label><input type="number" id="lf-min" min="100" max="3000" inputmode="numeric" value="${esc(v.min || '')}"></div><div class="grow"><label for="lf-max">to</label><input type="number" id="lf-max" min="100" max="3000" inputmode="numeric" value="${esc(v.max || '')}"></div></div>${err}`;
     if (kind === 'pace') return `<div class="row"><div class="grow"><label for="lf-min">Pace from (per km)</label><input type="text" id="lf-min" placeholder="5:30" inputmode="numeric" value="${esc(v.min || '')}"></div><div class="grow"><label for="lf-max">to</label><input type="text" id="lf-max" placeholder="6:30" inputmode="numeric" value="${esc(v.max || '')}"></div></div>${err}`;
+    if (kind === 'speed') return `<div class="row"><div class="grow"><label for="lf-min">Speed from, km/h</label><input type="number" id="lf-min" min="5" max="60" inputmode="numeric" value="${esc(v.min || '')}"></div><div class="grow"><label for="lf-max">to</label><input type="number" id="lf-max" min="5" max="60" inputmode="numeric" value="${esc(v.max || '')}"></div></div>${err}`;
     const opt = (sel) => LV5.map((l, i) => `<option value="${i}" ${String(sel) === String(i) ? 'selected' : ''}>${l}</option>`).join('');
     return `<div class="row"><div class="grow"><label for="lf-min">Level from</label><select id="lf-min">${opt(v.min == null || v.min === '' ? 1 : v.min)}</select></div><div class="grow"><label for="lf-max">to</label><select id="lf-max">${opt(v.max == null || v.max === '' ? 2 : v.max)}</select></div></div>${err}`;
   }
   O.lfp = () => { const v = overlay.v; const e = overlay.err || {}; const err = (k) => (e[k] ? `<p class="err" role="alert">${e[k]}</p>` : '');
-    return `<div class="sheet"><div class="stack tight"><h2>Find a player or partner</h2><p class="mut sm">Say what you’re playing, how many people you need and at what level. People ask to play and you choose.</p></div>
+    return `<div class="sheet"><div class="stack tight"><h2>${v.vis === 'mates' ? 'Play with your mates' : 'Play something'}</h2><p class="mut sm">${v.vis === 'mates' ? 'Not listed. You invite people once it’s made.' : 'Listed in Plans. Say how many players you need and at what level; people ask to play and you choose.'}</p></div>
       <label for="lf-sport">Activity</label><select id="lf-sport" data-lfpsport="1">${LFP_SPORTS.map((sp) => `<option value="${sp}" ${v.sport === sp ? 'selected' : ''}>${esc(SPORTS[sp])}</option>`).join('')}</select>
       <span class="flabel">Players you need, not counting you</span>
       <div class="seg" role="group" aria-label="Players you need">${[1, 2, 3, 5].map((n) => `<button class="${Number(v.need) === n ? 'on' : ''}" data-act="lfneed" data-val="${n}" aria-pressed="${Number(v.need) === n}">${n === 1 ? '1 · one-on-one' : n}</button>`).join('')}</div>
-      <span class="flabel">Level you’re looking for</span>${wantFields(v.sport, v, err('want'))}
+      ${v.vis === 'mates' || !hasLevel(v.sport) ? '' : `<span class="flabel">Level you’re looking for</span>${wantFields(v.sport, v, err('want'))}`}
       <label for="lf-date">Date</label><input type="date" id="lf-date" min="${ymd(now())}" value="${esc(v.date || '')}"${e.date ? ' aria-invalid="true"' : ''}>${err('date')}
       <label for="lf-time">Start time</label><input type="time" id="lf-time" value="${esc(v.t || '')}"${e.t ? ' aria-invalid="true"' : ''}>${err('t')}
       <label for="lf-place">Where</label><input type="text" id="lf-place" maxlength="80" placeholder="For example: Dubai Hills squash courts, court 2" value="${esc(v.place || '')}"${e.place ? ' aria-invalid="true"' : ''}>${err('place')}
       <label for="lf-cost">Court or table cost, AED (optional)<br><span class="mut sm">Leave empty if it’s free. Otherwise it’s split between everyone, you included.</span></label><input type="number" id="lf-cost" min="0" max="5000" inputmode="numeric" value="${esc(v.cost || '')}">
       <label for="lf-note">Anything else? (optional)</label><input type="text" id="lf-note" maxlength="120" placeholder="For example: Rapid games, 15 minutes each" value="${esc(v.note || '')}">
-      <button class="btn block" data-act="lfcreate">Post it</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+      <button class="btn block" data-act="lfcreate">Make the plan</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   const readLfp = () => { const v = overlay.v; const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; };
     [['sport', 'lf-sport'], ['min', 'lf-min'], ['max', 'lf-max'], ['date', 'lf-date'], ['t', 'lf-time'], ['place', 'lf-place'], ['cost', 'lf-cost'], ['note', 'lf-note']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; }); };
   O.gcancel = () => { const g = game(overlay.id); return `<div class="sheet"><h2>Cancel this game?</h2><p>${g.going.length ? `${plural(g.going.length, 'player')} will be told${g.cost ? ' and refunded in full' : ''}.` : 'Nobody has joined yet.'}</p>
     <button class="btn danger block" data-act="gdocancel" data-id="${g.id}">Cancel game</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
+  // ---------- friends (later phases, D59) ----------
+  // Mutual: one person asks, the other accepts. You add people you've met at a session or plan, by your friend link or
+  // QR code, or by their Instagram handle if they've shared it. No search of every member and no phone contacts.
+  const friends = () => S.friends || [];
+  const isFriend = (n) => friends().includes(n);
+  const friendIn = () => { if (!S.friendIn) S.friendIn = [{ name: 'Sana K.', via: 'Marina Dawn Runners' }]; return S.friendIn; };
+  const friendsIn = (names) => { const f = names.filter(isFriend); return f.length ? ` · <b>${f.map((n) => esc(n.split(' ')[0])).join(' and ')}</b> ${f.length === 1 ? 'is a friend' : 'are friends'}` : ''; };
+  const friendLine = (s) => { if (!LATER() || !S.user) return ''; const f = people(s, going(s)).filter(isFriend); return f.length ? `<p class="okline sm">${ic('clubs')}<span class="grow">${f.map((n) => esc(n.split(' ')[0])).join(' and ')} ${f.length === 1 ? 'is' : 'are'} going</span></p>` : ''; };
+  const friendUrl = () => `${location.href.split('#')[0]}#friend-${encodeURIComponent((S.user ? S.user.name : '').toLowerCase().replace(/[^a-z0-9]+/g, ''))}`;
+  const planUrl = (id) => `${location.href.split('#')[0]}#plan-${id}`;
+  const friendClubs = (n) => { const h = hash(n); return [CLUBS[h % CLUBS.length], CLUBS[(h * 7 + 3) % CLUBS.length]].filter((c, i, a) => a.indexOf(c) === i); };
+  function metPeople() {
+    const out = new Map(); const add = (n, via) => { if (!out.has(n)) out.set(n, via); };
+    Object.keys(S.att).filter((id) => S.att[id] === 'went').concat(S.rsvps).map(byId).filter(Boolean).forEach((s) => people(s, 6).forEach((n) => add(n, s.club.name)));
+    allGames().filter(gInvolved).forEach((g) => [g.host].concat(g.going).forEach((n) => add(n, gTitle(g))));
+    allEvents().filter(evInvolved).forEach((e) => [e.host].concat(e.going).forEach((n) => add(n, e.title)));
+    if (!out.size) S.follows.map(club).filter(Boolean).forEach((c) => c.top.forEach(([n]) => add(n, c.name)));
+    friends().concat(S.friendSent || [], friendIn().map((r) => r.name)).forEach((n) => out.delete(n)); if (S.user) out.delete(S.user.name);
+    return [...out.entries()].slice(0, 8);
+  }
+  V.friends = () => {
+    const reqs = friendIn(); const fr = friends(); const met = metPeople(); const sent = S.friendSent || [];
+    return `<main class="pad-nav"><div class="stack tight"><h1>Friends</h1><p class="mut sm">Friends see when you’re going to the same session, and you can invite each other to plans in one tap.</p></div>
+      ${reqs.length ? `<div class="stack tight"><h2>Requests</h2>${reqs.map((r) => `<div class="item"><span>${face(r.name, '')}</span><span class="grow"><b>${esc(r.name)}</b><br><span class="sm mut">You were both at ${esc(r.via)}</span></span><span class="row"><button class="btn small" data-act="fracc" data-name="${esc(r.name)}">Accept</button><button class="btn small ghost" data-act="frdec" data-name="${esc(r.name)}">Not now</button></span></div>`).join('')}</div>` : ''}
+      <div class="stack tight"><h2>Your friends · ${fr.length}</h2>${fr.length ? fr.map((n) => `<div class="item"><span>${face(n, '')}</span><span class="grow"><b>${esc(n)}</b><br><span class="sm mut">Goes to ${friendClubs(n).map((c) => esc(c.name)).join(' and ')}</span></span><button class="link sm" data-act="frrm" data-name="${esc(n)}">Remove</button></div>`).join('') : '<p class="sm mut">No friends yet. Add people you’ve met below, or share your friend link.</p>'}</div>
+      ${met.length || sent.length ? `<div class="stack tight"><h2>People you’ve met</h2>${sent.map((n) => `<div class="item"><span>${face(n, '')}</span><span class="grow"><b>${esc(n)}</b><br><span class="sm mut">Request sent</span></span><button class="link sm" data-act="fracc-demo" data-name="${esc(n)}">Demo: accepts</button></div>`).join('')}
+        ${met.map(([n, via]) => `<div class="item"><span>${face(n, '')}</span><span class="grow"><b>${esc(n)}</b><br><span class="sm mut">${esc(via)}</span></span><button class="btn small ghost" data-act="fradd" data-name="${esc(n)}">${ic('plus')}Add</button></div>`).join('')}</div>` : ''}
+      <div class="stack tight"><h2>Add by link</h2><p class="sm mut">Send your friend link, or let someone scan your code when you meet.</p>
+        <div class="row"><a class="btn grow" href="https://wa.me/?text=${encodeURIComponent(`Add me on Ryze Club: ${friendUrl()}`)}" target="_blank" rel="noopener">WhatsApp</a><button class="btn ghost grow" data-act="copylink" data-url="${esc(friendUrl())}">Copy link</button><button class="btn ghost grow" data-act="frqr">QR code</button></div>
+        ${route.qr ? `<div class="qrwrap">${qrSvg(friendUrl())}</div>` : ''}</div>
+      <div class="stack tight"><h2>Add by Instagram</h2><p class="sm mut">Works if they’ve added their Instagram to their Ryze profile.</p>
+        <div class="row"><input type="text" id="fr-ig" placeholder="@theirhandle" autocomplete="off" autocapitalize="off" aria-label="Their Instagram handle" class="grow"><button class="btn" data-act="frig">Add</button></div></div>
+      <label class="switch" for="fr-clubs"><span>Friends can see which clubs I go to<br><span class="mut sm">Off means they only see sessions you’re both going to.</span></span><input type="checkbox" id="fr-clubs" data-set="friendClubs" ${S.set.friendClubs === false ? '' : 'checked'}></label>
+      <button class="btn quiet block" data-act="profile">${ic('left')}Back to profile</button></main>`;
+  };
+  // ---------- organiser money (D60, D61) ----------
+  // Ryze keeps 10% of bookings from members who found the club through Ryze, and 5% from members who joined from the
+  // organiser's own invite link. In the prototype, the share each organiser brought is an example figure per club.
+  const FEE_RYZE = 0.1; const FEE_OWN = 0.05;
+  const ownShare = (c) => 0.45 + (hash(c.id) % 30) / 100;
+  const feeFor = (c, paid, price) => { const own = Math.round(paid * ownShare(c)); return { own, ryze: paid - own, fee: Math.round(((paid - own) * price * FEE_RYZE + own * price * FEE_OWN) * 100) / 100 }; };
+  function monthMoney(c, price) {
+    const n0 = now(); const start = new Date(n0.getFullYear(), n0.getMonth(), 1);
+    const rows = sessions(c, -31, 0).filter((s) => s.at >= start && s.at <= n0 && !isCancelled(s)).map((s) => { const paid = going(s); const f = feeFor(c, paid, price); const gross = paid * price; return { s, paid, own: f.own, ryze: f.ryze, gross, fee: f.fee, net: gross - f.fee }; }).reverse();
+    const sum = (k) => rows.reduce((a, r) => a + r[k], 0);
+    const ryzeGross = rows.reduce((a, r) => a + r.ryze * price, 0);
+    return { rows, gross: sum('gross'), fee: sum('fee'), net: sum('net'), ryzeGross, ryzePeople: rows.length ? Math.max(1, Math.round(sum('ryze') / rows.length)) : 0, month: MON[n0.getMonth()] };
+  }
+  const aedFmt = (n) => { const v = Math.round(n * 100) / 100; return `AED ${v.toLocaleString('en', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 })}`; };
+  OV['o-money'] = () => {
+    const c = orgClub(); const price = c.price || route.demoPrice || 0;
+    if (!price) return `<main class="pad-nav"><h1 style="font-size:22px">Money</h1><p class="mut">${esc(c.name)} is free, so there’s nothing to collect and Ryze takes nothing.</p>
+      <p class="note">To charge per session, set a price in Club details and connect Ziina. Members then pay when they book, straight to you.</p>
+      <button class="btn block" data-act="omoneydemo">Demo: see it at AED 30 a session</button></main>`;
+    const m = monthMoney(c, price);
+    return `<main class="pad-nav"><div class="stack tight"><h1 style="font-size:22px">Money</h1><p class="mut sm">${esc(c.name)} · ${m.month} so far${c.price ? '' : ` · example at AED ${price} a session`}</p></div>
+      <section class="money"><div class="row sp"><span>Booked</span><b>${aedFmt(m.gross)}</b></div><div class="row sp"><span>Ryze Club’s fee</span><b>− ${aedFmt(m.fee)}</b></div>
+        <div class="row sp mtotal"><span>You receive</span><b>${aedFmt(m.net)}</b></div><p class="xs mut">Before Ziina’s card fees, which show on your Ziina statement.</p></section>
+      ${m.ryzeGross ? `<p class="okline">${ic('clubs')}<span class="grow">${aedFmt(m.ryzeGross)} of this came from about ${plural(m.ryzePeople, 'person')} a session who found you on Ryze Club.</span></p>` : ''}
+      <div class="stack tight"><span class="cap">How the fee works</span><p class="sm">Ryze Club keeps <b>10%</b> on members who found you through Ryze, and <b>5%</b> on members who joined from your own invite link. Your first 3 months are free.</p></div>
+      <div class="stack tight"><span class="cap">Each session</span>${m.rows.length ? m.rows.map((r) => `<div class="item"><span class="when"><b>${whenShort(r.s.at)}</b><span class="mut sm">${r.s.t}</span></span><span class="grow"><b>${plural(r.paid, 'person')} paid</b><br><span class="sm mut">${r.own} from your link · ${r.ryze} found you on Ryze</span></span><span class="mright"><b>${aedFmt(r.net)}</b><br><span class="xs mut">of ${aedFmt(r.gross)}</span></span></div>`).join('') : '<p class="sm mut">No sessions yet this month.</p>'}</div>
+      <div class="stack tight"><span class="cap">Payouts</span><p class="sm">Ziina pays what members paid into your bank account. Check payout dates in the Ziina app.</p>
+        <div class="row"><button class="btn ghost grow" data-act="soon" data-what="This would open your Ziina payouts.">Open Ziina</button><button class="btn ghost grow" data-act="soon" data-what="This would download a statement for your accountant (PDF and CSV).">Download statement</button></div></div></main>`;
+  };
+  // Make a plan: the two questions that decide everything else.
+  O.planstart = () => { const v = overlay.v;
+    const opt = (key, k, t, d) => `<button class="quiz-opt plain ${v[key] === k ? 'on' : ''}" data-act="ps" data-k="${key}" data-val="${k}" aria-pressed="${v[key] === k}"><span class="grow"><b>${t}</b><br><span class="mut sm">${d}</span></span>${v[key] === k ? ic('check') : ''}</button>`;
+    return `<div class="sheet"><h2>Make a plan</h2>
+      <span class="flabel">Who’s it for?</span>
+      <div class="quiz-opts">${opt('vis', 'open', 'Find new people', 'Listed in Plans. People ask to join and you choose.')}${opt('vis', 'mates', 'Just my mates', 'Not listed. You invite people by WhatsApp, Instagram or from your friends.')}</div>
+      <span class="flabel">What kind?</span>
+      <div class="quiz-opts">${opt('kind', 'play', 'Play something', 'Chess, squash, tennis, a run. Say how many players and at what level.')}${opt('kind', 'together', 'Do something together', 'A yacht day, brunch, reading, a sketch walk. No levels.')}</div>
+      <button class="btn block" data-act="psnext"${v.vis && v.kind ? '' : ' disabled'}>Next</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+  // Invite people to a plan: WhatsApp, Instagram, a copied link, or friends in one tap.
+  O.invite = () => { const it = overlay; const link = planUrl(it.id); const msg = `Join me: ${it.title}, ${it.when}. ${link}`;
+    const fr = friends(); const sent = (S.planInv || {})[it.id] || [];
+    return `<div class="sheet"><div class="stack tight"><h2>Invite people</h2><p class="mut sm">${esc(it.title)} · ${esc(it.when)}</p></div>
+      <a class="btn block" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">${ic('share')}Send on WhatsApp</a>
+      <div class="row"><button class="btn ghost grow" data-act="copylink" data-url="${esc(link)}" data-ig="1">Instagram</button><button class="btn ghost grow" data-act="copylink" data-url="${esc(link)}">Copy link</button></div>
+      <p class="xs mut">${esc(link)}</p>
+      <span class="cap">Your friends</span>
+      ${fr.length ? `<div>${fr.map((n) => `<label class="switch" for="inv-${hash(n)}"><span class="row">${face(n, '')}<span>${esc(n)}</span></span><input type="checkbox" id="inv-${hash(n)}" data-inv="${esc(n)}" ${sent.includes(n) ? 'checked disabled' : ''}></label>`).join('')}</div>
+        <button class="btn block" data-act="invsend" data-id="${it.id}">Invite selected friends</button>` : '<p class="sm mut">No friends on Ryze yet. <button class="link sm" data-act="friends">Add friends</button></p>'}
+      <button class="btn quiet block" data-act="close">Done</button></div>`; };
   // ---------- reviews of hosts (later phases, D53) ----------
   // Only members who went can review: one review per club, which they can change. Hosts reply once and can report a
   // review to the Ryze team, but can't delete it. Event guests review the person who hosted.
@@ -1603,7 +1735,7 @@
     else if (full) act = `<p class="notice">Full · ${s.cap} of ${s.cap}. There is no waiting list.</p>`;
     else if (needsAsk(s.club)) act = `${askNote(s.club)}${askBtn(s.club, 'btn block')}`;
     else act = `<button class="btn block" data-act="rsvp" data-id="${s.id}">${bookLabel(s.club)}</button>`;
-    return `<div class="sheet"><div class="stack tight"><h2>${dayWord(s.at)} · ${s.t}</h2><p class="mut sm">${esc(s.club.name)}</p></div>
+    return `<div class="sheet"><div class="stack tight"><h2>${dayWord(s.at)} · ${s.t}</h2><p class="mut sm">${esc(s.club.name)}</p></div>${friendLine(s)}
       <dl class="facts"><dt>Date</dt><dd>${DAYL[s.at.getDay()]} ${s.at.getDate()} ${MON[s.at.getMonth()]}</dd><dt>Where</dt><dd>${s.place}<br>${mapLink(s.place, s.club, 'link sm')}</dd><dt>What</dt><dd>${s.type}</dd><dt>How long</dt><dd>${lenOf(s)} min · until ${endTime(s)}</dd><dt>Setting</dt><dd>${esc(s.club.venue)}</dd><dt>Level</dt><dd>${s.note}</dd><dt>Bring</dt><dd>${esc(s.club.bring)}</dd><dt>Going</dt><dd>${going(s)}${s.cap ? ' of ' + s.cap : ''}${S.user ? ' · ' + people(s, 3).map((p) => p.split(' ')[0]).join(', ') + '…' : ''}</dd></dl>
       ${act}
       ${who(s, over)}
@@ -1647,7 +1779,7 @@
       <button class="btn block" data-act="opaystep" data-val="1">How Ryze Club fixes it ${ic('right')}</button><button class="btn quiet block" data-act="close">Not now</button></div>`;
     if (step === 1) return `<div class="sheet"><div class="stack tight">${dots}<h2>Members pay when they book</h2></div>
       <ul class="payget"><li>${ic('check')}They pay by Apple Pay, Google Pay or card, in the app</li><li>${ic('check')}The money goes to your own account</li><li>${ic('check')}This week shows who has paid and what you'll receive</li></ul>
-      <p class="sm">Ryze Club's fee: <b>10% per booking</b>, and 0% for your first 3 months.</p>
+      <p class="sm">Ryze Club's fee: <b>10%</b> on members who find you through Ryze, <b>5%</b> on members who join from your own invite link, and 0% for your first 3 months.</p>
       <button class="btn block" data-act="opaystep" data-val="2">Choose how to get paid ${ic('right')}</button><button class="btn quiet block" data-act="opaystep" data-val="0">Back</button></div>`;
     const opt = (v, name, who, needs, label) => `<div class="payopt ${cur === v ? 'on' : ''}"><div class="grow"><b>${name}</b><br><span class="sm">${who}</span><br><span class="mut sm">${needs}</span></div>${cur === v ? `<span class="tag ok">${ic('check')}Connected</span>` : `<button class="btn small" data-act="opayset" data-val="${v}">${label}</button>`}</div>`;
     return `<div class="sheet"><div class="stack tight">${dots}<h2>Get paid</h2></div><p class="mut sm">Members pay when they book, straight to you.</p>
@@ -1675,20 +1807,20 @@
     <button class="btn danger block" data-act="evdocancel" data-id="${e.id}">Cancel event and refund</button><button class="btn quiet block" data-act="close">Keep it</button></div>`; };
   // Plan a game or event: what it is, when, where, what it costs, and how the money is collected.
   O.evplan = () => { const v = overlay.v || {}; const e = overlay.err || {}; const err = (k) => (e[k] ? `<p class="err" role="alert">${e[k]}</p>` : '');
-    return `<div class="sheet"><div class="stack tight"><h2>Plan a game or event</h2><p class="mut sm">Split the cost with friends. Each guest pays their share plus a AED ${EVFEE} Ryze fee, straight to your Ziina.</p></div>
+    return `<div class="sheet"><div class="stack tight"><h2>${v.vis === 'mates' ? 'Do something with your mates' : 'Do something together'}</h2><p class="mut sm">${v.vis === 'mates' ? 'Not listed. You invite people once it’s made.' : 'Listed in Plans for new people to ask to join.'} If there’s a cost, each person pays their share plus a AED ${EVFEE} Ryze fee, straight to your Ziina.</p></div>
       <label for="pl-title">What is it?</label><input type="text" id="pl-title" maxlength="50" placeholder="For example: Friday 5-a-side, or Yacht day" value="${esc(v.title || '')}"${e.title ? ' aria-invalid="true"' : ''}>${err('title')}
       <div class="seg" role="group" aria-label="Mind, Body or Soul">${Object.keys(PILLAR_NAMES).map((k) => `<button class="${(v.pillar || 'body') === k ? 'on' : ''}" data-act="plpillar" data-val="${k}" aria-pressed="${(v.pillar || 'body') === k}">${PILLAR_NAMES[k]}</button>`).join('')}</div>
       <label for="pl-date">Date</label><input type="date" id="pl-date" min="${ymd(now())}" value="${esc(v.date || '')}"${e.date ? ' aria-invalid="true"' : ''}>${err('date')}
       <label for="pl-time">Start time</label><input type="time" id="pl-time" value="${esc(v.t || '')}"${e.t ? ' aria-invalid="true"' : ''}>${err('t')}
       <label for="pl-place">Where</label><input type="text" id="pl-place" maxlength="80" placeholder="For example: JVC sports hall, pitch 2" value="${esc(v.place || '')}"${e.place ? ' aria-invalid="true"' : ''}>${err('place')}
-      <label for="pl-total">Total cost, AED<br><span class="mut sm">The pitch, table, boat or food</span></label><input type="number" id="pl-total" min="1" max="100000" inputmode="numeric" value="${esc(v.total || '')}"${e.total ? ' aria-invalid="true"' : ''}>${err('total')}
+      <label for="pl-total">Total cost, AED (optional)<br><span class="mut sm">The boat, table or food. Leave empty if it’s free.</span></label><input type="number" id="pl-total" min="1" max="100000" inputmode="numeric" value="${esc(v.total || '')}"${e.total ? ' aria-invalid="true"' : ''}>${err('total')}
       <label for="pl-people">People, including you</label><input type="number" id="pl-people" min="2" max="100" inputmode="numeric" value="${esc(v.people || '')}"${e.people ? ' aria-invalid="true"' : ''}>${err('people')}
       <span class="flabel">How you’ll pay for it</span>
       <div class="seg" role="group" aria-label="How you'll pay for it">${[['fronted', 'I’ve already paid'], ['collect', 'Collect first, then book']].map(([k, l]) => `<button class="${(v.mode || 'fronted') === k ? 'on' : ''}" data-act="plmode" data-val="${k}" aria-pressed="${(v.mode || 'fronted') === k}">${l}</button>`).join('')}</div>
       ${(v.mode || 'fronted') === 'collect' ? `<label for="pl-min">Minimum people to go ahead, including you</label><input type="number" id="pl-min" min="2" max="100" inputmode="numeric" value="${esc(v.min || '')}"${e.min ? ' aria-invalid="true"' : ''}>${err('min')}
       <label for="pl-payby">Pay-by date<br><span class="mut sm">Before you have to book. If the minimum isn’t reached, nobody is charged.</span></label><input type="date" id="pl-payby" min="${ymd(now())}" value="${esc(v.payBy || '')}"${e.payBy ? ' aria-invalid="true"' : ''}>${err('payBy')}` : '<p class="sm mut">Guests pay you back. Paid means committed: someone who drops out gets their share back only if another person takes the spot.</p>'}
-      <label class="switch" for="pl-ask"><span>Ask to join<br><span class="mut sm">People send you their profile first and pay only once you approve</span></span><input type="checkbox" id="pl-ask" ${v.ask ? 'checked' : ''}></label>
-      <button class="btn block" data-act="evcreate">Create and get a link</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
+      ${v.vis === 'mates' ? '' : `<label class="switch" for="pl-ask"><span>Ask to join<br><span class="mut sm">People send you their profile first and pay only once you approve</span></span><input type="checkbox" id="pl-ask" ${v.ask ? 'checked' : ''}></label>`}
+      <button class="btn block" data-act="evcreate">Make the plan</button><button class="btn quiet block" data-act="close">Cancel</button></div>`; };
   const readPlan = () => { const v = overlay.v = overlay.v || {}; const g = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; };
     [['title', 'pl-title'], ['date', 'pl-date'], ['t', 'pl-time'], ['place', 'pl-place'], ['total', 'pl-total'], ['people', 'pl-people'], ['min', 'pl-min'], ['payBy', 'pl-payby']].forEach(([k, id]) => { const x = g(id); if (x !== undefined) v[k] = x; });
     const a = document.getElementById('pl-ask'); if (a) v.ask = a.checked; };
@@ -1720,8 +1852,8 @@
       <label for="ep-work">Work</label><input type="text" id="ep-work" maxlength="40" placeholder="For example: Nurse, or Works in marketing" value="${esc(d.work)}">
       <label for="ep-hob">Other things you're into</label><input type="text" id="ep-hob" maxlength="80" placeholder="For example: brunch spots, photography" value="${esc(d.hobbies)}">
       <fieldset class="levels"><legend>Your levels<br><span class="mut sm">Hosts see your level for their activity when you ask to join or ask to play</span></legend>
-        ${Object.keys(d.skills || {}).map((sp) => skillRow(sp, d.skills[sp])).join('')}
-        <label for="ep-addsk">Add an activity</label><select id="ep-addsk" data-skilladd="1"><option value="">Choose</option>${Object.keys(SPORTS).filter((sp) => !(d.skills || {})[sp]).map((sp) => `<option value="${sp}">${esc(SPORTS[sp])}</option>`).join('')}</select></fieldset>
+        ${Object.keys(d.skills || {}).filter(hasLevel).map((sp) => skillRow(sp, d.skills[sp])).join('')}
+        <label for="ep-addsk">Add an activity</label><select id="ep-addsk" data-skilladd="1"><option value="">Choose</option>${LEVELLED.filter((sp) => !(d.skills || {})[sp]).map((sp) => `<option value="${sp}">${esc(SPORTS[sp])}</option>`).join('')}</select></fieldset>
       <label class="switch" for="ep-share"><span>Show my profile to people at my sessions<br><span class="mut sm">And to those clubs' organisers. Off means they only see your first name.</span></span><input type="checkbox" id="ep-share" ${d.share ? 'checked' : ''}></label>` : '<p class="mut sm">A clear photo helps people find you at the meeting point.</p>'}
       <button class="btn block" data-act="savepro">Save</button><button class="btn quiet block" data-act="procancel">Cancel</button></div>`;
   };
@@ -1729,7 +1861,8 @@
     const kind = skillKind(sp); const rm = `<button class="link sm" data-act="skillrm" data-sp="${sp}">Remove</button>`;
     if (kind === 'rating') return `<div class="skrow"><div class="row sp"><b>${esc(SPORTS[sp])}</b>${rm}</div><label for="sk-${sp}-r">Rating, online or club<br><span class="mut sm">Leave empty if you\u2019re unrated</span></label><input type="number" id="sk-${sp}-r" min="100" max="3000" inputmode="numeric" value="${k.rating || ''}"></div>`;
     if (kind === 'pace') return `<div class="skrow"><div class="row sp"><b>${esc(SPORTS[sp])}</b>${rm}</div><label for="sk-${sp}-p">Usual pace per km</label><input type="text" id="sk-${sp}-p" placeholder="6:00" inputmode="numeric" value="${esc(k.raw != null ? k.raw : k.pace ? paceTxt(k.pace) : '')}"></div>`;
-    return `<div class="skrow"><div class="row sp"><b>${esc(SPORTS[sp])}</b>${rm}</div><div class="row"><div class="grow"><label for="sk-${sp}-l">Level</label><select id="sk-${sp}-l">${LV5.map((l, i) => `<option value="${i}" ${Number(k.level || 0) === i ? 'selected' : ''}>${l}</option>`).join('')}</select></div><div class="grow"><label for="sk-${sp}-y">Years playing</label><input type="number" id="sk-${sp}-y" min="0" max="80" inputmode="numeric" value="${k.years || ''}"></div></div></div>`;
+    if (kind === 'speed') return `<div class="skrow"><div class="row sp"><b>${esc(SPORTS[sp])}</b>${rm}</div><label for="sk-${sp}-s">Usual average speed, km/h</label><input type="number" id="sk-${sp}-s" min="5" max="60" inputmode="numeric" value="${k.speed || ''}"></div>`;
+    return `<div class="skrow"><div class="row sp"><b>${esc(SPORTS[sp])}</b>${rm}</div><div class="row"><div class="grow"><label for="sk-${sp}-l">Level</label><select id="sk-${sp}-l">${LV5.map((l, i) => `<option value="${i}" ${Number(k.level || 0) === i ? 'selected' : ''}>${l}</option>`).join('')}</select></div><div class="grow"><label for="sk-${sp}-y">${yearsLabel(sp)}</label><input type="number" id="sk-${sp}-y" min="0" max="80" inputmode="numeric" value="${k.years || ''}"></div></div></div>`;
   }
   // Keep what has been typed when the sheet re-renders (for example after picking a photo).
   const readPro = () => { const v = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : undefined; }; const d = overlay.d;
@@ -1738,6 +1871,7 @@
     Object.keys(d.skills || {}).forEach((sp) => { const kind = skillKind(sp);
       if (kind === 'rating') { const x = v(`sk-${sp}-r`); if (x !== undefined) d.skills[sp] = { rating: x ? Number(x) : null }; }
       else if (kind === 'pace') { const x = v(`sk-${sp}-p`); if (x !== undefined) d.skills[sp] = { pace: parsePace(x), raw: x }; }
+      else if (kind === 'speed') { const x = v(`sk-${sp}-s`); if (x !== undefined) d.skills[sp] = { speed: x ? Number(x) : null }; }
       else { const l = v(`sk-${sp}-l`); const y = v(`sk-${sp}-y`); if (l !== undefined) d.skills[sp] = { level: Number(l), years: y ? Number(y) : null }; } }); };
   O.milestone = () => { const m = MS.find((x) => x.id === overlay.id); return `<div class="sheet full" style="justify-content:center;text-align:center;align-items:center">
     <span class="badge on" style="width:120px;font-size:26px">${m.b}</span><h1>${m.t}</h1><p>${m.line}</p><p class="mut sm">with ${esc(overlay.club)}</p>
@@ -1901,6 +2035,7 @@
       if (d.ig && !/^[A-Za-z0-9._]{1,30}$/.test(d.ig)) { say('Instagram handles use letters, numbers, dots and underscores only.'); render(); return; }
       const badPace = Object.keys(d.skills || {}).find((sp) => skillKind(sp) === 'pace' && d.skills[sp].raw && d.skills[sp].pace == null);
       if (badPace) { say('Write your pace like 6:00, minutes and seconds per km.'); render(); return; }
+      Object.keys(d.skills || {}).forEach((sp) => { if (!hasLevel(sp)) delete d.skills[sp]; });
       S.user.pro = d; save(); const sid = overlay.sid; overlay = sid ? { t: 'session', id: sid } : null; say('Profile saved.'); render();
     },
     club: (d) => go('club', { id: d.id }), clubs: () => go('clubs'), profile: () => go('profile'),
@@ -1940,18 +2075,24 @@
       if (!v.date || v.date < ymd(now())) e.date = 'Pick a date from today on.';
       if (!/^\d{2}:\d{2}$/.test(v.t || '')) e.t = 'Pick a start time.';
       if (!v.place) e.place = 'Say where, so guests can find it.';
-      if (!(num(v.total) >= 1)) e.total = 'Enter the total cost in AED.';
+      if (v.total && !(num(v.total) >= 1)) e.total = 'Enter the total cost in AED, or leave it empty if it’s free.';
       if (!(num(v.people) >= 2)) e.people = 'At least 2 people, including you.';
-      if (v.mode === 'collect') {
+      if (v.mode === 'collect' && num(v.total) >= 1) {
         if (!(num(v.min) >= 2 && num(v.min) <= num(v.people))) e.min = 'Use a number from 2 up to the number of people.';
         if (!v.payBy || v.payBy < ymd(now()) || (v.date && v.payBy > v.date)) e.payBy = 'Pick a date between today and the event.';
       }
       if (Object.keys(e).length) { overlay.err = e; render(); const f = document.querySelector('.sheet [aria-invalid="true"]'); if (f) f.focus(); return; }
+      const vis = v.vis || 'open';
+      if (!(num(v.total) >= 1)) { // free: a plan with no money, kept with the other plans
+        const gid = `g${Date.now().toString(36)}`;
+        S.games = (S.games || []).concat([{ id: gid, mine: true, kind: 'together', vis, sport: v.pillar || 'soul', title: v.title, need: num(v.people) - 1, host: S.user.name, date: v.date, t: v.t, place: v.place, cost: 0, want: null, note: '', going: [], requests: vis === 'open' ? [{ name: 'Sana K.', note: 'Would love to join' }, { name: 'Jonas P.', note: '' }] : [] }]);
+        save(); overlay = null; haptic('success'); say(vis === 'open' ? 'Made. In this demo, two people have asked to join.' : 'Made. Now invite your mates.'); go('game', { id: gid }); if (vis === 'mates') A.invite({ k: 'g', id: gid }); return;
+      }
       const id = `my${Date.now().toString(36)}`;
       // In the prototype, two example requests arrive so the host can try approving.
       const requests = v.ask ? [{ name: 'Sana K.', note: 'Layla’s friend from padel', li: '' }, { name: 'Jonas P.', note: '', li: 'linkedin.com/in/example' }] : [];
-      S.myEvents = (S.myEvents || []).concat([{ id, mine: true, title: v.title, pillar: v.pillar || 'body', sport: 'social', host: S.user.name, date: v.date, t: v.t, place: v.place, total: num(v.total), people: num(v.people), mode: v.mode || 'fronted', min: v.mode === 'collect' ? num(v.min) : 0, payBy: v.mode === 'collect' ? v.payBy : '', ask: !!v.ask, going: v.ask ? [] : ['Mei L.'], requests }]);
-      save(); overlay = null; haptic('success'); say(v.ask ? 'Created. In this demo, two people have asked to join.' : 'Created. Share the link with your friends.'); go('event', { id });
+      S.myEvents = (S.myEvents || []).concat([{ id, mine: true, title: v.title, pillar: v.pillar || 'body', sport: 'social', host: S.user.name, date: v.date, t: v.t, place: v.place, total: num(v.total), people: num(v.people), mode: v.mode || 'fronted', min: v.mode === 'collect' ? num(v.min) : 0, payBy: v.mode === 'collect' ? v.payBy : '', vis, ask: vis === 'open' && !!v.ask, going: v.ask || vis === 'mates' ? [] : ['Mei L.'], requests: vis === 'open' ? requests : [] }]);
+      save(); overlay = null; haptic('success'); say(v.ask ? 'Created. In this demo, two people have asked to join.' : 'Created. Share the link with your friends.'); go('event', { id }); if (vis === 'mates') A.invite({ k: 'e', id });
     },
     evask: needUser((d) => { overlay = { t: 'evask', id: d.id }; render(); }),
     evsendask: (d) => { const n = document.getElementById('ev-note'); S.ev = S.ev || {}; S.ev[d.id] = { st: 'requested', note: n ? n.value.trim() : '' }; save(); overlay = null; say('Request sent.'); render(); },
@@ -1970,10 +2111,12 @@
     lfp: needUser(() => { overlay = { t: 'lfp', v: { sport: 'chess', need: 1 } }; render(); }),
     lfneed: (d) => { readLfp(); overlay.v.need = Number(d.val); render(); },
     lfcreate: () => {
-      readLfp(); const v = overlay.v; const e = {}; const kind = skillKind(v.sport);
+      readLfp(); const v = overlay.v; const e = {}; const kind = skillKind(v.sport); const vis = v.vis || 'open'; const lv = vis === 'open' && hasLevel(v.sport);
       let min; let max;
-      if (kind === 'rating') { min = Number(v.min); max = Number(v.max); if (!(min >= 100 && max >= min && max <= 3000)) e.want = 'Enter a rating range, for example 1200 to 1600.'; }
+      if (!lv) { /* no level for mates-only plans or activities without levels */ }
+      else if (kind === 'rating') { min = Number(v.min); max = Number(v.max); if (!(min >= 100 && max >= min && max <= 3000)) e.want = 'Enter a rating range, for example 1200 to 1600.'; }
       else if (kind === 'pace') { min = parsePace(v.min); max = parsePace(v.max); if (min == null || max == null || max < min) e.want = 'Enter paces like 5:30 and 6:30, faster first.'; }
+      else if (kind === 'speed') { min = Number(v.min); max = Number(v.max); if (!(min >= 5 && max >= min && max <= 60)) e.want = 'Enter a speed range, for example 25 to 30 km/h.'; }
       else { min = Number(v.min); max = Number(v.max); if (max < min) e.want = 'The second level should be the same or higher.'; }
       if (!v.date || v.date < ymd(now())) e.date = 'Pick a date from today on.';
       if (!/^\d{2}:\d{2}$/.test(v.t || '')) e.t = 'Pick a start time.';
@@ -1981,13 +2124,14 @@
       if (Object.keys(e).length) { overlay.err = e; render(); return; }
       const id = `g${Date.now().toString(36)}`;
       // In the prototype, three example requests arrive: one in range, one outside it, and one with a weak record.
-      const mid = Math.round((min + max) / 2);
+      const mid = lv ? Math.round((min + max) / 2) : 0;
       const ks = kind === 'rating' ? [{ rating: mid }, { rating: Math.max(100, min - 150) }, { rating: min + 20 }]
         : kind === 'pace' ? [{ pace: mid }, { pace: max + 40 }, { pace: min }]
+        : kind === 'speed' ? [{ speed: mid }, { speed: Math.max(5, min - 4) }, { speed: min }]
         : [{ level: min, years: 4 }, { level: Math.max(0, min - 1), years: 1 }, { level: max, years: 6 }];
       const requests = [{ name: 'Sana K.', note: 'Free most evenings', k: ks[0] }, { name: 'Yuki O.', note: '', k: ks[1] }, { name: 'Jonas P.', note: 'Keen to improve', k: ks[2] }];
-      S.games = (S.games || []).concat([{ id, mine: true, sport: v.sport, need: Number(v.need) || 1, host: S.user.name, date: v.date, t: v.t, place: v.place, cost: Number(v.cost) || 0, want: { min, max }, note: v.note || '', going: [], requests }]);
-      save(); overlay = null; haptic('success'); say('Posted. In this demo, three people have asked to play.'); go('game', { id });
+      S.games = (S.games || []).concat([{ id, mine: true, kind: 'play', vis, sport: v.sport, need: Number(v.need) || 1, host: S.user.name, date: v.date, t: v.t, place: v.place, cost: Number(v.cost) || 0, want: lv ? { min, max } : null, note: v.note || '', going: [], requests: vis === 'open' ? requests.map((r) => (lv ? r : { name: r.name, note: r.note })) : [] }]);
+      save(); overlay = null; haptic('success'); say(vis === 'open' ? 'Posted. In this demo, three people have asked to play.' : 'Made. Now invite your mates.'); go('game', { id }); if (vis === 'mates') A.invite({ k: 'g', id });
     },
     gask: needUser((d) => { overlay = { t: 'gask', id: d.id }; render(); }),
     gsend: (d) => { gSet(game(d.id), 'requested'); overlay = null; say('Request sent.'); render(); },
@@ -1999,6 +2143,29 @@
     gcancel: (d) => { overlay = { t: 'gcancel', id: d.id }; render(); },
     gdocancel: (d) => { S.games = (S.games || []).filter((x) => x.id !== d.id); save(); overlay = null; say('Cancelled. Everyone has been told.'); go('me', {}, true); },
     skillrm: (d) => { readPro(); delete overlay.d.skills[d.sp]; render(); },
+    plans: () => { overlay = null; go('plans'); },
+    toclubs: () => go('browse'),
+    pfilt: (d) => { route.pf = d.val; render(); },
+    planstart: (d) => { if (!S.user) { overlay = { t: 'signin', then: { act: 'planstart' } }; render(); return; } overlay = { t: 'planstart', v: {} }; render(); },
+    ps: (d) => { overlay.v[d.k] = d.val; haptic('tap'); render(); },
+    psnext: () => { const v = overlay.v; overlay = v.kind === 'play' ? { t: 'lfp', v: { sport: 'chess', need: 1, vis: v.vis } } : { t: 'evplan', v: { pillar: 'soul', mode: 'fronted', ask: v.vis === 'open', vis: v.vis } }; render(); },
+    gjoin: (d) => { gSet(game(d.id), 'in'); haptic('success'); say('You’re in.'); render(); },
+    invite: (d) => { if (d.k === 'g') { const g = game(d.id); overlay = { t: 'invite', id: g.id, title: gTitle(g), when: `${dayWord(gAt(g))} at ${g.t}` }; } else { const e = ev(d.id); overlay = { t: 'invite', id: e.id, title: e.title, when: `${dayWord(evAt(e))} at ${e.t}` }; } render(); },
+    invsend: (d) => { const sel = [...document.querySelectorAll('[data-inv]')].filter((x) => x.checked && !x.disabled).map((x) => x.dataset.inv); if (!sel.length) { say('Tick the friends to invite.'); render(); return; } S.planInv = S.planInv || {}; S.planInv[d.id] = (S.planInv[d.id] || []).concat(sel); save(); say(`Invited ${plural(sel.length, 'friend')}. They’ll see it in their plans.`); render(); },
+    friends: (d) => { if (!S.user) { overlay = { t: 'signin', then: null }; render(); return; } overlay = null; go('friends'); },
+    fracc: (d) => { S.friendIn = friendIn().filter((r) => r.name !== d.name); S.friends = friends().concat([d.name]); save(); haptic('success'); say(`You and ${d.name.split(' ')[0]} are friends.`); render(); },
+    frdec: (d) => { S.friendIn = friendIn().filter((r) => r.name !== d.name); save(); say('Done. They aren’t told.'); render(); },
+    fradd: (d) => { S.friendSent = (S.friendSent || []).concat([d.name]); save(); say(`Request sent to ${d.name.split(' ')[0]}.`); render(); },
+    'fracc-demo': (d) => { S.friendSent = (S.friendSent || []).filter((n) => n !== d.name); S.friends = friends().concat([d.name]); save(); say(`${d.name.split(' ')[0]} accepted. You’re friends.`); render(); },
+    frrm: (d) => { S.friends = friends().filter((n) => n !== d.name); save(); say('Removed. They aren’t told.'); render(); },
+    frqr: () => { route.qr = !route.qr; render(); },
+    frig: () => { const el = document.getElementById('fr-ig'); const h = (el ? el.value.trim() : '').replace(/^@/, '').toLowerCase(); if (!h) { say('Type their Instagram handle.'); render(); return; }
+      const n = PEOPLE.find((p) => (memberPro(p).ig || '').toLowerCase() === h);
+      if (!n) { say('Nobody on Ryze Club has shared that handle.'); render(); return; }
+      if (isFriend(n)) { say(`You and ${n.split(' ')[0]} are already friends.`); render(); return; }
+      S.friendSent = (S.friendSent || []).concat([n]); save(); say(`Request sent to ${n}.`); render(); },
+    omoney: () => go('o-money'),
+    omoneydemo: () => { route.demoPrice = 30; render(); },
     dosignin: () => {
       const el = document.getElementById('si-name'); const name = el ? el.value.trim() : ''; const then = overlay.then;
       const age = document.getElementById('si-age'); overlay.name = name; overlay.age = !!(age && age.checked);
@@ -2077,7 +2244,7 @@
     ock: (d) => { ckOf(orgClub())[d.k] = true; if (d.k === 'd') S.conf[orgClub().id] = now().getTime(); save(); say('Thanks. Marked as checked.'); render(); },
     oshare: () => { overlay = { t: 'oshare' }; render(); },
     ojoin: (d) => { overlay = { t: 'ojoin', qr: !!d.qr }; render(); },
-    copylink: (d) => { try { navigator.clipboard.writeText(d.url); } catch (e) { /* not available */ } say('Link copied.'); render(); }, oinvite: () => { overlay = { t: 'oinvite' }; render(); },
+    copylink: (d) => { try { navigator.clipboard.writeText(d.url); } catch (e) { /* not available */ } say(d.ig ? 'Link copied. Paste it in an Instagram message or your story.' : 'Link copied.'); render(); }, oinvite: () => { overlay = { t: 'oinvite' }; render(); },
     ci: (d) => { const t = (S.ci[d.id] = S.ci[d.id] || {}); t[d.name] = !t[d.name]; if (t[d.name]) { haptic('tap'); cue(`.cirow[data-name="${CSS.escape(d.name)}"] .citick`, 'fx-pop'); } const o = (S.orgAtt[d.id] = S.orgAtt[d.id] || {}); o[d.name] = t[d.name] ? 'came' : 'no'; save(); render(); },
     ciall: (d) => { haptic('success'); cue('.citick', 'fx-pop'); const s = byId(d.id); const t = (S.ci[d.id] = {}); const o = (S.orgAtt[d.id] = {}); roster(s).forEach((p) => { t[p.name] = true; o[p.name] = 'came'; }); save(); say('Everyone checked in. Tap a name to untick.'); render(); },
     ciclear: (d) => { delete S.ci[d.id]; delete S.orgAtt[d.id]; save(); render(); },
@@ -2147,7 +2314,7 @@
     if (v !== route.v) route = { v };
     const reuse = { 'o-sched': V.sched, 'o-photos': V.mphotos, 'o-session': V.attend };
     const body = (OV[v] || reuse[v])();
-    const sub = ['o-sched', 'o-session', 'o-checkin', 'o-reviews'].includes(v);
+    const sub = ['o-sched', 'o-session', 'o-checkin', 'o-reviews', 'o-money'].includes(v);
     const top = `<header class="top otop"><div class="r">${sub ? `<button class="back" data-act="back">${ic('left')}${({ 'o-week': 'This week', 'o-club': 'Club', 'o-checks': 'Check-in', 'o-session': 'Session', 'o-sched': 'Schedule' }[(stack[stack.length - 1] || {}).v]) || 'Back'}</button>` : `<span class="ologo">ryze club <span class="obadge">Organiser</span></span>`}</div>
       <div class="r"><button class="pill" data-act="demo">Demo</button></div></header>`;
     const tab = (act, l, i, on) => `<button data-act="${act}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
@@ -2179,7 +2346,7 @@
       <div class="r"><button class="pill" data-act="demo">Demo</button>${S.user ? '' : '<button class="btn small ghost" data-act="signin">Sign in</button>'}</div></header>`;
     const showNav = S.user && route.v !== 'club' && route.v !== 'quiz';
     const tab = (v, l, i, on) => `<button data-act="${v}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}><span class="ni">${ic(i)}</span>${l}</button>`;
-    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('tohome', 'Home', 'home', route.v === 'home')}${tab('me', 'My week', 'week', ['me', 'result', 'missed', 'confirm', 'event', 'game'].includes(route.v))}${tab('browse', 'Find', 'find', ['browse', 'results'].includes(route.v))}${tab('clubs', 'My clubs', 'clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', 'me', route.v === 'profile')}</nav>` : '';
+    const nav = showNav ? `<nav class="nav" aria-label="Main">${tab('tohome', 'Home', 'home', route.v === 'home')}${tab('me', 'My week', 'week', ['me', 'result', 'missed', 'confirm'].includes(route.v))}${tab('browse', 'Find', 'find', ['browse', 'results', 'plans', 'game', 'event'].includes(route.v))}${tab('clubs', 'My clubs', 'clubs', ['clubs', 'manage', 'attend', 'sched', 'mphotos'].includes(route.v))}${tab('profile', 'Profile', 'me', ['profile', 'friends'].includes(route.v))}</nav>` : '';
     const ov = overlay ? `<div class="veil" data-veil="1">${O[overlay.t]().replace(/^(<div class="sheet[^>]*>)/, '$1<button class="sheet-x" data-act="close" aria-label="Close">' + ic('x') + '</button>').replace('<div class="sheet', '<div role="dialog" aria-modal="true" class="sheet')}</div>` : '';
     const ts = toast ? `<div class="toast${overlay ? ' over' : ''}" role="status"><div><span>${esc(toast.msg)}</span>${toast.undo ? '<button data-act="undo">Undo</button>' : ''}</div></div>` : '';
     app.innerHTML = offBar() + top + (V[route.v] || V.home)() + nav + ov + ts;
@@ -2268,11 +2435,13 @@
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(report);
 
   // An invite link (#join/<club>) opens that club in the member app with a welcome and a Join button.
+  const readPlanLink = () => { const m = location.hash.match(/^#plan-([a-z0-9]+)$/); if (!m) return null; if (game(m[1])) return { v: 'game', id: m[1] }; if (ev(m[1])) return { v: 'event', id: m[1] }; return null; };
   const readJoin = () => { const m = location.hash.match(/^#join\/([a-z]+)$/); return m && club(m[1]) ? m[1] : null; };
-  window.addEventListener('hashchange', () => { const j = readJoin(); if (j) { S.mode = 'member'; stack = []; route = { v: 'club', id: j, invited: true }; render(); window.scrollTo(0, 0); return; }
+  window.addEventListener('hashchange', () => { const pl = readPlanLink(); if (pl) { S.mode = 'member'; stack = []; route = pl; render(); window.scrollTo(0, 0); return; } const j = readJoin(); if (j) { S.mode = 'member'; stack = []; route = { v: 'club', id: j, invited: true }; render(); window.scrollTo(0, 0); return; }
     S.mode = location.hash === '#organiser' ? 'org' : 'member'; stack = []; route = { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' }; render(); });
   applyEdits();
   route = { v: S.mode === 'org' ? 'o-week' : S.user ? 'me' : 'home' };
   if (readJoin()) { S.mode = 'member'; route = { v: 'club', id: readJoin(), invited: true }; }
+  if (readPlanLink()) { S.mode = 'member'; route = readPlanLink(); }
   render();
 })();

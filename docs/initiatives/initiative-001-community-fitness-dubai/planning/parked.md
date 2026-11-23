@@ -94,3 +94,12 @@ Added 20 November 2026. Once Ryze brings pitches and courts regular weekly booki
 ## 7. Map view
 
 Added 19 November 2026, from the ClassPass review. A map with "Redo search in this area", without other businesses' pins. Not needed for 3 areas and about 15 hosts.
+
+## 8. Keeping organisers on Ryze
+
+Added 24 November 2026. Built: the 5% fee on members organisers invite (D60) and the Money screen showing what Ryze brought (D61). Still to decide:
+
+- A cap per member per month (for example AED 30), so loyal regulars don't get expensive for the organiser.
+- A line in the organiser terms against moving members who found them on Ryze to off-app payments.
+- A warning sign to watch: an organiser checking in many people who didn't book through Ryze.
+
